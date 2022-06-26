@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    kotlin("kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -31,15 +33,32 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
 }
 
 dependencies {
     api(platform(project(":depconstraints")))
+    androidTestApi(platform(project(":depconstraints")))
 
     implementation(Libs.CORE_KTX)
+    implementation(Libs.ACTIVITY_KTX)
     implementation(Libs.APPCOMPAT)
     implementation(Libs.MATERIAL)
     implementation(Libs.CONSTRAINT_LAYOUT)
+
+    implementation(Libs.COROUTINES)
+
+    implementation(platform(Libs.FIREBASE_BOM))
+    implementation(Libs.FIREBASE_AUTH)
+
+    implementation(Libs.GOOGLE_PLAY_SERVICES_AUTH)
+
+    implementation(Libs.TIMBER)
+
     testImplementation(Libs.JUNIT)
     androidTestImplementation(Libs.JUNIT_EXT)
     androidTestImplementation(Libs.ESPRESSO)

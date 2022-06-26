@@ -8,4 +8,6 @@ object Versions {
     const val COMPILE_SDK = 31
     const val TARGET_SDK = 30
     const val MIN_SDK = 21
+
+    const val GOOGLE_SERVICES = "4.3.12"
 }

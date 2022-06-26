@@ -5,3 +5,9 @@ plugins {
     id("org.jetbrains.kotlin.android") version("1.6.20") apply false
     id("org.jetbrains.kotlin.jvm") version("1.7.0")
 }
+
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:${Versions.GOOGLE_SERVICES}")
+    }
+}
