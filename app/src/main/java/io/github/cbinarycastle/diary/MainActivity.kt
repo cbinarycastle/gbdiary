@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.cbinarycastle.diary.databinding.ActivityMainBinding
 import io.github.cbinarycastle.diary.extensions.launchAndRepeatWithLifecycle
+import io.github.cbinarycastle.diary.extensions.toast
 import io.github.cbinarycastle.diary.signin.SignInViewModel
 
 @AndroidEntryPoint
@@ -50,9 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         launchAndRepeatWithLifecycle {
-            viewModel.errorMessage.collect {
-                Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
-            }
+            viewModel.errorMessage.collect { this@MainActivity.toast(it) }
         }
     }
 
