@@ -15,6 +15,6 @@ class ObserveUserAuthStateUseCase @Inject constructor(
 ) : FlowUseCase<Unit, User?>(ioDispatcher) {
 
     override fun execute(params: Unit): Flow<Result<User?>> {
-        return userDataSource.getUser().map { Result.Success(it) }
+        return userDataSource.user.map { Result.Success(it) }
     }
 }

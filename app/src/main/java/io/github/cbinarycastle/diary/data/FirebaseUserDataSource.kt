@@ -15,7 +15,7 @@ class FirebaseUserDataSource(
     @ApplicationScope private val externalScope: CoroutineScope,
 ) : UserDataSource {
 
-    private val user: Flow<User?> = callbackFlow {
+    override val user: Flow<User?> = callbackFlow {
         val authStateListener: (FirebaseAuth) -> Unit = { auth ->
             auth.currentUser?.email?.let { trySend(User(it)) }
                 ?: trySend(null)
@@ -27,6 +27,4 @@ class FirebaseUserDataSource(
         started = SharingStarted.WhileSubscribed(),
         replay = 1
     )
-
-    override fun getUser(): Flow<User?> = user
 }

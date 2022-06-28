@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserDataSource {
 
-    fun getUser(): Flow<User?>
+    val user: Flow<User?>
 }

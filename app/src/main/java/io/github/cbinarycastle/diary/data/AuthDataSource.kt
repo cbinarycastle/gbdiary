@@ -7,5 +7,5 @@ import io.github.cbinarycastle.diary.model.User
 
 interface AuthDataSource {
 
-    suspend fun signInWithGoogle(task: Task<GoogleSignInAccount>): Result<Unit>
+    suspend fun signInWithGoogle(account: GoogleSignInAccount): Result<Unit>
 }
