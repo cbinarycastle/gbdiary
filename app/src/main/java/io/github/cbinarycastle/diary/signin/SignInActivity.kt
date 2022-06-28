@@ -1,7 +1,6 @@
-package io.github.cbinarycastle.diary
+package io.github.cbinarycastle.diary.signin
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -9,13 +8,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.cbinarycastle.diary.R
 import io.github.cbinarycastle.diary.databinding.ActivityMainBinding
 import io.github.cbinarycastle.diary.extensions.launchAndRepeatWithLifecycle
 import io.github.cbinarycastle.diary.extensions.toast
-import io.github.cbinarycastle.diary.signin.SignInViewModel
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class SignInActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel by viewModels<SignInViewModel>()
@@ -31,8 +30,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater).apply {
-            lifecycleOwner = this@MainActivity
-            viewModel = this@MainActivity.viewModel
+            lifecycleOwner = this@SignInActivity
+            viewModel = this@SignInActivity.viewModel
         }
         setContentView(binding.root)
 
@@ -51,12 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         launchAndRepeatWithLifecycle {
-            viewModel.errorMessage.collect { this@MainActivity.toast(it) }
+            viewModel.errorMessage.collect { this@SignInActivity.toast(it) }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.checkSignedIn()
     }
 }
