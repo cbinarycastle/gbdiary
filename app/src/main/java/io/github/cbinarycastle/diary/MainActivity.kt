@@ -8,13 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.cbinarycastle.diary.databinding.ActivityMainBinding
 import io.github.cbinarycastle.diary.extensions.launchAndRepeatWithLifecycle
 import io.github.cbinarycastle.diary.signin.SignInViewModel
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -25,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.signInWithGoogle(task)
     }
 
-    private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +35,6 @@ class MainActivity : AppCompatActivity() {
         }
         setContentView(binding.root)
 
-        auth = Firebase.auth
         googleSignInClient = GoogleSignIn.getClient(
             this,
             GoogleSignInOptions.Builder()

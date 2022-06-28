@@ -3,6 +3,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("com.google.gms.google-services")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -20,8 +21,10 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -42,6 +45,7 @@ android {
 
 dependencies {
     api(platform(project(":depconstraints")))
+    kapt(platform(project(":depconstraints")))
     androidTestApi(platform(project(":depconstraints")))
 
     implementation(Libs.CORE_KTX)
@@ -56,6 +60,9 @@ dependencies {
     implementation(Libs.FIREBASE_AUTH)
 
     implementation(Libs.GOOGLE_PLAY_SERVICES_AUTH)
+
+    implementation(Libs.HILT_ANDROID)
+    kapt(Libs.HILT_COMPILER)
 
     implementation(Libs.TIMBER)
 

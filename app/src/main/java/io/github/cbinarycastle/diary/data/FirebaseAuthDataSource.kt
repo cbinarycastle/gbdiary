@@ -8,6 +8,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import io.github.cbinarycastle.diary.model.Result
 import io.github.cbinarycastle.diary.model.User
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

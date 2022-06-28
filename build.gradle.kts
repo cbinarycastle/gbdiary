@@ -1,13 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id("com.android.application") version("7.1.2") apply false
-    id("com.android.library") version("7.1.2") apply false
-    id("org.jetbrains.kotlin.android") version("1.6.20") apply false
-    id("org.jetbrains.kotlin.jvm") version("1.7.0")
-}
-
 buildscript {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
     dependencies {
-        classpath("com.google.gms:google-services:${Versions.GOOGLE_SERVICES}")
+        classpath("${Plugins.ANDROID_GRADLE_PLUGIN}:${Versions.ANDROID_GRADLE_PLUGIN}")
+        classpath("${Plugins.KOTLIN}:${Versions.KOTLIN}")
+        classpath("${Plugins.GOOGLE_SERVICES}:${Versions.GOOGLE_SERVICES}")
+        classpath("${Plugins.HILT_AGP}:${Versions.HILT_AGP}")
     }
 }

@@ -5,18 +5,23 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.cbinarycastle.diary.R
 import io.github.cbinarycastle.diary.data.AuthDataSource
-import io.github.cbinarycastle.diary.data.FirebaseAuthDataSource
 import io.github.cbinarycastle.diary.model.Result
 import io.github.cbinarycastle.diary.model.User
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignInViewModel : ViewModel() {
-
-    private val firebaseAuth = FirebaseAuth.getInstance()
-    private val authDataSource: AuthDataSource = FirebaseAuthDataSource(firebaseAuth)
+@HiltViewModel
+class SignInViewModel @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val authDataSource: AuthDataSource,
+) : ViewModel() {
 
     private val _signInNavigationAction = MutableSharedFlow<Unit>()
     val signInNavigationAction = _signInNavigationAction.asSharedFlow()
