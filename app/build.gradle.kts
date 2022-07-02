@@ -61,6 +61,8 @@ dependencies {
 
     implementation(Libs.GOOGLE_PLAY_SERVICES_AUTH)
 
+    implementation(Libs.BILLING)
+
     implementation(Libs.HILT_ANDROID)
     kapt(Libs.HILT_COMPILER)
 

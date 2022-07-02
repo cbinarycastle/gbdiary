@@ -1,6 +1,7 @@
 object Libs {
     const val ACTIVITY_KTX = "androidx.activity:activity-ktx"
     const val APPCOMPAT = "androidx.appcompat:appcompat"
+    const val BILLING = "com.android.billingclient:billing-ktx"
     const val CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout"
     const val CORE_KTX = "androidx.core:core-ktx"
     const val COROUTINES = "org.jetbrains.kotlinx:kotlinx-coroutines-android"
