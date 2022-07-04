@@ -5,10 +5,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.cbinarycastle.diary.data.AuthDataSource
-import io.github.cbinarycastle.diary.data.FirebaseAuthDataSource
-import io.github.cbinarycastle.diary.data.FirebaseUserDataSource
-import io.github.cbinarycastle.diary.data.UserDataSource
+import io.github.cbinarycastle.diary.data.auth.AuthDataSource
+import io.github.cbinarycastle.diary.data.auth.FirebaseAuthDataSource
+import io.github.cbinarycastle.diary.data.auth.FirebaseUserDataSource
+import io.github.cbinarycastle.diary.data.auth.UserDataSource
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 

@@ -7,7 +7,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.cbinarycastle.diary.R
-import io.github.cbinarycastle.diary.data.AuthDataSource
 import io.github.cbinarycastle.diary.domain.ObserveUserAuthStateUseCase
 import io.github.cbinarycastle.diary.domain.SignInWithGoogleUseCase
 import io.github.cbinarycastle.diary.extensions.WhileViewSubscribed

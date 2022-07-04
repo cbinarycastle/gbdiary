@@ -1,7 +1,7 @@
 package io.github.cbinarycastle.diary.domain
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import io.github.cbinarycastle.diary.data.AuthDataSource
+import io.github.cbinarycastle.diary.data.auth.AuthDataSource
 import io.github.cbinarycastle.diary.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject

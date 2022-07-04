@@ -1,6 +1,6 @@
 package io.github.cbinarycastle.diary.domain
 
-import io.github.cbinarycastle.diary.data.UserDataSource
+import io.github.cbinarycastle.diary.data.auth.UserDataSource
 import io.github.cbinarycastle.diary.di.IoDispatcher
 import io.github.cbinarycastle.diary.model.Result
 import io.github.cbinarycastle.diary.model.User

@@ -1,4 +1,4 @@
-package io.github.cbinarycastle.diary.data
+package io.github.cbinarycastle.diary.data.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import io.github.cbinarycastle.diary.di.ApplicationScope
