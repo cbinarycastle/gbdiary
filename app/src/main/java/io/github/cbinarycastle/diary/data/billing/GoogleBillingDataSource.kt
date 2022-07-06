@@ -10,13 +10,13 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlin.time.Duration.Companion.seconds
 
-private const val RECONNECTION_THROTTLE_DELAY = 10
-
 class GoogleBillingDataSource(
     @ApplicationContext applicationContext: Context,
     @ApplicationScope private val externalScope: CoroutineScope,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : BillingDataSource, BillingClientStateListener, PurchasesUpdatedListener {
+
+    private val reconnectionThrottleDelay = 10.seconds
 
     private val billingClient = BillingClient.newBuilder(applicationContext)
         .setListener(this)
@@ -24,6 +24,8 @@ class GoogleBillingDataSource(
         .build()
 
     private val productDetailsList = mutableListOf<ProductDetails>()
+
+    private val purchases = mutableListOf<Purchase>()
 
     private val _billingStateCode = MutableSharedFlow<Int>()
     val billingStateCode = _billingStateCode.asSharedFlow()
@@ -35,7 +37,7 @@ class GoogleBillingDataSource(
 
         externalScope.launch {
             reconnectSignal
-                .throttle(RECONNECTION_THROTTLE_DELAY.seconds)
+                .throttle(reconnectionThrottleDelay)
                 .collect { startConnection() }
         }
     }
@@ -74,21 +76,30 @@ class GoogleBillingDataSource(
         }.let { onProductDetailsResult(it) }
     }
 
-    private suspend fun queryPurchases() {
-        val params = createQueryPurchasesParams()
-        billingClient.queryPurchasesAsync()
-    }
-
-    private fun createQueryPurchasesParams() = QueryPurchasesParams.newBuilder()
-        .setProductType(BillingClient.ProductType.INAPP)
-        .build()
-
     private fun onProductDetailsResult(result: ProductDetailsResult) {
         result.productDetailsList?.let {
             productDetailsList.run {
                 clear()
                 addAll(it)
             }
+        }
+    }
+
+    private suspend fun queryPurchases() {
+        val params = createQueryPurchasesParams()
+        withContext(ioDispatcher) {
+            billingClient.queryPurchasesAsync(params)
+        }.let { onPurchasesResult(it) }
+    }
+
+    private fun createQueryPurchasesParams() = QueryPurchasesParams.newBuilder()
+        .setProductType(BillingClient.ProductType.INAPP)
+        .build()
+
+    private fun onPurchasesResult(result: PurchasesResult) {
+        purchases.run {
+            clear()
+            addAll(result.purchasesList)
         }
     }
 
