@@ -3,9 +3,11 @@ plugins {
     id("maven-publish")
 }
 
+val activityCompose = "1.5.0"
 val activityKtx = "1.4.0"
 val appcompat = "1.4.2"
 val billing = "5.0.0"
+val compose = "1.1.1"
 val constraintLayout = "2.1.4"
 val coreKtx = "1.8.0"
 val coroutines = "1.6.3"
@@ -21,9 +23,12 @@ val timber = "5.0.1"
 
 dependencies {
     constraints {
+        api("${Libs.ACTIVITY_COMPOSE}:$activityCompose")
         api("${Libs.ACTIVITY_KTX}:$activityKtx")
         api("${Libs.APPCOMPAT}:$appcompat")
         api("${Libs.BILLING}:$billing")
+        api("${Libs.COMPOSE_RUNTIME}:$compose")
+        api("${Libs.COMPOSE_UI}:$compose")
         api("${Libs.CONSTRAINT_LAYOUT}:$constraintLayout")
         api("${Libs.CORE_KTX}:$coreKtx")
         api("${Libs.COROUTINES}:$coroutines")

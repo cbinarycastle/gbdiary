@@ -37,9 +37,14 @@ android {
         jvmTarget = "1.8"
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0"
+    }
+
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        compose = true
     }
 }
 
@@ -55,6 +60,10 @@ dependencies {
     implementation(Libs.CONSTRAINT_LAYOUT)
 
     implementation(Libs.COROUTINES)
+
+    implementation(Libs.COMPOSE_RUNTIME)
+    implementation(Libs.COMPOSE_UI)
+    implementation(Libs.ACTIVITY_COMPOSE)
 
     implementation(platform(Libs.FIREBASE_BOM))
     implementation(Libs.FIREBASE_AUTH)
