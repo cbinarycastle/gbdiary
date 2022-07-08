@@ -47,37 +47,31 @@ android {
 }
 
 dependencies {
-    api(platform(project(":depconstraints")))
-    kapt(platform(project(":depconstraints")))
-    androidTestApi(platform(project(":depconstraints")))
+    implementation(Libs.Android.BILLING)
+    implementation(Libs.Android.MATERIAL)
 
-    implementation(Libs.CORE_KTX)
-    implementation(Libs.ACTIVITY_KTX)
-    implementation(Libs.APPCOMPAT)
-    implementation(Libs.MATERIAL)
-    implementation(Libs.CONSTRAINT_LAYOUT)
+    implementation(Libs.AndroidX.APPCOMPAT)
+    implementation(Libs.AndroidX.CORE_KTX)
+    implementation(Libs.AndroidX.Activity.ACTIVITY_KTX)
 
-    implementation(Libs.COROUTINES)
+    implementation(Libs.AndroidX.Compose.MATERIAL)
+    implementation(Libs.AndroidX.Compose.RUNTIME)
+    implementation(Libs.AndroidX.Compose.UI)
+    implementation(Libs.AndroidX.Activity.ACTIVITY_COMPOSE)
+    implementation(Libs.AndroidX.Lifecycle.VIEWMODEL_COMPOSE)
 
-    implementation(Libs.COMPOSE_RUNTIME)
-    implementation(Libs.COMPOSE_UI)
-    implementation(Libs.COMPOSE_MATERIAL)
-    implementation(Libs.ACTIVITY_COMPOSE)
-    implementation(Libs.VIEWMODEL_COMPOSE)
+    implementation(Libs.Coroutines.ANDROID)
 
-    implementation(platform(Libs.FIREBASE_BOM))
-    implementation(Libs.FIREBASE_AUTH)
+    implementation(platform(Libs.Firebase.BOM))
+    implementation(Libs.Firebase.AUTH_KTX)
+    implementation(Libs.GooglePlayServices.AUTH)
 
-    implementation(Libs.GOOGLE_PLAY_SERVICES_AUTH)
+    implementation(Libs.Hilt.ANDROID)
+    kapt(Libs.Hilt.COMPILER)
 
-    implementation(Libs.BILLING)
+    testImplementation(Libs.JUnit.JUNIT)
+    androidTestImplementation(Libs.AndroidX.Test.ESPRESSO)
+    androidTestImplementation(Libs.AndroidX.Test.JUNIT_EXT)
 
-    implementation(Libs.HILT_ANDROID)
-    kapt(Libs.HILT_COMPILER)
-
-    implementation(Libs.TIMBER)
-
-    testImplementation(Libs.JUNIT)
-    androidTestImplementation(Libs.JUNIT_EXT)
-    androidTestImplementation(Libs.ESPRESSO)
+    implementation(Libs.Timber.TIMBER)
 }

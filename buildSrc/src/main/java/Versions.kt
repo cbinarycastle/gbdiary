@@ -8,9 +8,4 @@ object Versions {
     const val COMPILE_SDK = 31
     const val TARGET_SDK = 30
     const val MIN_SDK = 21
-
-    const val ANDROID_GRADLE_PLUGIN = "7.2.1"
-    const val KOTLIN = "1.7.0"
-    const val GOOGLE_SERVICES = "4.3.12"
-    const val HILT_AGP = "2.42"
 }

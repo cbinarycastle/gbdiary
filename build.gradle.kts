@@ -6,9 +6,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("${Plugins.ANDROID_GRADLE_PLUGIN}:${Versions.ANDROID_GRADLE_PLUGIN}")
-        classpath("${Plugins.KOTLIN}:${Versions.KOTLIN}")
-        classpath("${Plugins.GOOGLE_SERVICES}:${Versions.GOOGLE_SERVICES}")
-        classpath("${Plugins.HILT_AGP}:${Versions.HILT_AGP}")
+        classpath(Plugins.ANDROID_GRADLE_PLUGIN)
+        classpath(Plugins.KOTLIN)
+        classpath(Plugins.GOOGLE_SERVICES)
+        classpath(Plugins.HILT_AGP)
     }
 }

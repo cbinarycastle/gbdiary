@@ -1,36 +1,67 @@
 object Libs {
-    const val ACTIVITY_COMPOSE = "androidx.activity:activity-compose"
-    const val ACTIVITY_KTX = "androidx.activity:activity-ktx"
-    const val APPCOMPAT = "androidx.appcompat:appcompat"
-    const val BILLING = "com.android.billingclient:billing-ktx"
-    const val COMPOSE_FOUNDATION = "androidx.compose.foundation:foundation"
-    const val COMPOSE_FOUNDATION_LAYOUT = "androidx.compose.foundation:foundation-layout"
-    const val COMPOSE_RUNTIME = "androidx.compose.runtime:runtime"
-    const val COMPOSE_LIVEDATA = "androidx.compose.runtime:runtime-livedata"
-    const val COMPOSE_MATERIAL = "androidx.compose.material:material"
-    const val COMPOSE_THEME_ADAPTER = "com.google.android.material:compose-theme-adapter"
-    const val COMPOSE_UI = "androidx.compose.ui:ui"
-    const val COMPOSE_UI_TOOLING = "androidx.compose.ui:ui-tooling"
-    const val CONSTRAINT_LAYOUT = "androidx.constraintlayout:constraintlayout"
-    const val CORE_KTX = "androidx.core:core-ktx"
-    const val COROUTINES = "org.jetbrains.kotlinx:kotlinx-coroutines-android"
-    const val ESPRESSO = "androidx.test.espresso:espresso-core"
-    const val FIREBASE_AUTH = "com.google.firebase:firebase-auth-ktx"
-    const val FIREBASE_BOM = "com.google.firebase:firebase-bom"
-    const val GOOGLE_PLAY_SERVICES_AUTH = "com.google.android.gms:play-services-auth"
-    const val HILT_ANDROID = "com.google.dagger:hilt-android"
-    const val HILT_COMPILER = "com.google.dagger:hilt-android-compiler"
-    const val JUNIT = "junit:junit"
-    const val JUNIT_EXT = "androidx.test.ext:junit"
-    const val LIFECYCLE_RUNTIME_KTX = "androidx.lifecycle:lifecycle-runtime-ktx"
-    const val MATERIAL = "com.google.android.material:material"
-    const val TIMBER = "com.jakewharton.timber:timber"
-    const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose"
+
+    object Android {
+        const val BILLING = "com.android.billingclient:billing-ktx:5.0.0"
+        const val MATERIAL = "com.google.android.material:material:1.6.1"
+    }
+
+    object AndroidX {
+        const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.2"
+        const val CORE_KTX = "androidx.core:core-ktx:1.8.0"
+
+        object Activity {
+            const val ACTIVITY_COMPOSE = "androidx.activity:activity-compose:1.5.0"
+            const val ACTIVITY_KTX = "androidx.activity:activity-ktx:1.4.0"
+        }
+
+        object Compose {
+            private const val VERSION = "1.1.1"
+            const val MATERIAL = "androidx.compose.material:material:$VERSION"
+            const val RUNTIME = "androidx.compose.runtime:runtime:$VERSION"
+            const val UI = "androidx.compose.ui:ui:$VERSION"
+        }
+
+        object Lifecycle {
+            const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
+        }
+
+        object Test {
+            const val ESPRESSO = "androidx.test.espresso:espresso-core:3.4.0"
+            const val JUNIT_EXT = "androidx.test.ext:junit:1.1.3"
+        }
+    }
+
+    object Coroutines {
+        const val ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
+    }
+
+    object Firebase {
+        const val AUTH_KTX = "com.google.firebase:firebase-auth-ktx"
+        const val BOM = "com.google.firebase:firebase-bom:30.1.0"
+    }
+
+    object GooglePlayServices {
+        const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
+    }
+
+    object Hilt {
+        private const val VERSION = "2.42"
+        const val ANDROID = "com.google.dagger:hilt-android:$VERSION"
+        const val COMPILER = "com.google.dagger:hilt-android-compiler:$VERSION"
+    }
+
+    object JUnit {
+        const val JUNIT = "junit:junit:4.13.2"
+    }
+
+    object Timber {
+        const val TIMBER = "com.jakewharton.timber:timber:5.0.1"
+    }
 }
 
 object Plugins {
-    const val ANDROID_GRADLE_PLUGIN = "com.android.tools.build:gradle"
-    const val GOOGLE_SERVICES = "com.google.gms:google-services"
-    const val HILT_AGP = "com.google.dagger:hilt-android-gradle-plugin"
-    const val KOTLIN = "org.jetbrains.kotlin:kotlin-gradle-plugin"
+    const val ANDROID_GRADLE_PLUGIN = "com.android.tools.build:gradle:7.2.1"
+    const val GOOGLE_SERVICES = "com.google.gms:google-services:4.3.12"
+    const val HILT_AGP = "com.google.dagger:hilt-android-gradle-plugin:2.42"
+    const val KOTLIN = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 }
