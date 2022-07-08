@@ -25,6 +25,7 @@ object Libs {
     const val LIFECYCLE_RUNTIME_KTX = "androidx.lifecycle:lifecycle-runtime-ktx"
     const val MATERIAL = "com.google.android.material:material"
     const val TIMBER = "com.jakewharton.timber:timber"
+    const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose"
 }
 
 object Plugins {

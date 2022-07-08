@@ -1,4 +1,4 @@
-package io.github.cbinarycastle.diary.signin
+package io.github.cbinarycastle.diary.ui.signin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

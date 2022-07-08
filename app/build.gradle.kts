@@ -42,8 +42,6 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
-        dataBinding = true
         compose = true
     }
 }
@@ -63,7 +61,9 @@ dependencies {
 
     implementation(Libs.COMPOSE_RUNTIME)
     implementation(Libs.COMPOSE_UI)
+    implementation(Libs.COMPOSE_MATERIAL)
     implementation(Libs.ACTIVITY_COMPOSE)
+    implementation(Libs.VIEWMODEL_COMPOSE)
 
     implementation(platform(Libs.FIREBASE_BOM))
     implementation(Libs.FIREBASE_AUTH)

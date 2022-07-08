@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Diary">
         <activity
-            android:name=".signin.SignInActivity"
+            android:name="io.github.cbinarycastle.diary.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

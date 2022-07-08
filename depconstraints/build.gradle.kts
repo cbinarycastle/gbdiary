@@ -20,6 +20,7 @@ val junitExt = "1.1.3"
 val lifecycleRuntimeKtx = "2.4.0"
 val material = "1.6.1"
 val timber = "5.0.1"
+val viewModelCompose = "2.5.0"
 
 dependencies {
     constraints {
@@ -27,6 +28,7 @@ dependencies {
         api("${Libs.ACTIVITY_KTX}:$activityKtx")
         api("${Libs.APPCOMPAT}:$appcompat")
         api("${Libs.BILLING}:$billing")
+        api("${Libs.COMPOSE_MATERIAL}:$compose")
         api("${Libs.COMPOSE_RUNTIME}:$compose")
         api("${Libs.COMPOSE_UI}:$compose")
         api("${Libs.CONSTRAINT_LAYOUT}:$constraintLayout")
@@ -42,6 +44,7 @@ dependencies {
         api("${Libs.LIFECYCLE_RUNTIME_KTX}:$lifecycleRuntimeKtx")
         api("${Libs.MATERIAL}:$material")
         api("${Libs.TIMBER}:$timber")
+        api("${Libs.VIEWMODEL_COMPOSE}:$viewModelCompose")
     }
 }
 
