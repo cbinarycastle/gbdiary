@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,7 +22,7 @@ import io.github.cbinarycastle.diary.R
 import io.github.cbinarycastle.diary.extensions.toast
 
 @Composable
-fun SignInScreen(viewModel: SignInViewModel = viewModel()) {
+fun SignInScreen(viewModel: SignInViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
     val googleSignInClient = remember(context) {
