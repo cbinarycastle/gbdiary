@@ -58,6 +58,7 @@ dependencies {
     implementation(Libs.AndroidX.Compose.RUNTIME)
     implementation(Libs.AndroidX.Compose.UI)
     implementation(Libs.AndroidX.Activity.ACTIVITY_COMPOSE)
+    implementation(Libs.AndroidX.Hilt.NAVIGATION_COMPOSE)
     implementation(Libs.AndroidX.Lifecycle.VIEWMODEL_COMPOSE)
 
     implementation(Libs.Coroutines.ANDROID)

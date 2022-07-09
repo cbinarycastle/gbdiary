@@ -21,6 +21,10 @@ object Libs {
             const val UI = "androidx.compose.ui:ui:$VERSION"
         }
 
+        object Hilt {
+            const val NAVIGATION_COMPOSE = "androidx.hilt:hilt-navigation-compose:1.0.0"
+        }
+
         object Lifecycle {
             const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
         }
