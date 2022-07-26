@@ -3,6 +3,7 @@ package com.casoft.gbdiary.domain
 import com.casoft.gbdiary.model.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 abstract class UseCase<P, R>(private val dispatcher: CoroutineDispatcher) {
 
@@ -14,6 +15,7 @@ abstract class UseCase<P, R>(private val dispatcher: CoroutineDispatcher) {
                 }
             }
         } catch (e: Exception) {
+            Timber.e(e)
             Result.Error(e)
         }
     }

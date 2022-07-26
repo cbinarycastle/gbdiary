@@ -2,23 +2,24 @@ package com.casoft.gbdiary.data.billing
 
 import android.content.Context
 import com.android.billingclient.api.*
-import dagger.hilt.android.qualifiers.ApplicationContext
-import com.casoft.gbdiary.di.ApplicationScope
-import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.extensions.throttle
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
 class GoogleBillingDataSource(
-    @ApplicationContext applicationContext: Context,
-    @ApplicationScope private val externalScope: CoroutineScope,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    context: Context,
+    private val externalScope: CoroutineScope,
+    private val ioDispatcher: CoroutineDispatcher,
 ) : BillingDataSource, BillingClientStateListener, PurchasesUpdatedListener {
 
     private val reconnectionThrottleDelay = 10.seconds
 
-    private val billingClient = BillingClient.newBuilder(applicationContext)
+    private val billingClient = BillingClient.newBuilder(context)
         .setListener(this)
         .enablePendingPurchases()
         .build()

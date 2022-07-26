@@ -6,6 +6,8 @@ import com.casoft.gbdiary.data.auth.GoogleAccountDataSource
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +22,7 @@ object AuthModule {
     @Singleton
     @Provides
     fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
-        val options = GoogleSignInOptions.Builder()
+        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
         return GoogleSignIn.getClient(context, options)

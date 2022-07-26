@@ -3,13 +3,10 @@ package com.casoft.gbdiary.data.auth
 import android.accounts.Account
 import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class GoogleAccountDataSource(
-    @ApplicationContext private val context: Context,
-) : AccountDataSource {
+class GoogleAccountDataSource(private val context: Context) : AccountDataSource {
 
     private val _account = MutableStateFlow<Account?>(null)
     override val account: Flow<Account?> = _account
