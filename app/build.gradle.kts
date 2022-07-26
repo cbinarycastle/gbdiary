@@ -10,7 +10,7 @@ android {
     compileSdk = Versions.COMPILE_SDK
 
     defaultConfig {
-        applicationId = "io.github.cbinarycastle.diary"
+        applicationId = "com.casoft.gbdiary"
         minSdk = Versions.MIN_SDK
         targetSdk = Versions.TARGET_SDK
         versionCode = Versions.VERSION_CODE
