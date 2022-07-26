@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Diary"
-include(":app", "depconstraints")
+include(":app")

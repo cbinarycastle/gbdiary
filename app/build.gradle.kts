@@ -61,6 +61,8 @@ android {
 }
 
 dependencies {
+    implementation(files("libs/compose-calendar.aar"))
+
     implementation(Libs.Android.BILLING)
     implementation(Libs.Android.MATERIAL)
 

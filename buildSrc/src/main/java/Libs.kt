@@ -76,6 +76,10 @@ object Libs {
         const val THREE_TEN = "com.jakewharton.threetenabp:threetenabp:1.4.0"
     }
 
+    object ThreeTen {
+        const val THREE_TEN = "com.jakewharton.threetenabp:threetenabp:1.4.0"
+    }
+
     object Timber {
         const val TIMBER = "com.jakewharton.timber:timber:5.0.1"
     }
