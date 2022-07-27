@@ -1,15 +1,15 @@
 package com.casoft.gbdiary.ui.signin
 
+import android.accounts.Account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.domain.ObserveUserAuthStateUseCase
-import com.casoft.gbdiary.domain.SignInWithGoogleUseCase
+import com.casoft.gbdiary.domain.CheckExistingSignedInUserUseCase
+import com.casoft.gbdiary.domain.ObserveAccountUseCase
 import com.casoft.gbdiary.extensions.WhileViewSubscribed
 import com.casoft.gbdiary.model.Result
-import com.casoft.gbdiary.model.User
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -19,13 +19,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    observeUserAuthStateUseCase: ObserveUserAuthStateUseCase,
-    private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    observeUserAuthStateUseCase: ObserveAccountUseCase,
+    private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
+    val googleSignInClient: GoogleSignInClient,
 ) : ViewModel() {
 
-    private val userAuthState: Flow<Result<User?>> = observeUserAuthStateUseCase(Unit)
-
-    val user = userAuthState
+    private val _account: Flow<Result<Account?>> = observeUserAuthStateUseCase(Unit)
+    val account = _account
         .map { (it as? Result.Success)?.data }
         .stateIn(viewModelScope, WhileViewSubscribed, null)
 
@@ -41,18 +41,13 @@ class SignInViewModel @Inject constructor(
 
     fun signInWithGoogle(task: Task<GoogleSignInAccount>) {
         viewModelScope.launch {
-            val account = try {
-                task.getResult(ApiException::class.java)
-            } catch (e: ApiException) {
-                Timber.e(e, "Google sign in failed")
+            if (task.isSuccessful.not()) {
+                Timber.e("Sign in failed.")
                 _errorMessage.emit(R.string.sign_in_failed)
                 return@launch
             }
 
-            val result = signInWithGoogleUseCase(account)
-            if (result is Result.Error) {
-                _errorMessage.emit(R.string.sign_in_failed)
-            }
+            checkExistingSignedInUserUseCase(Unit)
         }
     }
 }

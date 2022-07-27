@@ -1,15 +1,16 @@
 package com.casoft.gbdiary.di
 
-import com.google.firebase.auth.FirebaseAuth
+import android.content.Context
+import com.casoft.gbdiary.data.auth.AccountDataSource
+import com.casoft.gbdiary.data.auth.GoogleAccountDataSource
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import com.casoft.gbdiary.data.auth.AuthDataSource
-import com.casoft.gbdiary.data.auth.FirebaseAuthDataSource
-import com.casoft.gbdiary.data.auth.FirebaseUserDataSource
-import com.casoft.gbdiary.data.auth.UserDataSource
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -18,22 +19,16 @@ object AuthModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
-
-    @Singleton
-    @Provides
-    fun provideAuthDataSource(firebaseAuth: FirebaseAuth): AuthDataSource =
-        FirebaseAuthDataSource(firebaseAuth)
-
-    @Singleton
-    @Provides
-    fun provideUserDataSource(
-        firebaseAuth: FirebaseAuth,
-        @ApplicationScope applicationScope: CoroutineScope,
-    ): UserDataSource {
-        return FirebaseUserDataSource(
-            firebaseAuth = firebaseAuth,
-            externalScope = applicationScope
-        )
+    fun provideGoogleSignInClient(@ApplicationContext context: Context): GoogleSignInClient {
+        val options = GoogleSignInOptions.Builder()
+            .requestEmail()
+            .build()
+        return GoogleSignIn.getClient(context, options)
     }
+
+    @Singleton
+    @Provides
+    fun provideAccountDataSource(
+        @ApplicationContext applicationContext: Context,
+    ): AccountDataSource = GoogleAccountDataSource(applicationContext)
 }

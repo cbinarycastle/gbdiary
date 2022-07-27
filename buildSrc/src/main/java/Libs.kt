@@ -39,11 +39,6 @@ object Libs {
         const val ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
     }
 
-    object Firebase {
-        const val AUTH_KTX = "com.google.firebase:firebase-auth-ktx"
-        const val BOM = "com.google.firebase:firebase-bom:30.1.0"
-    }
-
     object GooglePlayServices {
         const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
     }

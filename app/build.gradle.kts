@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.gms.google-services")
     id("dagger.hilt.android.plugin")
 }
 
@@ -63,8 +62,6 @@ dependencies {
 
     implementation(Libs.Coroutines.ANDROID)
 
-    implementation(platform(Libs.Firebase.BOM))
-    implementation(Libs.Firebase.AUTH_KTX)
     implementation(Libs.GooglePlayServices.AUTH)
 
     implementation(Libs.Hilt.ANDROID)
