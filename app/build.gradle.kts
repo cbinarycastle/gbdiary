@@ -79,14 +79,9 @@ dependencies {
 
     implementation(Libs.GooglePlayServices.AUTH)
 
-    implementation("com.google.http-client:google-http-client-gson:1.26.0")
-    implementation("com.google.api-client:google-api-client-android:1.26.0") {
-        exclude("org.apache.httpcomponents")
-    }
-    implementation("com.google.apis:google-api-services-drive:v3-rev136-1.25.0") {
-        exclude("org.apache.httpcomponents")
-    }
-    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+    implementation(Libs.GoogleDrive.HTTP_CLIENT)
+    implementation(Libs.GoogleDrive.API_CLIENT)
+    implementation(Libs.GoogleDrive.DRIVE)
 
     implementation(Libs.Hilt.ANDROID)
     kapt(Libs.Hilt.COMPILER)

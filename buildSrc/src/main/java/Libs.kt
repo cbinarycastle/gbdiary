@@ -43,6 +43,12 @@ object Libs {
         const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
     }
 
+    object GoogleDrive {
+        const val API_CLIENT = "com.google.api-client:google-api-client-android:2.0.0"
+        const val DRIVE = "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
+        const val HTTP_CLIENT = "com.google.http-client:google-http-client-gson:1.42.2"
+    }
+
     object Hilt {
         private const val VERSION = "2.42"
         const val ANDROID = "com.google.dagger:hilt-android:$VERSION"
