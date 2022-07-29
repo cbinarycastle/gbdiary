@@ -29,6 +29,13 @@ object Libs {
             const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
         }
 
+        object Room {
+            private const val VERSION = "2.4.2"
+            const val COMPILER = "androidx.room:room-compiler:$VERSION"
+            const val ROOM_KTX = "androidx.room:room-ktx:$VERSION"
+            const val RUNTIME = "androidx.room:room-runtime:$VERSION"
+        }
+
         object Test {
             const val ESPRESSO = "androidx.test.espresso:espresso-core:3.4.0"
             const val JUNIT_EXT = "androidx.test.ext:junit:1.1.3"
@@ -57,6 +64,10 @@ object Libs {
 
     object JUnit {
         const val JUNIT = "junit:junit:4.13.2"
+    }
+
+    object ThreeTen {
+        const val THREE_TEN = "com.jakewharton.threetenabp:threetenabp:1.4.0"
     }
 
     object Timber {

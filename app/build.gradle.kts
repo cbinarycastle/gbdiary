@@ -75,6 +75,10 @@ dependencies {
     implementation(Libs.AndroidX.Hilt.NAVIGATION_COMPOSE)
     implementation(Libs.AndroidX.Lifecycle.VIEWMODEL_COMPOSE)
 
+    kapt(Libs.AndroidX.Room.COMPILER)
+    implementation(Libs.AndroidX.Room.RUNTIME)
+    implementation(Libs.AndroidX.Room.ROOM_KTX)
+
     implementation(Libs.Coroutines.ANDROID)
 
     implementation(Libs.GooglePlayServices.AUTH)
@@ -89,6 +93,8 @@ dependencies {
     testImplementation(Libs.JUnit.JUNIT)
     androidTestImplementation(Libs.AndroidX.Test.ESPRESSO)
     androidTestImplementation(Libs.AndroidX.Test.JUNIT_EXT)
+
+    implementation(Libs.ThreeTen.THREE_TEN)
 
     implementation(Libs.Timber.TIMBER)
 }

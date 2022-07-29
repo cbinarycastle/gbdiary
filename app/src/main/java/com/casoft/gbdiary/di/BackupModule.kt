@@ -3,6 +3,8 @@ package com.casoft.gbdiary.di
 import android.content.Context
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.backup.GoogleDriveBackupDataSource
+import com.casoft.gbdiary.data.diary.DiaryItemDao
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,5 +22,12 @@ class BackupModule {
     fun provideBackupDataSource(
         @ApplicationContext applicationContext: Context,
         @IoDispatcher ioDispatcher: CoroutineDispatcher,
-    ): BackupDataSource = GoogleDriveBackupDataSource(applicationContext, ioDispatcher)
+        diaryItemDao: DiaryItemDao,
+        gson: Gson,
+    ): BackupDataSource = GoogleDriveBackupDataSource(
+        context = applicationContext,
+        ioDispatcher = ioDispatcher,
+        diaryItemDao = diaryItemDao,
+        gson = gson,
+    )
 }
