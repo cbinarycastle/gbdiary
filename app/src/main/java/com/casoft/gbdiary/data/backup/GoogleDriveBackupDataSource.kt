@@ -16,7 +16,6 @@ import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
-import java.io.IOException
 
 private const val APPLICATION_NAME = "GBDiary"
 private const val APP_DATA_FOLDER = "appDataFolder"
@@ -47,7 +46,11 @@ class GoogleDriveBackupDataSource(
         val diaryItems = diaryItemDao.getNotSyncedDiaryItems()
         val backupDataItems = diaryItems.map { item ->
             async {
-                val uploadedImages = uploadImages(drive, item.day, item.images)
+                val uploadedImages = uploadImages(
+                    drive = drive,
+                    date = item.day,
+                    images = item.images
+                )
                 BackupDataItem(
                     day = item.day.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     contents = item.contents,
@@ -57,7 +60,8 @@ class GoogleDriveBackupDataSource(
             }
         }.awaitAll()
 
-        uploadJson(
+        deleteExistingData(drive = drive)
+        uploadData(
             drive = drive,
             backupData = BackupData(backupDataItems)
         )
@@ -65,23 +69,52 @@ class GoogleDriveBackupDataSource(
 
     private fun uploadImages(drive: Drive, date: LocalDate, images: List<String>): List<File> {
         return images.mapIndexed { index, image ->
-            val metadata = File().apply {
-                parents = listOf(APP_DATA_FOLDER)
-                name = "${date}_${index + 1}.jpg"
-            }
+            val fileName = "${date}_${index + 1}.jpg"
             val filePath = java.io.File(context.filesDir, image)
-            val mediaContent = FileContent(MIME_TYPE_JPEG, filePath)
 
-            val file: File = drive.files().create(metadata, mediaContent).execute()
-                ?: throw IOException("Null result when requesting file creation.")
-
-            Timber.d("Uploaded image file ID: ${file.id}")
-
-            file
+            deleteExistingImage(drive = drive, fileName = fileName)
+            uploadImage(
+                drive = drive,
+                fileName = fileName,
+                filePath = filePath
+            )
         }
     }
 
-    private fun uploadJson(drive: Drive, backupData: BackupData) {
+    private fun deleteExistingImage(drive: Drive, fileName: String) {
+        val existingImageFiles = drive.files().list()
+            .setQ("name='$fileName'")
+            .setSpaces(APP_DATA_FOLDER)
+            .execute()
+
+        existingImageFiles.files.forEach {
+            drive.files().delete(it.id).execute()
+        }
+    }
+
+    private fun uploadImage(drive: Drive, fileName: String, filePath: java.io.File): File {
+        val metadata = File().apply {
+            parents = listOf(APP_DATA_FOLDER)
+            name = fileName
+        }
+        val mediaContent = FileContent(MIME_TYPE_JPEG, filePath)
+
+        return drive.files().create(metadata, mediaContent).execute()
+            .also { file -> Timber.d("Uploaded image file ID: ${file.id}") }
+    }
+
+    private fun deleteExistingData(drive: Drive) {
+        val existingDataFiles = drive.files().list()
+            .setQ("name='$JSON_FILE_NAME'")
+            .setSpaces(APP_DATA_FOLDER)
+            .execute()
+
+        existingDataFiles.files.forEach {
+            drive.files().delete(it.id).execute()
+        }
+    }
+
+    private fun uploadData(drive: Drive, backupData: BackupData) {
         val metadata = File().apply {
             parents = listOf(APP_DATA_FOLDER)
             name = JSON_FILE_NAME
@@ -89,9 +122,7 @@ class GoogleDriveBackupDataSource(
         val mediaContent = FileContent(MIME_TYPE_JSON, createBackupDataFile(backupData))
 
         val file: File = drive.files().create(metadata, mediaContent).execute()
-            ?: throw IOException("Null result when requesting file creation.")
-
-        Timber.d("Uploaded JSON file ID: ${file.id}")
+        Timber.d("Uploaded data file ID: ${file.id}")
     }
 
     private fun createBackupDataFile(backupData: BackupData): java.io.File {
