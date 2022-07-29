@@ -2,6 +2,7 @@ package com.casoft.gbdiary.data.backup
 
 import android.content.Context
 import com.casoft.gbdiary.data.diary.DiaryItemDao
+import com.casoft.gbdiary.data.diary.DiaryItemEntity
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -16,6 +17,8 @@ import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 private const val APPLICATION_NAME = "GBDiary"
 private const val APP_DATA_FOLDER = "appDataFolder"
@@ -26,6 +29,10 @@ private const val MIME_TYPE_JPEG = "images/jpeg"
 private const val JSON_FILE_NAME_PREFIX = "diaryData"
 private const val JSON_FILE_NAME_SUFFIX = ".json"
 private const val JSON_FILE_NAME = JSON_FILE_NAME_PREFIX + JSON_FILE_NAME_SUFFIX
+
+private const val IMAGE_FILE_EXTENSION = "jpg"
+
+private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
 class GoogleDriveBackupDataSource(
     private val context: Context,
@@ -52,7 +59,7 @@ class GoogleDriveBackupDataSource(
                     images = item.images
                 )
                 BackupDataItem(
-                    day = item.day.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    day = item.day.format(dateTimeFormatter),
                     contents = item.contents,
                     images = uploadedImages.map { it.id },
                     sticker = item.sticker
@@ -69,7 +76,7 @@ class GoogleDriveBackupDataSource(
 
     private fun uploadImages(drive: Drive, date: LocalDate, images: List<String>): List<File> {
         return images.mapIndexed { index, image ->
-            val fileName = "${date}_${index + 1}.jpg"
+            val fileName = "${date}_${index + 1}.$IMAGE_FILE_EXTENSION"
             val filePath = java.io.File(context.filesDir, image)
 
             deleteExistingImage(drive = drive, fileName = fileName)
@@ -132,5 +139,58 @@ class GoogleDriveBackupDataSource(
             JSON_FILE_NAME_SUFFIX,
             context.cacheDir
         ).apply { writeText(backupDataJson) }
+    }
+
+    override suspend fun sync(credential: GoogleAccountCredential) = withContext(ioDispatcher) {
+        val drive = Drive.Builder(
+            NetHttpTransport(),
+            GsonFactory.getDefaultInstance(),
+            credential
+        )
+            .setApplicationName(APPLICATION_NAME)
+            .build()
+
+        val backupDataFile = drive.files().list()
+            .setQ("name='$JSON_FILE_NAME'")
+            .setSpaces(APP_DATA_FOLDER)
+            .execute()
+            .files
+            .firstOrNull() ?: throw BackupDataNotFoundException()
+
+        val backupDataJson = ByteArrayOutputStream().let {
+            drive.files().get(backupDataFile.id).executeMediaAndDownloadTo(it)
+            it.toByteArray().decodeToString()
+        }
+        val backupData = gson.fromJson(backupDataJson, BackupData::class.java)
+        restoreData(drive, backupData)
+    }
+
+    private suspend fun restoreData(
+        drive: Drive,
+        backupData: BackupData,
+    ) = withContext(ioDispatcher) {
+        val diaryItems = backupData.data.map { item ->
+            async {
+                val imageFileNames = item.images.map { fileId ->
+                    val fileName = "${System.currentTimeMillis()}_${UUID.randomUUID()}.$IMAGE_FILE_EXTENSION"
+                    val file = java.io.File(context.filesDir, fileName)
+                    ByteArrayOutputStream().let {
+                        drive.files().get(fileId).executeMediaAndDownloadTo(it)
+                        it.toByteArray().inputStream().copyTo(file.outputStream())
+                    }
+                    fileName
+                }
+
+                DiaryItemEntity(
+                    day = LocalDate.parse(item.day, dateTimeFormatter),
+                    sticker = item.sticker,
+                    contents = item.contents,
+                    images = imageFileNames,
+                    isSync = true
+                )
+            }
+        }.awaitAll()
+
+        diaryItemDao.deleteAllAndInsertAll(diaryItems)
     }
 }

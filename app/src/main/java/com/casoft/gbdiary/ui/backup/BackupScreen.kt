@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui.backup
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -26,12 +27,16 @@ fun BackupScreen(viewModel: BackupViewModel) {
         }
     }
 
-    Box(Modifier.fillMaxSize()) {
-        Button(
-            onClick = { viewModel.backup() },
-            modifier = Modifier.align(Alignment.Center)
-        ) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Button(onClick = { viewModel.backup() }) {
             Text("백업")
+        }
+        Button(onClick = { viewModel.sync() }) {
+            Text("복원")
         }
     }
 }

@@ -5,4 +5,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 interface BackupDataSource {
 
     suspend fun backup(credential: GoogleAccountCredential)
+
+    suspend fun sync(credential: GoogleAccountCredential)
 }

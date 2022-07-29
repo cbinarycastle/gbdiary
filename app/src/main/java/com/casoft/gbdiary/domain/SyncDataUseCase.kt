@@ -10,14 +10,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
-class BackupDataUseCase @Inject constructor(
+class SyncDataUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
     @ApplicationContext private val context: Context,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : UseCase<Account, Unit>(ioDispatcher) {
 
     override suspend fun execute(params: Account) {
-        backupDataSource.backup(
+        backupDataSource.sync(
             credential = GoogleAccountCredential.usingOAuth2(
                 context,
                 listOf(DriveScopes.DRIVE_APPDATA)

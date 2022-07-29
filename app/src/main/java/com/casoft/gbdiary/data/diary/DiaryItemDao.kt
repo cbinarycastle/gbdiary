@@ -11,6 +11,9 @@ interface DiaryItemDao {
     @Insert
     fun insert(item: DiaryItemEntity)
 
+    @Insert
+    fun insertAll(items: List<DiaryItemEntity>)
+
     @Update
     fun update(item: DiaryItemEntity)
 
@@ -19,4 +22,10 @@ interface DiaryItemDao {
 
     @Query("DELETE FROM DiaryItem")
     fun deleteAll()
+
+    @Transaction
+    fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
+        deleteAll()
+        insertAll(items)
+    }
 }
