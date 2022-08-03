@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.casoft.gbdiary.ui.backup.BackupScreen
 import com.casoft.gbdiary.ui.backup.BackupViewModel
+import com.casoft.gbdiary.ui.calendar.CalendarScreen
 import com.casoft.gbdiary.ui.signin.SignInScreen
 import com.casoft.gbdiary.ui.signin.SignInViewModel
 
@@ -22,9 +23,13 @@ fun DiaryApp() {
         ) {
             composable(MainDestination.HOME) {
                 HomeScreen(
+                    navigateToCalendar = { navController.navigate(MainDestination.CALENDAR) },
                     navigateToSignIn = { navController.navigate(MainDestination.SIGN_IN) },
                     navigateToBackup = { navController.navigate(MainDestination.BACKUP) }
                 )
+            }
+            composable(MainDestination.CALENDAR) {
+                CalendarScreen()
             }
             composable(MainDestination.SIGN_IN) {
                 val signInViewModel = hiltViewModel<SignInViewModel>()

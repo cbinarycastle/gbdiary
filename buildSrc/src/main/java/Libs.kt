@@ -1,5 +1,9 @@
 object Libs {
 
+    object Accompanist {
+        const val PAGER = "com.google.accompanist:accompanist-pager:0.23.1"
+    }
+
     object Android {
         const val BILLING = "com.android.billingclient:billing-ktx:5.0.0"
         const val MATERIAL = "com.google.android.material:material:1.6.1"
@@ -70,10 +74,6 @@ object Libs {
 
     object Mockito {
         const val CORE = "org.mockito:mockito-core:1.10.19"
-    }
-
-    object ThreeTen {
-        const val THREE_TEN = "com.jakewharton.threetenabp:threetenabp:1.4.0"
     }
 
     object ThreeTen {

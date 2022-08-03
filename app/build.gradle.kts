@@ -61,8 +61,6 @@ android {
 }
 
 dependencies {
-    implementation(files("libs/compose-calendar.aar"))
-
     implementation(Libs.Android.BILLING)
     implementation(Libs.Android.MATERIAL)
 
@@ -83,6 +81,8 @@ dependencies {
 
     implementation(Libs.Coroutines.ANDROID)
     testImplementation(Libs.Coroutines.TEST)
+
+    implementation(Libs.Accompanist.PAGER)
 
     implementation(Libs.GooglePlayServices.AUTH)
 
