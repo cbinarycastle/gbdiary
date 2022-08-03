@@ -43,7 +43,9 @@ object Libs {
     }
 
     object Coroutines {
-        const val ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
+        private const val VERSION = "1.6.4"
+        const val ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$VERSION"
+        const val TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$VERSION"
     }
 
     object GooglePlayServices {
@@ -62,8 +64,12 @@ object Libs {
         const val COMPILER = "com.google.dagger:hilt-android-compiler:$VERSION"
     }
 
-    object JUnit {
-        const val JUNIT = "junit:junit:4.13.2"
+    object Kotlin {
+        const val TEST_JUNIT = "org.jetbrains.kotlin:kotlin-test-junit:1.7.10"
+    }
+
+    object Mockito {
+        const val CORE = "org.mockito:mockito-core:1.10.19"
     }
 
     object ThreeTen {

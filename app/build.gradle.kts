@@ -80,6 +80,7 @@ dependencies {
     implementation(Libs.AndroidX.Room.ROOM_KTX)
 
     implementation(Libs.Coroutines.ANDROID)
+    testImplementation(Libs.Coroutines.TEST)
 
     implementation(Libs.GooglePlayServices.AUTH)
 
@@ -90,9 +91,10 @@ dependencies {
     implementation(Libs.Hilt.ANDROID)
     kapt(Libs.Hilt.COMPILER)
 
-    testImplementation(Libs.JUnit.JUNIT)
     androidTestImplementation(Libs.AndroidX.Test.ESPRESSO)
     androidTestImplementation(Libs.AndroidX.Test.JUNIT_EXT)
+    testImplementation(Libs.Kotlin.TEST_JUNIT)
+    testImplementation(Libs.Mockito.CORE)
 
     implementation(Libs.ThreeTen.THREE_TEN)
 

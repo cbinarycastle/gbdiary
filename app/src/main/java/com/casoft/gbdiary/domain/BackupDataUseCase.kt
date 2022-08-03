@@ -1,15 +1,14 @@
 package com.casoft.gbdiary.domain
 
 import android.accounts.Account
-import android.content.Context
 import com.casoft.gbdiary.data.backup.BackupData
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.backup.toBackupData
 import com.casoft.gbdiary.data.diary.DiaryDataSource
+import com.casoft.gbdiary.data.diary.DiaryImageDataSource
 import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
 import com.casoft.gbdiary.di.IoDispatcher
 import com.google.api.services.drive.model.File
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -20,7 +19,7 @@ import javax.inject.Inject
 class BackupDataUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
     private val diaryDataSource: DiaryDataSource,
-    @ApplicationContext private val context: Context,
+    private val diaryImageDataSource: DiaryImageDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : UseCase<Account, Unit>(ioDispatcher) {
 
@@ -51,14 +50,14 @@ class BackupDataUseCase @Inject constructor(
         date: LocalDate,
         images: List<String>,
     ): List<File> {
-        return images.mapIndexed { index, image ->
-            val fileName = "${date}_${index + 1}.$IMAGE_FILE_EXTENSION"
-            val filePath = java.io.File(context.filesDir, image)
+        return images.mapIndexed { index, fileName ->
+            val backupFileName = "${date}_${index + 1}.$IMAGE_FILE_EXTENSION"
+            backupDataSource.deleteImage(account = account, fileName = backupFileName)
 
-            backupDataSource.deleteImage(account = account, fileName = fileName)
+            val filePath = diaryImageDataSource.getImageFile(fileName)
             backupDataSource.uploadImage(
                 account = account,
-                fileName = fileName,
+                fileName = backupFileName,
                 filePath = filePath
             )
         }
