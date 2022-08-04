@@ -1,6 +1,5 @@
 package com.casoft.gbdiary.ui
 
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -11,12 +10,13 @@ import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
 import com.casoft.gbdiary.ui.signin.SignInScreen
 import com.casoft.gbdiary.ui.signin.SignInViewModel
+import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 
 @Composable
 fun DiaryApp() {
     val navController = rememberNavController()
 
-    MaterialTheme {
+    GBDiaryTheme {
         NavHost(
             navController = navController,
             startDestination = MainDestination.HOME,

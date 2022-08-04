@@ -1,7 +1,6 @@
 package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,28 +22,26 @@ fun CalendarScreen() {
         selectionState = rememberSelectionState(SelectionMode.SINGLE)
     )
 
-    MaterialTheme {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        CalendarHeader(yearMonth = state.currentYearMonth)
+        Spacer(Modifier.height(32.dp))
+        WeekHeader(Modifier.align(Alignment.CenterHorizontally))
+        Calendar(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            CalendarHeader(yearMonth = state.currentYearMonth)
-            Spacer(Modifier.height(32.dp))
-            WeekHeader(Modifier.align(Alignment.CenterHorizontally))
-            Calendar(
-                modifier = Modifier
-                    .height(314.dp)
-                    .align(Alignment.CenterHorizontally),
-                state = state,
-            ) { month ->
-                Month(
-                    month = month,
-                    selectionState = state.selectionState,
-                    modifier = Modifier.fillMaxHeight()
-                )
-            }
+                .height(314.dp)
+                .align(Alignment.CenterHorizontally),
+            state = state,
+        ) { month ->
+            Month(
+                month = month,
+                selectionState = state.selectionState,
+                modifier = Modifier.fillMaxHeight()
+            )
         }
     }
 }
