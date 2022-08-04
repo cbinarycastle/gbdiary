@@ -6,7 +6,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.threeten.bp.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
@@ -18,7 +17,7 @@ fun Day(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier.size(44.dp),
+        modifier = modifier.size(CellSize),
         contentAlignment = Alignment.Center
     ) {
         if (day.inCurrentMonth) {

@@ -18,7 +18,7 @@ data class Month(
 fun Month(
     month: Month,
     selectionState: SelectionState,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     weekContent: @Composable (Week) -> Unit = { Week(week = it, selectionState = selectionState) },
 ) {
     Column(

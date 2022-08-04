@@ -9,8 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
+import org.threeten.bp.YearMonth
 import org.threeten.bp.format.TextStyle
 import java.util.*
+
+internal val CellSize = 44.dp
+internal val HorizontalSpaceBetweenCells = 3.dp
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -21,31 +25,37 @@ fun CalendarScreen() {
 
     MaterialTheme {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            val yearMonth = state.currentYearMonth
-            Text(
-                text = yearMonth.month.getDisplayName(
-                    TextStyle.FULL,
-                    Locale.getDefault()
-                ),
-                fontSize = 20.sp
-            )
+            CalendarHeader(yearMonth = state.currentYearMonth)
             Spacer(Modifier.height(32.dp))
+            WeekHeader(Modifier.align(Alignment.CenterHorizontally))
             Calendar(
-                modifier = Modifier.height(314.dp),
+                modifier = Modifier
+                    .height(314.dp)
+                    .align(Alignment.CenterHorizontally),
                 state = state,
             ) { month ->
-                Column(Modifier.fillMaxHeight()) {
-                    Month(
-                        month = month,
-                        selectionState = state.selectionState,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
+                Month(
+                    month = month,
+                    selectionState = state.selectionState,
+                    modifier = Modifier.fillMaxHeight()
+                )
             }
         }
     }
+}
+
+@Composable
+private fun CalendarHeader(yearMonth: YearMonth) {
+    Text(
+        text = yearMonth.month.getDisplayName(
+            TextStyle.FULL,
+            Locale.getDefault()
+        ),
+        fontSize = 20.sp
+    )
 }
