@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 
 private val LightColors = lightColors(
     primary = Light1,
@@ -50,8 +51,17 @@ fun GBDiaryTheme(
     }
 }
 
+object GBDiaryTheme {
+    val colors: Colors
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.colors
+}
+
 val ContentAlpha.dim: Float
-    get() = 0.3f
+    @Composable
+    @ReadOnlyComposable
+    get() = if (GBDiaryTheme.colors.isLight) 0.3f else 0.5f
 
 val ContentAlpha.disabledText: Float
     get() = 0.2f
