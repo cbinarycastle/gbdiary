@@ -11,10 +11,8 @@ internal const val PAGE_COUNT = 10000
 internal const val INITIAL_PAGE = PAGE_COUNT / 2
 
 @Stable
-class CalendarState(
-    private val initialYearMonth: YearMonth,
-    val selectionState: SelectionState,
-) {
+class CalendarState(private val initialYearMonth: YearMonth) {
+
     var currentYearMonth by mutableStateOf(initialYearMonth)
         private set
 
@@ -70,10 +68,6 @@ class CalendarState(
 @Composable
 fun rememberCalendarState(
     initialYearMonth: YearMonth = YearMonth.now(),
-    selectionState: SelectionState = remember { SelectionState(selectionMode = SelectionMode.NONE) },
 ): CalendarState = remember(initialYearMonth) {
-    CalendarState(
-        initialYearMonth = initialYearMonth,
-        selectionState = selectionState,
-    )
+    CalendarState(initialYearMonth = initialYearMonth)
 }

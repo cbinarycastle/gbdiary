@@ -18,9 +18,7 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun CalendarScreen() {
-    val state = rememberCalendarState(
-        selectionState = rememberSelectionState(SelectionMode.SINGLE)
-    )
+    val state = rememberCalendarState()
 
     Column(
         modifier = Modifier
@@ -39,7 +37,6 @@ fun CalendarScreen() {
         ) { month ->
             Month(
                 month = month,
-                selectionState = state.selectionState,
                 modifier = Modifier.fillMaxHeight()
             )
         }

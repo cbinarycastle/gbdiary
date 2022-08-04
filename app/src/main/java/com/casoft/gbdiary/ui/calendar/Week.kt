@@ -10,9 +10,8 @@ data class Week(val days: List<Day>)
 @Composable
 fun Week(
     week: Week,
-    selectionState: SelectionState,
     modifier: Modifier = Modifier,
-    dayContent: @Composable (Day) -> Unit = { Day(day = it, selectionState = selectionState) },
+    dayContent: @Composable (Day) -> Unit = { Day(it) },
 ) {
     Row(
         modifier = modifier,

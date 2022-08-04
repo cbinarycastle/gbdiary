@@ -13,7 +13,6 @@ data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 @Composable
 fun Day(
     day: Day,
-    selectionState: SelectionState,
     modifier: Modifier = Modifier,
 ) {
     Box(
