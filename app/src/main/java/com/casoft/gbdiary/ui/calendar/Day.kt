@@ -21,6 +21,8 @@ fun Day(
         modifier = modifier.size(44.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(day.date.dayOfMonth.toString())
+        if (day.inCurrentMonth) {
+            Text(day.date.dayOfMonth.toString())
+        }
     }
 }
