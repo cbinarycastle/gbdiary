@@ -2,6 +2,7 @@ package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -11,7 +12,7 @@ data class Week(val days: List<Day>)
 fun Week(
     week: Week,
     modifier: Modifier = Modifier,
-    dayContent: @Composable (Day) -> Unit = { Day(it) },
+    dayContent: @Composable RowScope.(Day) -> Unit = { Day(it) },
 ) {
     Row(
         modifier = modifier,

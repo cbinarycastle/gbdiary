@@ -12,7 +12,6 @@ import org.threeten.bp.YearMonth
 import org.threeten.bp.format.TextStyle
 import java.util.*
 
-internal val CellSize = 44.dp
 internal val HorizontalSpaceBetweenCells = 3.dp
 
 @OptIn(ExperimentalPagerApi::class)

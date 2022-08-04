@@ -7,28 +7,14 @@ import org.threeten.bp.YearMonth
 import org.threeten.bp.temporal.ChronoUnit
 
 internal const val DAYS_IN_WEEK = 7
-internal const val PAGE_COUNT = 10000
-internal const val INITIAL_PAGE = PAGE_COUNT / 2
 
 @Stable
-class CalendarState(private val initialYearMonth: YearMonth) {
+class CalendarState(internal val initialYearMonth: YearMonth) {
 
     var currentYearMonth by mutableStateOf(initialYearMonth)
-        private set
+        internal set
 
-    internal fun getMonthByPage(page: Int, firstDayOfWeek: DayOfWeek): Month {
-        val offsetFromInitialPage = INITIAL_PAGE.toLong() - page
-        val yearMonth = initialYearMonth.minusMonths(offsetFromInitialPage)
-
-        val dayOfWeeks = listOf(0 until DAYS_IN_WEEK).flatten()
-            .map { firstDayOfWeek.plus(it.toLong()) }
-
-        val weeks = getWeeks(yearMonth = yearMonth, firstDayOfWeek = firstDayOfWeek)
-
-        return Month(yearMonth = yearMonth, dayOfWeeks = dayOfWeeks, weeks = weeks)
-    }
-
-    private fun getWeeks(yearMonth: YearMonth, firstDayOfWeek: DayOfWeek): List<Week> {
+    internal fun getWeeks(yearMonth: YearMonth, firstDayOfWeek: DayOfWeek): List<Week> {
         val firstDayOfPage = getFirstDayOfPage(
             firstDayOfMonth = yearMonth.atDay(1),
             firstDayOfWeek = firstDayOfWeek

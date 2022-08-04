@@ -3,7 +3,7 @@ package com.casoft.gbdiary.ui.calendar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Text
@@ -36,7 +36,9 @@ fun WeekHeader(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabledText) {
             dayOfWeeks.forEach { dayOfWeek ->
                 Box(
-                    modifier = Modifier.size(CellSize),
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()))
