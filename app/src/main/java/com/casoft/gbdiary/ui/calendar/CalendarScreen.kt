@@ -26,35 +26,46 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 fun CalendarScreen() {
     val state = rememberCalendarState()
 
-    Column {
-        CalendarAppBar()
-        Box {
-            Column(
+    Box {
+        Column(Modifier.fillMaxSize()) {
+            CalendarAppBar()
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.Center
+                    .weight(1f)
+                    .padding(horizontal = 24.dp)
             ) {
-                CalendarHeader(yearMonth = state.currentYearMonth)
-                Spacer(Modifier.height(32.dp))
-                WeekHeader(Modifier.align(Alignment.CenterHorizontally))
-                Calendar(
-                    modifier = Modifier
-                        .height(314.dp)
-                        .align(Alignment.CenterHorizontally),
-                    state = state,
-                ) { month ->
-                    Month(
-                        month = month,
-                        modifier = Modifier.fillMaxHeight()
-                    )
+                Column(
+                    modifier = Modifier.padding(top = 80.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CalendarHeader(yearMonth = state.currentYearMonth)
+                    Spacer(Modifier.height(32.dp))
+                    WeekHeader(Modifier.align(Alignment.CenterHorizontally))
+                    Calendar(
+                        modifier = Modifier
+                            .height(314.dp)
+                            .align(Alignment.CenterHorizontally),
+                        state = state,
+                    ) { month ->
+                        Month(
+                            month = month,
+                            modifier = Modifier.fillMaxHeight()
+                        )
+                    }
                 }
             }
-            TodayButton(
-                onClick = { state.currentYearMonth = YearMonth.now() },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
+        TodayButton(
+            onClick = { state.currentYearMonth = YearMonth.now() },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 34.dp)
+        )
+        WriteButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 24.dp, bottom = 34.dp)
+        )
     }
 }
 
@@ -78,7 +89,7 @@ private fun TodayButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = modifier.padding(20.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(100.dp),
         contentPadding = PaddingValues(
             start = 14.dp,
@@ -90,6 +101,20 @@ private fun TodayButton(
         Text(
             text = "오늘",
             fontSize = 20.sp
+        )
+    }
+}
+
+@Composable
+private fun WriteButton(modifier: Modifier = Modifier) {
+    FloatingActionButton(
+        onClick = { /*TODO*/ },
+        modifier = modifier,
+        elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.edit),
+            contentDescription = "작성"
         )
     }
 }
