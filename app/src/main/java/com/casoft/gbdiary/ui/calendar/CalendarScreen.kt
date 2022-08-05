@@ -2,14 +2,17 @@ package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.ImHyemin
 import com.google.accompanist.pager.ExperimentalPagerApi
 import org.threeten.bp.YearMonth
@@ -23,32 +26,35 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 fun CalendarScreen() {
     val state = rememberCalendarState()
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            CalendarHeader(yearMonth = state.currentYearMonth)
-            Spacer(Modifier.height(32.dp))
-            WeekHeader(Modifier.align(Alignment.CenterHorizontally))
-            Calendar(
+    Column {
+        CalendarAppBar()
+        Box {
+            Column(
                 modifier = Modifier
-                    .height(314.dp)
-                    .align(Alignment.CenterHorizontally),
-                state = state,
-            ) { month ->
-                Month(
-                    month = month,
-                    modifier = Modifier.fillMaxHeight()
-                )
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                CalendarHeader(yearMonth = state.currentYearMonth)
+                Spacer(Modifier.height(32.dp))
+                WeekHeader(Modifier.align(Alignment.CenterHorizontally))
+                Calendar(
+                    modifier = Modifier
+                        .height(314.dp)
+                        .align(Alignment.CenterHorizontally),
+                    state = state,
+                ) { month ->
+                    Month(
+                        month = month,
+                        modifier = Modifier.fillMaxHeight()
+                    )
+                }
             }
+            TodayButton(
+                onClick = { state.currentYearMonth = YearMonth.now() },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
-        TodayButton(
-            onClick = { state.currentYearMonth = YearMonth.now() },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -68,7 +74,7 @@ private fun CalendarHeader(yearMonth: YearMonth) {
 @Composable
 private fun TodayButton(
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -85,5 +91,41 @@ private fun TodayButton(
             text = "오늘",
             fontSize = 20.sp
         )
+    }
+}
+
+@Composable
+private fun CalendarAppBar() {
+    TopAppBar(
+        backgroundColor = GBDiaryTheme.colors.background,
+        elevation = 0.dp
+    ) {
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(R.drawable.timeline),
+                            contentDescription = "타임라인"
+                        )
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(R.drawable.calendar),
+                            contentDescription = "캘린더"
+                        )
+                    }
+                }
+                IconButton(onClick = {}) {
+                    Icon(
+                        painter = painterResource(R.drawable.setting),
+                        contentDescription = "설정"
+                    )
+                }
+            }
+        }
     }
 }
