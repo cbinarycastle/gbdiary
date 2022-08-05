@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Text
@@ -15,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import org.threeten.bp.LocalDate
@@ -37,11 +37,7 @@ fun RowScope.Day(
     ) {
         if (day.inCurrentMonth) {
             if (day.isToday()) {
-                TodayMarker(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 10.dp)
-                )
+                TodayMarker(Modifier.alignTopToCenterOfParent())
             }
             CompositionLocalProvider(
                 if (day.isFuture()) {
