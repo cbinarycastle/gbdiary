@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.casoft.gbdiary.ui.theme.disabledText
+import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -33,7 +32,7 @@ fun WeekHeader(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(HorizontalSpaceBetweenCells)
     ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabledText) {
+        CompositionLocalProvider(LocalContentAlpha provides GBDiaryContentAlpha.disabled) {
             dayOfWeeks.forEach { dayOfWeek ->
                 Box(
                     modifier = Modifier

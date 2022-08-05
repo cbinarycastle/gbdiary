@@ -7,8 +7,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 
 private val LightColors = lightColors(
-    primary = Light1,
-    primaryVariant = Light1,
+    primary = Light2,
+    primaryVariant = Light2,
     secondary = LightTextIcon,
     secondaryVariant = LightTextIcon,
     background = Light1,
@@ -20,8 +20,8 @@ private val LightColors = lightColors(
 )
 
 private val DarkColors = darkColors(
-    primary = Dark1,
-    primaryVariant = Dark1,
+    primary = Dark2,
+    primaryVariant = Dark2,
     secondary = DarkTextIcon,
     secondaryVariant = DarkTextIcon,
     background = Dark1,
@@ -58,10 +58,13 @@ object GBDiaryTheme {
         get() = MaterialTheme.colors
 }
 
-val ContentAlpha.dim: Float
-    @Composable
-    @ReadOnlyComposable
-    get() = if (GBDiaryTheme.colors.isLight) 0.3f else 0.5f
+object GBDiaryContentAlpha {
 
-val ContentAlpha.disabledText: Float
-    get() = 0.2f
+    val dim: Float
+        @Composable
+        @ReadOnlyComposable
+        get() = if (GBDiaryTheme.colors.isLight) 0.3f else 0.5f
+
+    val disabled: Float
+        get() = 0.2f
+}

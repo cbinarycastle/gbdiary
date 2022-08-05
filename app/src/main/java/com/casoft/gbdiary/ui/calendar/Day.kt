@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.ui.theme.disabledText
 import org.threeten.bp.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
@@ -45,7 +45,7 @@ fun RowScope.Day(
             }
             CompositionLocalProvider(
                 if (day.isFuture()) {
-                    LocalContentAlpha provides ContentAlpha.disabledText
+                    LocalContentAlpha provides GBDiaryContentAlpha.disabled
                 } else {
                     LocalContentAlpha provides ContentAlpha.high
                 }

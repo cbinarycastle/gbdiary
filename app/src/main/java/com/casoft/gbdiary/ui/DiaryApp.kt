@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui
 
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -17,27 +18,29 @@ fun DiaryApp() {
     val navController = rememberNavController()
 
     GBDiaryTheme {
-        NavHost(
-            navController = navController,
-            startDestination = MainDestination.HOME,
-        ) {
-            composable(MainDestination.HOME) {
-                HomeScreen(
-                    navigateToCalendar = { navController.navigate(MainDestination.CALENDAR) },
-                    navigateToSignIn = { navController.navigate(MainDestination.SIGN_IN) },
-                    navigateToBackup = { navController.navigate(MainDestination.BACKUP) }
-                )
-            }
-            composable(MainDestination.CALENDAR) {
-                CalendarScreen()
-            }
-            composable(MainDestination.SIGN_IN) {
-                val signInViewModel = hiltViewModel<SignInViewModel>()
-                SignInScreen(viewModel = signInViewModel)
-            }
-            composable(MainDestination.BACKUP) {
-                val backupViewModel = hiltViewModel<BackupViewModel>()
-                BackupScreen(viewModel = backupViewModel)
+        Surface(color = GBDiaryTheme.colors.background) {
+            NavHost(
+                navController = navController,
+                startDestination = MainDestination.HOME,
+            ) {
+                composable(MainDestination.HOME) {
+                    HomeScreen(
+                        navigateToCalendar = { navController.navigate(MainDestination.CALENDAR) },
+                        navigateToSignIn = { navController.navigate(MainDestination.SIGN_IN) },
+                        navigateToBackup = { navController.navigate(MainDestination.BACKUP) }
+                    )
+                }
+                composable(MainDestination.CALENDAR) {
+                    CalendarScreen()
+                }
+                composable(MainDestination.SIGN_IN) {
+                    val signInViewModel = hiltViewModel<SignInViewModel>()
+                    SignInScreen(viewModel = signInViewModel)
+                }
+                composable(MainDestination.BACKUP) {
+                    val backupViewModel = hiltViewModel<BackupViewModel>()
+                    BackupScreen(viewModel = backupViewModel)
+                }
             }
         }
     }

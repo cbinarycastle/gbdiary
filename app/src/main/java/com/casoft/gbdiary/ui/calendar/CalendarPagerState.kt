@@ -7,9 +7,12 @@ import androidx.compose.runtime.snapshotFlow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.YearMonth
+import org.threeten.bp.temporal.ChronoUnit
 
 internal const val PAGE_COUNT = 10000
 internal const val INITIAL_PAGE = PAGE_COUNT / 2
@@ -22,10 +25,15 @@ class CalendarPagerState constructor(
     coroutineScope: CoroutineScope,
 ) {
     init {
-        coroutineScope.launch {
-            snapshotFlow { pagerState.currentPage }
-                .collect { calendarState.currentYearMonth = getYearMonthByPage(page = it) }
-        }
+        snapshotFlow { calendarState.currentYearMonth }
+            .distinctUntilChanged()
+            .onEach { pagerState.scrollToPage(getPageFromYearMonth(it)) }
+            .launchIn(coroutineScope)
+
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .onEach { calendarState.currentYearMonth = getYearMonthByPage(page = it) }
+            .launchIn(coroutineScope)
     }
 
     internal fun getMonthByPage(page: Int, firstDayOfWeek: DayOfWeek): Month {
@@ -40,6 +48,14 @@ class CalendarPagerState constructor(
     private fun getYearMonthByPage(page: Int): YearMonth {
         val offsetFromInitialPage = INITIAL_PAGE.toLong() - page
         return calendarState.initialYearMonth.minusMonths(offsetFromInitialPage)
+    }
+
+    private fun getPageFromYearMonth(yearMonth: YearMonth): Int {
+        val offsetFromInitialYearMonth = ChronoUnit.MONTHS.between(
+            calendarState.initialYearMonth,
+            yearMonth
+        ).toInt()
+        return INITIAL_PAGE + offsetFromInitialYearMonth
     }
 }
 
