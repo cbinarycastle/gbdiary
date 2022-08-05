@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.casoft.gbdiary.ui.theme.ImHyemin
 import com.google.accompanist.pager.ExperimentalPagerApi
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.TextStyle
@@ -59,7 +60,8 @@ private fun CalendarHeader(yearMonth: YearMonth) {
             Locale.getDefault()
         ),
         fontSize = 20.sp,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        fontFamily = ImHyemin
     )
 }
 

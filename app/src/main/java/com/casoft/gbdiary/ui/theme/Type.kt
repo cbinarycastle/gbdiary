@@ -9,6 +9,10 @@ val GangwanEduSaeeum = FontFamily(
     Font(R.font.gangwon_edu_saeeum)
 )
 
+val ImHyemin = FontFamily(
+    Font(R.font.im_hyemin_regular)
+)
+
 val Typography = Typography(
     defaultFontFamily = GangwanEduSaeeum
 )

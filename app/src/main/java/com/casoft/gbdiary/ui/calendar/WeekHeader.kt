@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
+import com.casoft.gbdiary.ui.theme.ImHyemin
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -43,7 +44,8 @@ fun WeekHeader(
                 ) {
                     Text(
                         text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        fontFamily = ImHyemin
                     )
                 }
             }
