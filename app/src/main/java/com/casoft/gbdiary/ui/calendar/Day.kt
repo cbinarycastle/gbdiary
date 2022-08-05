@@ -5,19 +5,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.ui.theme.disabledText
 import org.threeten.bp.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 
 fun Day.isToday() = this.date == LocalDate.now()
+
+fun Day.isFuture() = this.date > LocalDate.now()
 
 @Composable
 fun RowScope.Day(
@@ -37,10 +43,18 @@ fun RowScope.Day(
                         .padding(bottom = 10.dp)
                 )
             }
-            Text(
-                text = day.date.dayOfMonth.toString(),
-                modifier = Modifier.align(Alignment.Center)
-            )
+            CompositionLocalProvider(
+                if (day.isFuture()) {
+                    LocalContentAlpha provides ContentAlpha.disabledText
+                } else {
+                    LocalContentAlpha provides ContentAlpha.high
+                }
+            ) {
+                Text(
+                    text = day.date.dayOfMonth.toString(),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }
