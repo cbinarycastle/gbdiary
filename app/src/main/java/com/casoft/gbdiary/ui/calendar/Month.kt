@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 data class Month(
@@ -17,8 +18,9 @@ data class Month(
 @Composable
 fun Month(
     month: Month,
+    today: LocalDate,
     modifier: Modifier = Modifier,
-    weekContent: @Composable (Week) -> Unit = { Week(it) },
+    weekContent: @Composable (Week) -> Unit = { Week(week = it, today = today) },
 ) {
     Column(
         modifier = modifier,

@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.runtime.*
+import com.casoft.gbdiary.extensions.yearMonth
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -28,7 +29,7 @@ class CalendarState(internal val initialYearMonth: YearMonth) {
         return listOf(0..daysOfPage).flatten()
             .map {
                 val date = firstDayOfPage.plusDays(it)
-                Day(date = date, inCurrentMonth = YearMonth.from(date) == yearMonth)
+                Day(date = date, inCurrentMonth = date.yearMonth == yearMonth)
             }
             .chunked(DAYS_IN_WEEK)
             .map { days -> Week(days) }

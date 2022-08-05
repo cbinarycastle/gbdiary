@@ -12,9 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.extensions.yearMonth
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.ImHyemin
 import com.google.accompanist.pager.ExperimentalPagerApi
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -25,6 +27,7 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 @Composable
 fun CalendarScreen() {
     val state = rememberCalendarState()
+    val today = LocalDate.now()
 
     Box {
         Column(Modifier.fillMaxSize()) {
@@ -49,18 +52,21 @@ fun CalendarScreen() {
                     ) { month ->
                         Month(
                             month = month,
+                            today = today,
                             modifier = Modifier.fillMaxHeight()
                         )
                     }
                 }
             }
         }
-        TodayButton(
-            onClick = { state.currentYearMonth = YearMonth.now() },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 34.dp)
-        )
+        if (state.currentYearMonth != today.yearMonth) {
+            TodayButton(
+                onClick = { state.currentYearMonth = today.yearMonth },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 34.dp)
+            )
+        }
         WriteButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)

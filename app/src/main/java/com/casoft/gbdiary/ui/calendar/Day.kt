@@ -21,13 +21,10 @@ import org.threeten.bp.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 
-fun Day.isToday() = this.date == LocalDate.now()
-
-fun Day.isFuture() = this.date > LocalDate.now()
-
 @Composable
 fun RowScope.Day(
     day: Day,
+    today: LocalDate,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -36,11 +33,11 @@ fun RowScope.Day(
             .aspectRatio(1f)
     ) {
         if (day.inCurrentMonth) {
-            if (day.isToday()) {
+            if (day.date == today) {
                 TodayMarker(Modifier.alignTopToCenterOfParent())
             }
             CompositionLocalProvider(
-                if (day.isFuture()) {
+                if (day.date > today) {
                     LocalContentAlpha provides GBDiaryContentAlpha.disabled
                 } else {
                     LocalContentAlpha provides ContentAlpha.high
