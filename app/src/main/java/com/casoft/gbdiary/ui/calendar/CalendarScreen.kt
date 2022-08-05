@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -57,7 +58,8 @@ private fun CalendarHeader(yearMonth: YearMonth) {
             TextStyle.FULL,
             Locale.getDefault()
         ),
-        fontSize = 20.sp
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
     )
 }
 

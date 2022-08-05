@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.TextStyle
@@ -40,7 +41,10 @@ fun WeekHeader(
                         .aspectRatio(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()))
+                    Text(
+                        text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                        fontSize = 12.sp
+                    )
                 }
             }
         }

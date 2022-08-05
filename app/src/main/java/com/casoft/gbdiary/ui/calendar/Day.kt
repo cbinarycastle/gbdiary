@@ -13,7 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -52,7 +52,8 @@ fun RowScope.Day(
             ) {
                 Text(
                     text = day.date.dayOfMonth.toString(),
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 22.sp
                 )
             }
         }
