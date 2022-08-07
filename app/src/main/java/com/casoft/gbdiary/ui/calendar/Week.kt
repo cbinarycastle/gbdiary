@@ -2,9 +2,9 @@ package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.casoft.gbdiary.model.Sticker
 import org.threeten.bp.LocalDate
 
 data class Week(val days: List<Day>)
@@ -13,15 +13,19 @@ data class Week(val days: List<Day>)
 fun Week(
     week: Week,
     today: LocalDate,
+    stickers: Map<LocalDate, Sticker>,
     modifier: Modifier = Modifier,
-    dayContent: @Composable RowScope.(Day) -> Unit = { Day(day = it, today = today) },
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(HorizontalSpaceBetweenCells)
     ) {
-        week.days.forEach {
-            dayContent(it)
+        week.days.forEach { day ->
+            Day(
+                day = day,
+                today = today,
+                sticker = stickers[day.date]
+            )
         }
     }
 }

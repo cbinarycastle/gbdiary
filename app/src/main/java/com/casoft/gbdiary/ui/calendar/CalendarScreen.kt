@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,7 +26,10 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CalendarScreen(onSettingsClick: () -> Unit) {
+fun CalendarScreen(
+    viewModel: CalendarViewModel,
+    onSettingsClick: () -> Unit,
+) {
     val state = rememberCalendarState()
     val today = LocalDate.now()
 
@@ -49,10 +54,13 @@ fun CalendarScreen(onSettingsClick: () -> Unit) {
                             .align(Alignment.CenterHorizontally),
                         state = state,
                     ) { month ->
+                        val stickers by viewModel.getStickers(month.yearMonth)
+                            .collectAsState(mapOf())
                         Month(
                             month = month,
                             today = today,
-                            modifier = Modifier.fillMaxHeight()
+                            modifier = Modifier.fillMaxHeight(),
+                            stickers = stickers
                         )
                     }
                 }
@@ -67,6 +75,7 @@ fun CalendarScreen(onSettingsClick: () -> Unit) {
             )
         }
         WriteButton(
+            onClick = { /*TODO*/ },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 34.dp)
@@ -142,9 +151,12 @@ private fun TodayButton(
 }
 
 @Composable
-private fun WriteButton(modifier: Modifier = Modifier) {
+private fun WriteButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     FloatingActionButton(
-        onClick = { /*TODO*/ },
+        onClick = onClick,
         modifier = modifier,
         elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp)
     ) {

@@ -12,7 +12,7 @@ internal const val DATABASE_NAME = "gbdiary"
 @TypeConverters(value = [
     IntListConverter::class,
     StringListConverter::class,
-    LocalDateConverter::class,
+    StickerListConverter::class,
 ])
 abstract class GBDiaryDatabase : RoomDatabase() {
 

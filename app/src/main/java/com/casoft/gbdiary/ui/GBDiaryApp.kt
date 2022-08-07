@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.casoft.gbdiary.ui.backup.BackupScreen
 import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
+import com.casoft.gbdiary.ui.calendar.CalendarViewModel
 import com.casoft.gbdiary.ui.settings.SettingsDestination
 import com.casoft.gbdiary.ui.settings.addSettingsGraph
 import com.casoft.gbdiary.ui.signin.SignInScreen
@@ -42,7 +43,9 @@ fun DiaryApp() {
                     )
                 }
                 composable(MainDestination.CALENDAR) {
+                    val calendarViewModel = hiltViewModel<CalendarViewModel>()
                     CalendarScreen(
+                        viewModel = calendarViewModel,
                         onSettingsClick = { navController.navigate(MainDestination.SETTINGS) }
                     )
                 }

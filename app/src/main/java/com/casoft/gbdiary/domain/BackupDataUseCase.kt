@@ -3,11 +3,12 @@ package com.casoft.gbdiary.domain
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupData
 import com.casoft.gbdiary.data.backup.BackupDataSource
-import com.casoft.gbdiary.data.backup.toBackupData
 import com.casoft.gbdiary.data.diary.DiaryDataSource
 import com.casoft.gbdiary.data.diary.DiaryImageDataSource
 import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
+import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
+import com.casoft.gbdiary.model.toBackupData
 import com.google.api.services.drive.model.File
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -25,11 +26,12 @@ class BackupDataUseCase @Inject constructor(
 
     override suspend fun execute(params: Account) = coroutineScope {
         val backupDataItems = diaryDataSource.getNotSyncedDiaryItems()
-            .map { diaryItem ->
+            .map { diaryItemEntity ->
                 async {
+                    val diaryItem = diaryItemEntity.toDiaryItem()
                     val uploadedImages = uploadImages(
                         account = params,
-                        date = diaryItem.day,
+                        date = diaryItem.date,
                         images = diaryItem.images
                     ).map { it.id }
 

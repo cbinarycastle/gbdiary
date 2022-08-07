@@ -17,3 +17,7 @@ sealed class Result<out R> {
 
 val <T> Result<T>.data: T?
     get() = (this as? Result.Success)?.data
+
+fun <T> Result<T>.successOr(fallback: T): T {
+    return data ?: fallback
+}

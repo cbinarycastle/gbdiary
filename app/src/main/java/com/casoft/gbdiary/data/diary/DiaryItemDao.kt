@@ -1,12 +1,16 @@
 package com.casoft.gbdiary.data.diary
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DiaryItemDao {
 
+    @Query("SELECT * FROM DiaryItem WHERE year = :year AND month = :month")
+    fun getStreamByYearAndMonth(year: Int, month: Int): Flow<List<DiaryItemEntity>>
+
     @Query("SELECT * FROM DiaryItem WHERE isSync = 0")
-    fun getNotSyncedDiaryItems(): List<DiaryItemEntity>
+    fun getNotSynced(): List<DiaryItemEntity>
 
     @Insert
     fun insert(item: DiaryItemEntity)

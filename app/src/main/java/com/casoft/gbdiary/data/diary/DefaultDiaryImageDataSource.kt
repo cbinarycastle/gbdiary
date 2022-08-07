@@ -5,6 +5,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.InputStream
 
+const val IMAGE_FILE_EXTENSION = "jpg"
+
 class DefaultDiaryImageDataSource(
     @ApplicationContext private val context: Context,
 ) : DiaryImageDataSource {

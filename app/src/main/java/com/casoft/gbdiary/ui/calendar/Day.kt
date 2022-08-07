@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.model.Sticker
+import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -25,6 +27,7 @@ data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 fun RowScope.Day(
     day: Day,
     today: LocalDate,
+    sticker: Sticker?,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -33,20 +36,27 @@ fun RowScope.Day(
             .aspectRatio(1f)
     ) {
         if (day.inCurrentMonth) {
-            if (day.date == today) {
-                TodayMarker(Modifier.alignTopToCenterOfParent())
-            }
-            CompositionLocalProvider(
-                if (day.date > today) {
-                    LocalContentAlpha provides GBDiaryContentAlpha.disabled
-                } else {
-                    LocalContentAlpha provides ContentAlpha.high
+            if (sticker == null) {
+                if (day.date == today) {
+                    TodayMarker(Modifier.alignTopToCenterOfParent())
                 }
-            ) {
-                Text(
-                    text = day.date.dayOfMonth.toString(),
-                    modifier = Modifier.align(Alignment.Center),
-                    fontSize = 22.sp
+                CompositionLocalProvider(
+                    if (day.date > today) {
+                        LocalContentAlpha provides GBDiaryContentAlpha.disabled
+                    } else {
+                        LocalContentAlpha provides ContentAlpha.high
+                    }
+                ) {
+                    Text(
+                        text = day.date.dayOfMonth.toString(),
+                        modifier = Modifier.align(Alignment.Center),
+                        fontSize = 22.sp
+                    )
+                }
+            } else {
+                Image(
+                    painter = painterResource(sticker.imageResId),
+                    contentDescription = sticker.name
                 )
             }
         }
