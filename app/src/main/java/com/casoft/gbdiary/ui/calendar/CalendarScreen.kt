@@ -1,7 +1,7 @@
 package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +28,9 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel,
+    onDayClick: (LocalDate) -> Unit,
     onSettingsClick: () -> Unit,
+    onWriteClick: (LocalDate) -> Unit,
 ) {
     val state = rememberCalendarState()
     val today = LocalDate.now()
@@ -60,7 +62,8 @@ fun CalendarScreen(
                             month = month,
                             today = today,
                             modifier = Modifier.fillMaxHeight(),
-                            stickers = stickers
+                            stickers = stickers,
+                            onDayClick = onDayClick,
                         )
                     }
                 }
@@ -75,7 +78,7 @@ fun CalendarScreen(
             )
         }
         WriteButton(
-            onClick = { /*TODO*/ },
+            onClick = { onWriteClick(today) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 34.dp)
@@ -135,7 +138,7 @@ private fun TodayButton(
     Button(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(100.dp),
+        shape = CircleShape,
         contentPadding = PaddingValues(
             start = 14.dp,
             top = 4.dp,

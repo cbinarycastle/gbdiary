@@ -19,10 +19,12 @@ object Libs {
         }
 
         object Compose {
-            private const val VERSION = "1.1.1"
+            private const val VERSION = "1.2.0"
             const val MATERIAL = "androidx.compose.material:material:$VERSION"
+            const val PREVIEW = "androidx.compose.ui:ui-tooling-preview:$VERSION"
             const val RUNTIME = "androidx.compose.runtime:runtime:$VERSION"
             const val UI = "androidx.compose.ui:ui:$VERSION"
+            const val UI_TOOLING = "androidx.compose.ui:ui-tooling:$VERSION"
         }
 
         object Hilt {

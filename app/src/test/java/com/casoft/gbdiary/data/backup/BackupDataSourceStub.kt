@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.data.backup
 
 import android.accounts.Account
+import com.casoft.gbdiary.model.Sticker
 import com.google.api.services.drive.model.File
 import com.google.gson.Gson
 import java.io.InputStream
@@ -46,7 +47,11 @@ class BackupDataSourceStub : BackupDataSource {
                     day = "2022-07-31",
                     contents = "22년 7월 31일",
                     images = listOf("abcd.jpg"),
-                    sticker = listOf(1, 2, 4)
+                    sticker = listOf(
+                        Sticker.ANGER.name,
+                        Sticker.CONFUSION.name,
+                        Sticker.DEPRESSION.name
+                    )
                 ),
                 BackupDataItem(
                     day = "2022-08-01",
@@ -55,7 +60,7 @@ class BackupDataSourceStub : BackupDataSource {
                         "efgh.jpg",
                         "ijkl.jpg"
                     ),
-                    sticker = listOf(5)
+                    sticker = listOf(Sticker.HOPEFUL.name)
                 ),
             )
         )

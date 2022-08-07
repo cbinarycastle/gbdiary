@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 
+val AppBarHeight = 56.dp
+
 @Composable
 fun GBDiaryAppBar(
     modifier: Modifier = Modifier,

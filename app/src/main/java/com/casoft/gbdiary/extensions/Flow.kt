@@ -15,5 +15,4 @@ fun <T> Flow<T>.throttle(delay: Long): Flow<T> = flow {
     }
 }
 
-
 fun <T> Flow<T>.throttle(delay: Duration): Flow<T> = throttle(delay.inWholeMilliseconds)

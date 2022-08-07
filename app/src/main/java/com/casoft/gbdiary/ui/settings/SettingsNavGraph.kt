@@ -4,12 +4,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
 object SettingsDestination {
-
-    const val HOME = "settings/home"
+    const val HOME_ROUTE = "settings/home"
 }
 
-fun NavGraphBuilder.addSettingsGraph(onBack: () -> Unit) {
-    composable(SettingsDestination.HOME) {
+fun NavGraphBuilder.settingsNavGraph(onBack: () -> Unit) {
+    composable(SettingsDestination.HOME_ROUTE) {
         SettingsScreen(onBack = onBack)
     }
 }

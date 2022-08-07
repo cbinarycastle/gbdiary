@@ -14,6 +14,7 @@ fun Week(
     week: Week,
     today: LocalDate,
     stickers: Map<LocalDate, Sticker>,
+    onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -24,7 +25,8 @@ fun Week(
             Day(
                 day = day,
                 today = today,
-                sticker = stickers[day.date]
+                sticker = stickers[day.date],
+                onClick = onDayClick
             )
         }
     }

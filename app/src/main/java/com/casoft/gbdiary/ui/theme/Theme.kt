@@ -4,6 +4,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import com.casoft.gbdiary.R
 
 private val LightColors = lightColors(
     primary = Light2,
@@ -31,9 +34,15 @@ private val DarkColors = darkColors(
     onSurface = DarkTextIcon
 )
 
-private val LightGBDiaryColors = GBDiaryColors(border = Light3)
+private val LightGBDiaryColors = GBDiaryColors(
+    dimmingOverlay = LightDimmingOverlay,
+    border = Light3
+)
 
-private val DarkGBDiaryColors = GBDiaryColors(border = Dark3)
+private val DarkGBDiaryColors = GBDiaryColors(
+    dimmingOverlay = DarkDimmingOverlay,
+    border = Dark3
+)
 
 @Composable
 fun GBDiaryTheme(
@@ -70,20 +79,29 @@ object GBDiaryTheme {
 }
 
 object GBDiaryContentAlpha {
-
-    val dim: Float
-        @Composable
-        @ReadOnlyComposable
-        get() = if (GBDiaryTheme.colors.isLight) 0.3f else 0.5f
-
     val disabled: Float
         get() = 0.2f
 }
 
 @Stable
-class GBDiaryColors(border: Color) {
+class GBDiaryColors(dimmingOverlay: Color, border: Color) {
+
+    var dimmingOverlay by mutableStateOf(dimmingOverlay)
+        private set
+
     var border by mutableStateOf(border)
         private set
 }
 
 private val LocalGBDiaryColors = staticCompositionLocalOf { LightGBDiaryColors }
+
+@Composable
+fun markerPainter(): Painter {
+    return painterResource(
+        if (GBDiaryTheme.colors.isLight) {
+            R.drawable.marker_light
+        } else {
+            R.drawable.marker_dark
+        }
+    )
+}

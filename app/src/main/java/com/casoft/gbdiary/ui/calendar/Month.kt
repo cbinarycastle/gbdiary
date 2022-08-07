@@ -21,6 +21,7 @@ fun Month(
     month: Month,
     today: LocalDate,
     stickers: Map<LocalDate, Sticker>,
+    onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -31,7 +32,8 @@ fun Month(
             Week(
                 week = week,
                 today = today,
-                stickers = stickers
+                stickers = stickers,
+                onDayClick = onDayClick
             )
         }
     }

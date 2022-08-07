@@ -19,22 +19,27 @@ fun DiaryItem.toBackupData(images: List<String>) = BackupDataItem(
     sticker = sticker.map { it.name }
 )
 
-enum class Sticker {
-    SMILE,
-    HAPPINESS,
-    HOPEFUL,
-    SATISFACTION,
-    JOY,
-    SADNESS,
-    PANIC,
-    SLEEPINESS,
-    ANGER,
-    DEPRESSION,
-    UNPLEASANT,
-    IMPASSIVE,
-    SICK,
-    CONFUSION,
-    TIRED,
+enum class Sticker(val type: StickerType) {
+    SMILE(StickerType.MOOD),
+    HAPPINESS(StickerType.MOOD),
+    HOPEFUL(StickerType.MOOD),
+    SATISFACTION(StickerType.MOOD),
+    JOY(StickerType.MOOD),
+    SADNESS(StickerType.MOOD),
+    PANIC(StickerType.MOOD),
+    SLEEPINESS(StickerType.MOOD),
+    ANGER(StickerType.MOOD),
+    DEPRESSION(StickerType.MOOD),
+    UNPLEASANT(StickerType.MOOD),
+    IMPASSIVE(StickerType.MOOD),
+    SICK(StickerType.MOOD),
+    CONFUSION(StickerType.MOOD),
+    TIRED(StickerType.MOOD),
+}
+
+enum class StickerType(val text: String) {
+    MOOD(text = "기분"),
+    DAILY(text = "일상"),
 }
 
 val Sticker.imageResId
