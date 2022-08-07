@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -13,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.yearMonth
-import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.ImHyemin
 import com.google.accompanist.pager.ExperimentalPagerApi
 import org.threeten.bp.LocalDate
@@ -25,13 +24,13 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(onSettingsClick: () -> Unit) {
     val state = rememberCalendarState()
     val today = LocalDate.now()
 
     Box {
         Column(Modifier.fillMaxSize()) {
-            CalendarAppBar()
+            AppBar(onSettingsClick = onSettingsClick)
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -72,6 +71,37 @@ fun CalendarScreen() {
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 34.dp)
         )
+    }
+}
+
+@Composable
+private fun AppBar(onSettingsClick: () -> Unit) {
+    GBDiaryAppBar {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        painter = painterResource(R.drawable.timeline),
+                        contentDescription = "타임라인"
+                    )
+                }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        painter = painterResource(R.drawable.calendar),
+                        contentDescription = "캘린더"
+                    )
+                }
+            }
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    painter = painterResource(R.drawable.setting),
+                    contentDescription = "설정"
+                )
+            }
+        }
     }
 }
 
@@ -122,41 +152,5 @@ private fun WriteButton(modifier: Modifier = Modifier) {
             painter = painterResource(R.drawable.edit),
             contentDescription = "작성"
         )
-    }
-}
-
-@Composable
-private fun CalendarAppBar() {
-    TopAppBar(
-        backgroundColor = GBDiaryTheme.colors.background,
-        elevation = 0.dp
-    ) {
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(R.drawable.timeline),
-                            contentDescription = "타임라인"
-                        )
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(R.drawable.calendar),
-                            contentDescription = "캘린더"
-                        )
-                    }
-                }
-                IconButton(onClick = {}) {
-                    Icon(
-                        painter = painterResource(R.drawable.setting),
-                        contentDescription = "설정"
-                    )
-                }
-            }
-        }
     }
 }

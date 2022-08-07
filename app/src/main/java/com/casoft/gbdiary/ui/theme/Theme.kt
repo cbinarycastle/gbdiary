@@ -2,9 +2,8 @@ package com.casoft.gbdiary.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 
 private val LightColors = lightColors(
     primary = Light2,
@@ -32,18 +31,24 @@ private val DarkColors = darkColors(
     onSurface = DarkTextIcon
 )
 
+private val LightGBDiaryColors = GBDiaryColors(border = Light3)
+
+private val DarkGBDiaryColors = GBDiaryColors(border = Dark3)
+
 @Composable
 fun GBDiaryTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) DarkColors else LightColors
+    val gbDiaryColors = if (darkTheme) DarkGBDiaryColors else LightGBDiaryColors
 
     MaterialTheme(
         colors = colors,
         typography = Typography
     ) {
         CompositionLocalProvider(
+            LocalGBDiaryColors provides gbDiaryColors,
             LocalContentColor provides contentColorFor(colors.background)
         ) {
             content()
@@ -52,10 +57,16 @@ fun GBDiaryTheme(
 }
 
 object GBDiaryTheme {
+
     val colors: Colors
         @Composable
         @ReadOnlyComposable
         get() = MaterialTheme.colors
+
+    val gbDiaryColors: GBDiaryColors
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalGBDiaryColors.current
 }
 
 object GBDiaryContentAlpha {
@@ -68,3 +79,11 @@ object GBDiaryContentAlpha {
     val disabled: Float
         get() = 0.2f
 }
+
+@Stable
+class GBDiaryColors(border: Color) {
+    var border by mutableStateOf(border)
+        private set
+}
+
+private val LocalGBDiaryColors = staticCompositionLocalOf { LightGBDiaryColors }
