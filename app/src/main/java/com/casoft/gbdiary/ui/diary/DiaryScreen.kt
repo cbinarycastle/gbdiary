@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.TopCenter
@@ -23,7 +22,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.toast
 import com.casoft.gbdiary.model.Sticker
@@ -31,6 +29,7 @@ import com.casoft.gbdiary.model.StickerType
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
 import kotlinx.coroutines.launch
@@ -215,7 +214,7 @@ private fun DateText(date: LocalDate, modifier: Modifier = Modifier) {
     Text(
         text = date.format(dateFormatter),
         modifier = modifier.alpha(0.4f),
-        fontSize = 22.sp
+        style = GBDiaryTheme.typography.caption
     )
 }
 
@@ -300,10 +299,10 @@ private fun StickerSelectionBottomSheet(
             )
             Spacer(Modifier.height(24.dp))
             DateText(date)
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 text = "오늘은 어떤 하루였나요?",
-                fontSize = 24.sp
+                style = GBDiaryTheme.typography.subtitle1
             )
             Spacer(Modifier.height(24.dp))
             Row {
@@ -333,26 +332,28 @@ private fun StickerTypeTab(
     Box(
         modifier = Modifier
             .width(80.dp)
-            .clickable { onClick() },
-        contentAlignment = Center
+            .height(IntrinsicSize.Min)
+            .clickable { onClick() }
     ) {
         if (selected) {
             Image(
                 painter = markerPainter(),
                 contentDescription = null,
-                modifier = Modifier
-                    .align(BottomCenter)
-                    .offset(y = 5.dp)
+                modifier = Modifier.alignTopToCenterOfParent()
             )
         }
         Text(
             text = text,
-            fontSize = 22.sp,
-            modifier = if (selected) {
-                Modifier
-            } else {
-                Modifier.alpha(0.4f)
-            }.padding(bottom = 5.dp)
+            style = GBDiaryTheme.typography.body1,
+            modifier = Modifier
+                .align(Center)
+                .then(
+                    if (selected) {
+                        Modifier
+                    } else {
+                        Modifier.alpha(0.4f)
+                    }
+                )
         )
     }
 }

@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -72,12 +71,8 @@ private fun PurchaseButton(modifier: Modifier = Modifier) {
         ) {
             Text(
                 text = "프리미엄 이용권 구매",
-                modifier = Modifier.padding(
-                    start = 36.dp,
-                    top = 24.dp,
-                    bottom = 31.dp
-                ),
-                fontSize = 24.sp
+                modifier = Modifier.padding(start = 36.dp),
+                style = GBDiaryTheme.typography.subtitle1
             )
             Image(
                 painter = painterResource(R.drawable.satisfaction),
@@ -155,7 +150,7 @@ private fun SettingsItem(
             Text(
                 text = name,
                 modifier = Modifier.padding(top = 8.dp, bottom = 15.dp),
-                fontSize = 24.sp
+                style = GBDiaryTheme.typography.subtitle1
             )
         }
         widget()

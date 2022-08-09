@@ -11,11 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.yearMonth
 import com.casoft.gbdiary.ui.GBDiaryAppBar
-import com.casoft.gbdiary.ui.theme.ImHyemin
+import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -47,7 +46,7 @@ fun CalendarScreen(
                     modifier = Modifier.padding(top = 80.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    CalendarHeader(yearMonth = state.currentYearMonth)
+                    MonthHeader(yearMonth = state.currentYearMonth)
                     Spacer(Modifier.height(32.dp))
                     WeekHeader(Modifier.align(Alignment.CenterHorizontally))
                     Calendar(
@@ -118,15 +117,14 @@ private fun AppBar(onSettingsClick: () -> Unit) {
 }
 
 @Composable
-private fun CalendarHeader(yearMonth: YearMonth) {
+private fun MonthHeader(yearMonth: YearMonth) {
     Text(
         text = yearMonth.month.getDisplayName(
             TextStyle.FULL,
             Locale.getDefault()
         ),
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        fontFamily = ImHyemin
+        style = GBDiaryTheme.typography.h6,
+        fontWeight = FontWeight.Bold
     )
 }
 
@@ -139,16 +137,11 @@ private fun TodayButton(
         onClick = onClick,
         modifier = modifier,
         shape = CircleShape,
-        contentPadding = PaddingValues(
-            start = 14.dp,
-            top = 4.dp,
-            end = 14.dp,
-            bottom = 8.dp
-        )
+        contentPadding = PaddingValues(horizontal = 14.dp)
     ) {
         Text(
             text = "오늘",
-            fontSize = 20.sp
+            style = GBDiaryTheme.typography.body2
         )
     }
 }

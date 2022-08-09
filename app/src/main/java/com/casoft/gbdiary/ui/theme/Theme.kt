@@ -67,6 +67,11 @@ fun GBDiaryTheme(
 
 object GBDiaryTheme {
 
+    val typography: Typography
+        @Composable
+        @ReadOnlyComposable
+        get() = MaterialTheme.typography
+
     val colors: Colors
         @Composable
         @ReadOnlyComposable
