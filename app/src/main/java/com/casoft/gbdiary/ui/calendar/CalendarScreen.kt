@@ -34,7 +34,11 @@ fun CalendarScreen(
     val state = rememberCalendarState()
     val today = LocalDate.now()
 
-    Box {
+    Box(
+        modifier = Modifier
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
         Column(Modifier.fillMaxSize()) {
             AppBar(onSettingsClick = onSettingsClick)
             Box(

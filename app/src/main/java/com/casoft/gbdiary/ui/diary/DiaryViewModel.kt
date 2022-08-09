@@ -19,6 +19,9 @@ class DiaryViewModel : ViewModel() {
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
+    private val _text = MutableStateFlow("")
+    val text = _text.asStateFlow()
+
     fun addSticker(sticker: Sticker) {
         val selectedStickers = _stickers.value
         if (selectedStickers.size == MAX_STICKERS) {
@@ -33,5 +36,9 @@ class DiaryViewModel : ViewModel() {
 
     fun removeSticker(index: Int) {
         _stickers.value = _stickers.value.filterIndexed { i, _ -> i != index }
+    }
+
+    fun inputText(text: String) {
+        _text.value = text
     }
 }

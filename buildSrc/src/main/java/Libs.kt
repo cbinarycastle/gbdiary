@@ -1,7 +1,9 @@
 object Libs {
 
     object Accompanist {
-        const val PAGER = "com.google.accompanist:accompanist-pager:0.23.1"
+        private const val VERSION = "0.25.0"
+        const val PAGER = "com.google.accompanist:accompanist-pager:$VERSION"
+        const val SYSTEM_UI_CONTROLLER = "com.google.accompanist:accompanist-systemuicontroller:$VERSION"
     }
 
     object Android {

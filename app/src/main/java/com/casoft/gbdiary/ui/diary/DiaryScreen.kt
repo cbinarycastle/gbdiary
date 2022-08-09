@@ -10,17 +10,23 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.toast
@@ -41,6 +47,7 @@ private const val NUMBER_OF_STICKERS_BY_ROW = 3
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
 private val SelectedStickerSize = 64.dp
+private val SuggestionBarHeight = 44.dp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -56,8 +63,10 @@ fun DiaryScreen(
     )
     val coroutineScope = rememberCoroutineScope()
     val stickers by viewModel.stickers.collectAsState()
+    val text by viewModel.text.collectAsState()
     var visibleRemoveButtonIndex by remember { mutableStateOf<Int?>(null) }
     val isRemoveMode = remember(visibleRemoveButtonIndex) { visibleRemoveButtonIndex != null }
+    var textAlign by remember { mutableStateOf(TextAlign.Start) }
 
     LaunchedEffect(viewModel) {
         launch {
@@ -82,28 +91,66 @@ fun DiaryScreen(
         sheetElevation = 0.dp,
         scrimColor = GBDiaryTheme.gbDiaryColors.dimmingOverlay
     ) {
-        Box(Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = CenterHorizontally
-            ) {
-                AppBar(
-                    onBack = onBack,
-                    onMoreClick = { /*TODO*/ }
-                )
-                Spacer(Modifier.height(8.dp))
-                AddStickerButton(
-                    onClick = {
-                        coroutineScope.launch { bottomSheetState.show() }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .imePadding()
+        ) {
+            Column(Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = CenterHorizontally
+                ) {
+                    AppBar(
+                        onBack = onBack,
+                        onMoreClick = { /*TODO*/ }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    AddStickerButton(
+                        onClick = {
+                            coroutineScope.launch { bottomSheetState.show() }
+                        }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    SelectedStickers(
+                        stickers = stickers,
+                        onStickerLongPress = { index -> visibleRemoveButtonIndex = index }
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    DateText(date = date)
+                    Spacer(Modifier.height(24.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                    ) {
+                        BasicTextField(
+                            value = text,
+                            onValueChange = { viewModel.inputText(it) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 120.dp),
+                            textStyle = GBDiaryTheme.typography.body1.copy(
+                                color = LocalContentColor.current,
+                                textAlign = textAlign
+                            ),
+                            cursorBrush = SolidColor(LocalContentColor.current)
+                        )
                     }
+                }
+                Spacer(Modifier.height(16.dp))
+                SuggestionBar(
+                    onAlbumClick = { /*TODO*/ },
+                    onAlignClick = { textAlign = textAlign.toggle() },
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding(),
+                    textAlign = textAlign
                 )
-                Spacer(Modifier.height(8.dp))
-                SelectedStickers(
-                    stickers = stickers,
-                    onStickerLongPress = { index -> visibleRemoveButtonIndex = index }
-                )
-                Spacer(Modifier.height(4.dp))
-                DateText(date = date)
             }
 
             if (isRemoveMode) {
@@ -216,6 +263,67 @@ private fun DateText(date: LocalDate, modifier: Modifier = Modifier) {
         modifier = modifier.alpha(0.4f),
         style = GBDiaryTheme.typography.caption
     )
+}
+
+@Composable
+private fun SuggestionBar(
+    onAlbumClick: () -> Unit,
+    onAlignClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start,
+) {
+    val borderColor = GBDiaryTheme.colors.onBackground
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(SuggestionBarHeight)
+            .drawBehind {
+                drawLine(
+                    color = borderColor,
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = 1.dp.toPx(),
+                    alpha = 0.05f
+                )
+            }
+            .padding(horizontal = 16.dp),
+        verticalAlignment = CenterVertically
+    ) {
+        SuggestionBarIcon(onClick = onAlbumClick) {
+            Icon(
+                painter = painterResource(R.drawable.album),
+                contentDescription = "앨범"
+            )
+        }
+        Spacer(Modifier.width(8.dp))
+        SuggestionBarIcon(onClick = onAlignClick) {
+            when (textAlign) {
+                TextAlign.Start -> {
+                    Icon(
+                        painter = painterResource(R.drawable.align_left),
+                        contentDescription = "왼쪽 정렬"
+                    )
+                }
+                TextAlign.Center -> {
+                    Icon(
+                        painter = painterResource(R.drawable.align_center),
+                        contentDescription = "가운데 정렬"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SuggestionBarIcon(
+    onClick: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Box(Modifier.clickable { onClick() }) {
+        content()
+    }
 }
 
 @Composable
@@ -379,5 +487,13 @@ private fun SelectableStickers(onClick: (Sticker) -> Unit) {
                     }
                 }
             }
+    }
+}
+
+private fun TextAlign.toggle(): TextAlign {
+    return if (this == TextAlign.Start) {
+        TextAlign.Center
+    } else {
+        TextAlign.Start
     }
 }

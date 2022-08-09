@@ -2,9 +2,7 @@ package com.casoft.gbdiary.ui.signin
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +40,12 @@ fun SignInScreen(viewModel: SignInViewModel = hiltViewModel()) {
         viewModel.errorMessage.collect { context.toast(it) }
     }
 
-    Box(Modifier.fillMaxSize()) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
         Text(
             text = if (account == null) "로그인 실패" else "로그인 성공",
             modifier = Modifier.align(Alignment.Center),
