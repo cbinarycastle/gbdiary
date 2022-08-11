@@ -9,16 +9,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.TopCenter
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -26,6 +23,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -51,7 +49,10 @@ private val AddStickerButtonSize = 32.dp
 private val SelectedStickerSize = 64.dp
 private val SuggestionBarHeight = 44.dp
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class,
+    ExperimentalMaterialApi::class,
+)
 @Composable
 fun DiaryScreen(
     viewModel: DiaryViewModel,
@@ -63,6 +64,8 @@ fun DiaryScreen(
         skipHalfExpanded = true
     )
     val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val stickers by viewModel.stickers.collectAsState()
     val text by viewModel.text.collectAsState()
     var visibleRemoveButtonIndex by remember { mutableStateOf<Int?>(null) }
@@ -96,7 +99,7 @@ fun DiaryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    horizontalAlignment = CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppBar(
                         onBack = onBack,
@@ -141,6 +144,7 @@ fun DiaryScreen(
                 SuggestionBar(
                     onAlbumClick = { /*TODO*/ },
                     onAlignClick = { textAlign = textAlign.toggle() },
+                    onHideKeyboardClick = { keyboardController?.hide() },
                     modifier = Modifier
                         .navigationBarsPadding()
                         .imePadding(),
@@ -161,7 +165,7 @@ fun DiaryScreen(
                 },
                 modifier = Modifier
                     .padding(top = 176.dp)
-                    .align(TopCenter)
+                    .align(Alignment.TopCenter)
             )
         }
     }
@@ -224,10 +228,10 @@ private fun SelectedStickers(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         stickers.forEachIndexed { index, sticker ->
-            Column(horizontalAlignment = CenterHorizontally) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 SelectedSticker(
                     sticker = sticker,
                     modifier = Modifier.pointerInput(Unit) {
@@ -292,10 +296,12 @@ private fun TextInput(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SuggestionBar(
     onAlbumClick: () -> Unit,
     onAlignClick: () -> Unit,
+    onHideKeyboardClick: () -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
 ) {
@@ -315,29 +321,40 @@ private fun SuggestionBar(
                 )
             }
             .padding(horizontal = 16.dp),
-        verticalAlignment = CenterVertically
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        SuggestionBarIcon(onClick = onAlbumClick) {
-            Icon(
-                painter = painterResource(R.drawable.album),
-                contentDescription = "앨범"
-            )
+        Row {
+            SuggestionBarIcon(onClick = onAlbumClick) {
+                Icon(
+                    painter = painterResource(R.drawable.album),
+                    contentDescription = "앨범"
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            SuggestionBarIcon(onClick = onAlignClick) {
+                when (textAlign) {
+                    TextAlign.Start -> {
+                        Icon(
+                            painter = painterResource(R.drawable.align_left),
+                            contentDescription = "왼쪽 정렬"
+                        )
+                    }
+                    TextAlign.Center -> {
+                        Icon(
+                            painter = painterResource(R.drawable.align_center),
+                            contentDescription = "가운데 정렬"
+                        )
+                    }
+                }
+            }
         }
-        Spacer(Modifier.width(8.dp))
-        SuggestionBarIcon(onClick = onAlignClick) {
-            when (textAlign) {
-                TextAlign.Start -> {
-                    Icon(
-                        painter = painterResource(R.drawable.align_left),
-                        contentDescription = "왼쪽 정렬"
-                    )
-                }
-                TextAlign.Center -> {
-                    Icon(
-                        painter = painterResource(R.drawable.align_center),
-                        contentDescription = "가운데 정렬"
-                    )
-                }
+        if (WindowInsets.isImeVisible) {
+            SuggestionBarIcon(onClick = onHideKeyboardClick) {
+                Icon(
+                    painter = painterResource(R.drawable.keyboard_down),
+                    contentDescription = "키보드 닫기"
+                )
             }
         }
     }
@@ -362,12 +379,12 @@ private fun RemoveStickerButtons(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         repeat(count) { index ->
             Box(
                 modifier = Modifier.width(SelectedStickerSize),
-                contentAlignment = Center
+                contentAlignment = Alignment.Center
             ) {
                 RemoveStickerButton(
                     visible = index == visibleIndex,
@@ -426,7 +443,7 @@ private fun StickerSelectionBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(maxHeight - statusBarHeight - AppBarHeight),
-            horizontalAlignment = CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(8.dp))
             Spacer(
@@ -485,7 +502,7 @@ private fun StickerTypeTab(
             text = text,
             style = GBDiaryTheme.typography.body1,
             modifier = Modifier
-                .align(Center)
+                .align(Alignment.Center)
                 .then(
                     if (selected) {
                         Modifier
@@ -499,11 +516,11 @@ private fun StickerTypeTab(
 
 @Composable
 private fun SelectableStickers(onClick: (Sticker) -> Unit) {
-    Column(verticalArrangement = spacedBy(24.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Sticker.values().toList()
             .chunked(NUMBER_OF_STICKERS_BY_ROW)
             .forEach { stickers ->
-                Row(horizontalArrangement = spacedBy(32.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
                     stickers.forEach { sticker ->
                         Image(
                             painter = painterResource(sticker.imageResId),
