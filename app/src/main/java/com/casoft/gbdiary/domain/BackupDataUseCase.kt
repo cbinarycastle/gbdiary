@@ -4,8 +4,8 @@ import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupData
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.diary.DiaryDataSource
-import com.casoft.gbdiary.data.diary.DiaryImageDataSource
 import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
+import com.casoft.gbdiary.data.diary.ImageDataSource
 import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.toBackupData
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class BackupDataUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
     private val diaryDataSource: DiaryDataSource,
-    private val diaryImageDataSource: DiaryImageDataSource,
+    private val imageDataSource: ImageDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : UseCase<Account, Unit>(ioDispatcher) {
 
@@ -56,7 +56,7 @@ class BackupDataUseCase @Inject constructor(
             val backupFileName = "${date}_${index + 1}.$IMAGE_FILE_EXTENSION"
             backupDataSource.deleteImage(account = account, fileName = backupFileName)
 
-            val filePath = diaryImageDataSource.getImageFile(fileName)
+            val filePath = imageDataSource.getImageFile(fileName)
             backupDataSource.uploadImage(
                 account = account,
                 fileName = backupFileName,

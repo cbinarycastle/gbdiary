@@ -1,11 +1,14 @@
 package com.casoft.gbdiary.ui.diary
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -19,20 +22,26 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.SavedStateHandle
+import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.StickerType
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.GBDiaryDialog
+import com.casoft.gbdiary.ui.extension.border
+import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -56,21 +65,45 @@ private val SuggestionBarHeight = 44.dp
 @Composable
 fun DiaryScreen(
     viewModel: DiaryViewModel,
+    savedStateHandle: SavedStateHandle?,
     date: LocalDate,
+    onAlbumClick: (Int) -> Unit,
     onBack: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val stickers by viewModel.stickers.collectAsState()
     val text by viewModel.text.collectAsState()
+    val imageUris by viewModel.images.collectAsState()
+
     var visibleRemoveButtonIndex by remember { mutableStateOf<Int?>(null) }
-    val isRemoveMode = remember(visibleRemoveButtonIndex) { visibleRemoveButtonIndex != null }
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
+    var permissionDeniedDialogVisible by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
+        if (granted) {
+            onAlbumClick(MAX_NUMBER_OF_IMAGES - imageUris.size)
+        } else {
+            permissionDeniedDialogVisible = true
+        }
+    }
+
+    if (savedStateHandle != null) {
+        val selectedImages = savedStateHandle
+            .getStateFlow<List<Uri>>(SELECTED_IMAGE_URIS_RESULT_KEY, listOf())
+            .collectAsState()
+
+        LaunchedEffect(selectedImages) {
+            viewModel.addImages(selectedImages.value)
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -98,7 +131,8 @@ fun DiaryScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppBar(
@@ -123,27 +157,44 @@ fun DiaryScreen(
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
                     Spacer(Modifier.height(24.dp))
-                    Column(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
                     ) {
-                        Box {
-                            if (text.isEmpty()) {
-                                TextInputPlaceholder(textAlign = textAlign)
-                            }
-                            TextInput(
-                                text = text,
-                                textAlign = textAlign,
-                                onValueChange = { viewModel.inputText(it) }
-                            )
+                        if (text.isEmpty()) {
+                            TextInputPlaceholder(textAlign = textAlign)
                         }
+                        TextInput(
+                            text = text,
+                            textAlign = textAlign,
+                            onValueChange = { viewModel.inputText(it) }
+                        )
+                    }
+                    imageUris.forEach { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(model = uri),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f)
+                        )
                     }
                 }
                 Spacer(Modifier.height(16.dp))
                 SuggestionBar(
-                    onAlbumClick = { /*TODO*/ },
-                    onAlignClick = { textAlign = textAlign.toggle() },
+                    onAlbumClick = {
+                        val permissionGranted = ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (permissionGranted) {
+                            onAlbumClick(MAX_NUMBER_OF_IMAGES - imageUris.size)
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        }
+                    },
+                    onAlignClick = { textAlign = textAlign.toggleSelect() },
                     onHideKeyboardClick = { keyboardController?.hide() },
                     modifier = Modifier
                         .navigationBarsPadding()
@@ -152,7 +203,7 @@ fun DiaryScreen(
                 )
             }
 
-            if (isRemoveMode) {
+            if (visibleRemoveButtonIndex != null) {
                 TouchBlock { visibleRemoveButtonIndex = null }
             }
 
@@ -167,6 +218,16 @@ fun DiaryScreen(
                     .padding(top = 176.dp)
                     .align(Alignment.TopCenter)
             )
+
+            if (permissionDeniedDialogVisible) {
+                PermissionDeniedDialog(
+                    onConfirm = {
+                        permissionDeniedDialogVisible = false
+                        context.navigateToAppSettings()
+                    },
+                    onDismiss = { permissionDeniedDialogVisible = false }
+                )
+            }
         }
     }
 }
@@ -311,15 +372,11 @@ private fun SuggestionBar(
         modifier = modifier
             .fillMaxWidth()
             .height(SuggestionBarHeight)
-            .drawBehind {
-                drawLine(
-                    color = borderColor,
-                    start = Offset(0f, 0f),
-                    end = Offset(size.width, 0f),
-                    strokeWidth = 1.dp.toPx(),
-                    alpha = 0.05f
-                )
-            }
+            .border(
+                color = borderColor,
+                top = 1.dp,
+                alpha = 0.05f
+            )
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -538,7 +595,26 @@ private fun SelectableStickers(onClick: (Sticker) -> Unit) {
     }
 }
 
-private fun TextAlign.toggle(): TextAlign {
+@Composable
+private fun PermissionDeniedDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    GBDiaryDialog(
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        message = {
+            Text(
+                text = "사진 업로드를 위한 접근 권한 변경이 필요합니다.",
+                textAlign = TextAlign.Center
+            )
+        },
+        confirmText = { Text("설정") },
+        dismissText = { Text("취소") }
+    )
+}
+
+private fun TextAlign.toggleSelect(): TextAlign {
     return if (this == TextAlign.Start) {
         TextAlign.Center
     } else {

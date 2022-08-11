@@ -5,6 +5,8 @@ import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
 import com.casoft.gbdiary.data.backup.BackupDataItem
 import org.threeten.bp.LocalDate
 
+const val MAX_NUMBER_OF_IMAGES = 3
+
 data class DiaryItem(
     val date: LocalDate,
     val sticker: List<Sticker>,

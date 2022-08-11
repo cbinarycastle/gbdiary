@@ -50,6 +50,10 @@ object Libs {
         }
     }
 
+    object Coil {
+        const val COMPOSE = "io.coil-kt:coil-compose:2.1.0"
+    }
+
     object Coroutines {
         private const val VERSION = "1.6.4"
         const val ANDROID = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$VERSION"

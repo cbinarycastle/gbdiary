@@ -1,9 +1,12 @@
 package com.casoft.gbdiary.data.diary
 
+import com.casoft.gbdiary.model.LocalImage
 import java.io.File
 import java.io.InputStream
 
-interface DiaryImageDataSource {
+interface ImageDataSource {
+
+    suspend fun getLocalImages(): List<LocalImage>
 
     fun getImageFile(fileName: String): File
 

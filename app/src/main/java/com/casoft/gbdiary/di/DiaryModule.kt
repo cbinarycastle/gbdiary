@@ -20,6 +20,6 @@ class DiaryModule {
 
     @Singleton
     @Provides
-    fun provideDiaryImageDataSource(@ApplicationContext context: Context): DiaryImageDataSource =
-        DefaultDiaryImageDataSource(context)
+    fun provideImageDataSource(@ApplicationContext context: Context): ImageDataSource =
+        DefaultImageDataSource(context)
 }

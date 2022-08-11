@@ -3,7 +3,7 @@ package com.casoft.gbdiary.domain
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupDataSourceStub
 import com.casoft.gbdiary.data.diary.DiaryDataSourceStub
-import com.casoft.gbdiary.data.diary.DiaryImageDataSourceStub
+import com.casoft.gbdiary.data.diary.ImageDataSourceStub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ class BackupDataUseCaseTest {
         val backupDataUseCase = BackupDataUseCase(
             backupDataSource = backupDataSource,
             diaryDataSource = diaryDataSource,
-            diaryImageDataSource = DiaryImageDataSourceStub(),
+            imageDataSource = ImageDataSourceStub(),
             ioDispatcher = StandardTestDispatcher(testScheduler),
         )
 

@@ -3,7 +3,7 @@ package com.casoft.gbdiary.domain
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupDataSourceStub
 import com.casoft.gbdiary.data.diary.DiaryDataSourceStub
-import com.casoft.gbdiary.data.diary.DiaryImageDataSourceStub
+import com.casoft.gbdiary.data.diary.ImageDataSourceStub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -18,12 +18,12 @@ class SyncDataUseCaseTest {
     fun `데이터 복원이 정상적으로 완료된다`() = runTest {
         val backupDataSource = BackupDataSourceStub().apply { setupTestData() }
         val diaryDataSource = DiaryDataSourceStub()
-        val diaryImageDataSource = DiaryImageDataSourceStub()
+        val diaryImageDataSource = ImageDataSourceStub()
 
         val syncDataUseCase = SyncDataUseCase(
             backupDataSource = backupDataSource,
             diaryDataSource = diaryDataSource,
-            diaryImageDataSource = diaryImageDataSource,
+            imageDataSource = diaryImageDataSource,
             ioDispatcher = StandardTestDispatcher(testScheduler),
         )
 
