@@ -1,6 +1,8 @@
 package com.casoft.gbdiary.ui.diary
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,12 +26,10 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.extensions.toast
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.StickerType
 import com.casoft.gbdiary.model.imageResId
@@ -47,6 +47,7 @@ private const val NUMBER_OF_STICKERS_BY_ROW = 3
 
 private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
+private val AddStickerButtonSize = 32.dp
 private val SelectedStickerSize = 64.dp
 private val SuggestionBarHeight = 44.dp
 
@@ -57,7 +58,6 @@ fun DiaryScreen(
     date: LocalDate,
     onBack: () -> Unit,
 ) {
-    val context = LocalContext.current
     val bottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -68,14 +68,6 @@ fun DiaryScreen(
     var visibleRemoveButtonIndex by remember { mutableStateOf<Int?>(null) }
     val isRemoveMode = remember(visibleRemoveButtonIndex) { visibleRemoveButtonIndex != null }
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
-
-    LaunchedEffect(viewModel) {
-        launch {
-            viewModel.message.collect {
-                context.toast(it)
-            }
-        }
-    }
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -111,11 +103,15 @@ fun DiaryScreen(
                         onMoreClick = { /*TODO*/ }
                     )
                     Spacer(Modifier.height(8.dp))
-                    AddStickerButton(
-                        onClick = {
-                            coroutineScope.launch { bottomSheetState.show() }
-                        }
-                    )
+                    if (stickers.size < MAX_STICKERS) {
+                        AddStickerButton(
+                            onClick = {
+                                coroutineScope.launch { bottomSheetState.show() }
+                            }
+                        )
+                    } else {
+                        Spacer(Modifier.height(AddStickerButtonSize))
+                    }
                     Spacer(Modifier.height(8.dp))
                     SelectedStickers(
                         stickers = stickers,
@@ -203,7 +199,7 @@ private fun AddStickerButton(
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.size(AddStickerButtonSize),
         shape = CircleShape,
         elevation = 1.dp
     ) {
@@ -387,7 +383,11 @@ private fun RemoveStickerButton(
     visible: Boolean,
     onClick: () -> Unit,
 ) {
-    AnimatedVisibility(visible) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Button(
             onClick = onClick,
             modifier = Modifier.size(width = 54.dp, height = 56.dp),
