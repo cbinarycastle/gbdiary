@@ -35,6 +35,7 @@ import com.casoft.gbdiary.model.StickerType
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
@@ -394,7 +395,7 @@ private fun StickerSelectionBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(maxHeight - AppBarHeight),
+                .height(maxHeight - statusBarHeight - AppBarHeight),
             horizontalAlignment = CenterHorizontally
         ) {
             Spacer(Modifier.height(8.dp))
