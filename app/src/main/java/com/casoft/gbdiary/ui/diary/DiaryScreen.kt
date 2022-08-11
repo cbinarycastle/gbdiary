@@ -129,18 +129,16 @@ fun DiaryScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
                     ) {
-                        BasicTextField(
-                            value = text,
-                            onValueChange = { viewModel.inputText(it) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(min = 120.dp),
-                            textStyle = GBDiaryTheme.typography.body1.copy(
-                                color = LocalContentColor.current,
-                                textAlign = textAlign
-                            ),
-                            cursorBrush = SolidColor(LocalContentColor.current)
-                        )
+                        Box {
+                            if (text.isEmpty()) {
+                                TextInputPlaceholder(textAlign = textAlign)
+                            }
+                            TextInput(
+                                text = text,
+                                textAlign = textAlign,
+                                onValueChange = { viewModel.inputText(it) }
+                            )
+                        }
                     }
                 }
                 Spacer(Modifier.height(16.dp))
@@ -263,6 +261,38 @@ private fun DateText(date: LocalDate, modifier: Modifier = Modifier) {
         text = date.format(dateFormatter),
         modifier = modifier.alpha(0.4f),
         style = GBDiaryTheme.typography.caption
+    )
+}
+
+@Composable
+private fun TextInputPlaceholder(textAlign: TextAlign) {
+    Text(
+        text = "오늘 하루를 기록해보세요",
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(0.3f),
+        style = GBDiaryTheme.typography.body1,
+        textAlign = textAlign
+    )
+}
+
+@Composable
+private fun TextInput(
+    text: String,
+    textAlign: TextAlign,
+    onValueChange: (String) -> Unit,
+) {
+    BasicTextField(
+        value = text,
+        onValueChange = onValueChange,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 120.dp),
+        textStyle = GBDiaryTheme.typography.body1.copy(
+            color = LocalContentColor.current,
+            textAlign = textAlign
+        ),
+        cursorBrush = SolidColor(LocalContentColor.current)
     )
 }
 
