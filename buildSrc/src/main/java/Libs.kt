@@ -21,7 +21,7 @@ object Libs {
         }
 
         object Compose {
-            private const val VERSION = "1.2.0"
+            private const val VERSION = "1.2.1"
             const val MATERIAL = "androidx.compose.material:material:$VERSION"
             const val PREVIEW = "androidx.compose.ui:ui-tooling-preview:$VERSION"
             const val RUNTIME = "androidx.compose.runtime:runtime:$VERSION"
