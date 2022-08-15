@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.toast
-import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
 import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 
@@ -82,10 +81,6 @@ fun ImagePickerScreen(
                                         } else {
                                             numberOfSelectedImages--
                                         }
-                                    } else {
-                                        context.toast(
-                                            "사진은 총 ${MAX_NUMBER_OF_IMAGES}장까지만 선택할 수 있습니다."
-                                        )
                                     }
                                 },
                                 modifier = Modifier
