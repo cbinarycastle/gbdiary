@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -60,7 +61,7 @@ private val SuggestionBarHeight = 44.dp
 
 @OptIn(
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class, ExperimentalLayoutApi::class,
 )
 @Composable
 fun DiaryScreen(
@@ -128,17 +129,18 @@ fun DiaryScreen(
                 .imePadding()
         ) {
             Column(Modifier.fillMaxSize()) {
+                AppBar(
+                    onBack = onBack,
+                    onMoreClick = { /*TODO*/ }
+                )
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .verticalScroll(scrollState),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(horizontal = 24.dp)
+                        .verticalScroll(scrollState)
                 ) {
-                    AppBar(
-                        onBack = onBack,
-                        onMoreClick = { /*TODO*/ }
-                    )
                     Spacer(Modifier.height(8.dp))
                     if (stickers.size < MAX_STICKERS) {
                         AddStickerButton(
@@ -157,11 +159,7 @@ fun DiaryScreen(
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
                     Spacer(Modifier.height(24.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                    ) {
+                    Box(Modifier.fillMaxWidth()) {
                         if (text.isEmpty()) {
                             TextInputPlaceholder(textAlign = textAlign)
                         }
@@ -171,17 +169,28 @@ fun DiaryScreen(
                             onValueChange = { viewModel.inputText(it) }
                         )
                     }
-                    imageUris.forEach { uri ->
-                        Image(
-                            painter = rememberAsyncImagePainter(model = uri),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                        )
+                    if (imageUris.isNotEmpty()) {
+                        Spacer(Modifier.height(24.dp))
+                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                            imageUris.forEach { uri ->
+                                Surface(
+                                    shape = RoundedCornerShape(6.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(1f)
+                                ) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(model = uri),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+                            }
+                        }
                     }
+                    Spacer(Modifier.height(16.dp))
                 }
-                Spacer(Modifier.height(16.dp))
                 SuggestionBar(
                     onAlbumClick = {
                         val permissionGranted = ContextCompat.checkSelfPermission(
@@ -196,9 +205,6 @@ fun DiaryScreen(
                     },
                     onAlignClick = { textAlign = textAlign.toggleSelect() },
                     onHideKeyboardClick = { keyboardController?.hide() },
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .imePadding(),
                     textAlign = textAlign
                 )
             }
@@ -342,18 +348,19 @@ private fun TextInput(
     text: String,
     textAlign: TextAlign,
     onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     BasicTextField(
         value = text,
         onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 120.dp),
         textStyle = GBDiaryTheme.typography.body1.copy(
             color = LocalContentColor.current,
             textAlign = textAlign
         ),
-        cursorBrush = SolidColor(LocalContentColor.current)
+        cursorBrush = SolidColor(LocalContentColor.current),
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 120.dp),
     )
 }
 

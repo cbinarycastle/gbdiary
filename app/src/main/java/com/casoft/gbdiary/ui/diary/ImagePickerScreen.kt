@@ -7,10 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +20,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.extensions.toast
 import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
+import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 
 const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
@@ -45,7 +43,11 @@ fun ImagePickerScreen(
         }
     }
 
-    Column {
+    Column(
+        modifier = Modifier
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
         AppBar(
             selectionCount = numberOfSelectedImages,
             onSelect = {
@@ -105,21 +107,28 @@ private fun AppBar(
     onClose: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        IconButton(onClick = onClose) {
-            Icon(
-                painter = painterResource(R.drawable.close),
-                contentDescription = "닫기"
-            )
-        }
-        Button(onClick = onSelect) {
-            Text(
-                text = "선택 $selectionCount",
-                style = GBDiaryTheme.typography.subtitle1
-            )
+    GBDiaryAppBar {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            IconButton(onClick = onClose) {
+                Icon(
+                    painter = painterResource(R.drawable.close),
+                    contentDescription = "닫기"
+                )
+            }
+            TextButton(
+                onClick = onSelect,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = GBDiaryTheme.colors.onBackground
+                )
+            ) {
+                Text(
+                    text = "선택 $selectionCount",
+                    style = GBDiaryTheme.typography.subtitle1
+                )
+            }
         }
     }
 }

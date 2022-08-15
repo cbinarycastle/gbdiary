@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.TopAppBar
@@ -14,7 +15,7 @@ val AppBarHeight = 56.dp
 @Composable
 fun GBDiaryAppBar(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable RowScope.() -> Unit
 ) {
     TopAppBar(
         modifier = modifier,
