@@ -61,7 +61,7 @@ private val SuggestionBarHeight = 44.dp
 
 @OptIn(
     ExperimentalComposeUiApi::class,
-    ExperimentalMaterialApi::class, ExperimentalLayoutApi::class,
+    ExperimentalMaterialApi::class,
 )
 @Composable
 fun DiaryScreen(
@@ -84,7 +84,8 @@ fun DiaryScreen(
     val text by viewModel.text.collectAsState()
     val imageUris by viewModel.images.collectAsState()
 
-    var visibleRemoveButtonIndex by remember { mutableStateOf<Int?>(null) }
+    var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
+    var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
     var textAlign by remember { mutableStateOf(TextAlign.Start) }
     var permissionDeniedDialogVisible by remember { mutableStateOf(false) }
 
@@ -154,7 +155,7 @@ fun DiaryScreen(
                     Spacer(Modifier.height(8.dp))
                     SelectedStickers(
                         stickers = stickers,
-                        onStickerLongPress = { index -> visibleRemoveButtonIndex = index }
+                        onStickerLongPress = { index -> visibleRemoveStickerButtonIndex = index }
                     )
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
@@ -171,23 +172,16 @@ fun DiaryScreen(
                     }
                     if (imageUris.isNotEmpty()) {
                         Spacer(Modifier.height(24.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            imageUris.forEach { uri ->
-                                Surface(
-                                    shape = RoundedCornerShape(6.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(1f)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(model = uri),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
+                        SelectedImages(
+                            imageUris = imageUris,
+                            visibleRemoveButtonIndex = visibleRemoveImageButtonIndex,
+                            onImageLongPress = { index -> visibleRemoveImageButtonIndex = index },
+                            onCancelRemove = { visibleRemoveImageButtonIndex = null },
+                            onRemove = { index ->
+                                viewModel.removeImage(index)
+                                visibleRemoveImageButtonIndex = null
                             }
-                        }
+                        )
                     }
                     Spacer(Modifier.height(16.dp))
                 }
@@ -209,15 +203,15 @@ fun DiaryScreen(
                 )
             }
 
-            if (visibleRemoveButtonIndex != null) {
-                TouchBlock { visibleRemoveButtonIndex = null }
+            if (visibleRemoveStickerButtonIndex != null) {
+                TouchBlock { visibleRemoveStickerButtonIndex = null }
             }
 
             RemoveStickerButtons(
                 count = stickers.size,
-                visibleIndex = visibleRemoveButtonIndex,
+                visibleIndex = visibleRemoveStickerButtonIndex,
                 onClick = { index ->
-                    visibleRemoveButtonIndex = null
+                    visibleRemoveStickerButtonIndex = null
                     viewModel.removeSticker(index)
                 },
                 modifier = Modifier
@@ -364,6 +358,76 @@ private fun TextInput(
     )
 }
 
+@Composable
+private fun SelectedImages(
+    imageUris: List<Uri>,
+    visibleRemoveButtonIndex: Int?,
+    onImageLongPress: (Int) -> Unit,
+    onCancelRemove: () -> Unit,
+    onRemove: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        imageUris.forEachIndexed { index, uri ->
+            SelectedImage(
+                imageUri = uri,
+                removeButtonVisible = index == visibleRemoveButtonIndex,
+                onLongPress = { onImageLongPress(index) },
+                onCancelRemove = onCancelRemove,
+                onRemove = { onRemove(index) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SelectedImage(
+    imageUri: Uri,
+    removeButtonVisible: Boolean,
+    onLongPress: () -> Unit,
+    onCancelRemove: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    Surface(
+        shape = RoundedCornerShape(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = imageUri),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = { onLongPress() })
+                }
+        )
+        AnimatedVisibility(
+            visible = removeButtonVisible,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(GBDiaryTheme.gbDiaryColors.dimmingOverlay)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onCancelRemove() }
+            ) {
+                RemoveButton(onClick = onRemove)
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SuggestionBar(
@@ -450,7 +514,7 @@ private fun RemoveStickerButtons(
                 modifier = Modifier.width(SelectedStickerSize),
                 contentAlignment = Alignment.Center
             ) {
-                RemoveStickerButton(
+                RemoveButton(
                     visible = index == visibleIndex,
                     onClick = { onClick(index) }
                 )
@@ -460,9 +524,9 @@ private fun RemoveStickerButtons(
 }
 
 @Composable
-private fun RemoveStickerButton(
-    visible: Boolean,
+private fun RemoveButton(
     onClick: () -> Unit,
+    visible: Boolean = true,
 ) {
     AnimatedVisibility(
         visible = visible,

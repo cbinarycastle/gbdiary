@@ -37,4 +37,8 @@ class DiaryViewModel() : ViewModel() {
     fun addImages(images: List<Uri>) {
         _images.value = _images.value + images
     }
+
+    fun removeImage(index: Int) {
+        _images.value = _images.value.filterIndexed { i, _ -> i != index }
+    }
 }
