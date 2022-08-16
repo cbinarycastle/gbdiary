@@ -41,6 +41,7 @@ import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.GBDiaryDialog
+import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.extension.statusBarHeight
@@ -97,15 +98,10 @@ fun DiaryScreen(
         }
     }
 
-    if (savedStateHandle != null) {
-        val selectedImages = savedStateHandle
-            .getStateFlow<List<Uri>>(SELECTED_IMAGE_URIS_RESULT_KEY, listOf())
-            .collectAsState()
-
-        LaunchedEffect(selectedImages) {
-            viewModel.addImages(selectedImages.value)
-        }
-    }
+    savedStateHandle?.CollectOnce<List<Uri>>(
+        key = SELECTED_IMAGE_URIS_RESULT_KEY,
+        defaultValue = listOf()
+    ) { selectedImages -> viewModel.addImages(selectedImages) }
 
     ModalBottomSheetLayout(
         sheetContent = {
