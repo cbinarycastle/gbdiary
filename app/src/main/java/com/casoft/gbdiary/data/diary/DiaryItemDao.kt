@@ -9,17 +9,17 @@ interface DiaryItemDao {
     @Query("SELECT * FROM DiaryItem WHERE year = :year AND month = :month")
     fun getStreamByYearAndMonth(year: Int, month: Int): Flow<List<DiaryItemEntity>>
 
+    @Query("SELECT * FROM DiaryItem WHERE year = :year AND month = :month AND dayOfMonth = :dayOfMonth")
+    fun getStreamByDate(year: Int, month: Int, dayOfMonth: Int): Flow<DiaryItemEntity>
+
     @Query("SELECT * FROM DiaryItem WHERE isSync = 0")
     fun getNotSynced(): List<DiaryItemEntity>
 
-    @Insert
-    fun insert(item: DiaryItemEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOrUpdate(item: DiaryItemEntity)
 
     @Insert
     fun insertAll(items: List<DiaryItemEntity>)
-
-    @Update
-    fun update(item: DiaryItemEntity)
 
     @Delete
     fun delete(item: DiaryItemEntity)

@@ -10,7 +10,7 @@ import org.threeten.bp.LocalDate
 @Entity(tableName = "DiaryItem")
 data class DiaryItemEntity(
     @PrimaryKey @Embedded val date: Date,
-    val sticker: List<Sticker>,
+    val stickers: List<Sticker>,
     val contents: String,
     val images: List<String> = listOf(),
     val status: DiaryItemStatus = DiaryItemStatus.ENABLED,
@@ -19,8 +19,8 @@ data class DiaryItemEntity(
 
 fun DiaryItemEntity.toDiaryItem() = DiaryItem(
     date = date.let { LocalDate.of(it.year, it.month, it.dayOfMonth) },
-    sticker = sticker,
-    contents = contents,
+    stickers = stickers,
+    content = contents,
     images = images
 )
 

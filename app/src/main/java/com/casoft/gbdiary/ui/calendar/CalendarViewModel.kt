@@ -16,11 +16,11 @@ class CalendarViewModel @Inject constructor(
     private val getDiaryItemsUseCase: GetDiaryItemsUseCase,
 ) : ViewModel() {
 
-    fun getStickers(yearMonth: YearMonth): Flow<Map<LocalDate, Sticker>> {
+    fun getStickers(yearMonth: YearMonth): Flow<Map<LocalDate, Sticker?>> {
         return getDiaryItemsUseCase(yearMonth)
             .map { result ->
                 result.successOr(listOf())
-                    .associate { item -> item.date to item.sticker.first() }
+                    .associate { item -> item.date to item.stickers.firstOrNull() }
             }
     }
 }

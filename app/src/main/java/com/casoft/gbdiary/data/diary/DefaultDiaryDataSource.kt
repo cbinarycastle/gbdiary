@@ -1,6 +1,9 @@
 package com.casoft.gbdiary.data.diary
 
+import com.casoft.gbdiary.model.DiaryItem
+import com.casoft.gbdiary.model.toDiaryItemEntity
 import kotlinx.coroutines.flow.Flow
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataSource {
@@ -12,8 +15,20 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataS
         )
     }
 
+    override fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity> {
+        return diaryItemDao.getStreamByDate(
+            year = date.year,
+            month = date.monthValue,
+            dayOfMonth = date.dayOfMonth
+        )
+    }
+
     override fun getNotSyncedDiaryItems(): List<DiaryItemEntity> {
         return diaryItemDao.getNotSynced()
+    }
+
+    override suspend fun save(diaryItem: DiaryItem) {
+        diaryItemDao.insertOrUpdate(diaryItem.toDiaryItemEntity())
     }
 
     override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {

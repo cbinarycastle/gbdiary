@@ -20,9 +20,9 @@ class ImageDataSourceStub : ImageDataSource {
         return File.createTempFile("temp", ".jpg")
     }
 
-    override fun copyImageFile(fileName: String, inputStream: InputStream): File {
+    override fun copyTo(fileName: String, source: InputStream): File {
         return getImageFile(fileName).also {
-            inputStream.copyTo(it.outputStream())
+            source.copyTo(it.outputStream())
             _files.add(it)
         }
     }

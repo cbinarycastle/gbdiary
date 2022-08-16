@@ -10,5 +10,5 @@ interface ImageDataSource {
 
     fun getImageFile(fileName: String): File
 
-    fun copyImageFile(fileName: String, inputStream: InputStream): File
+    fun copyTo(fileName: String, source: InputStream): File
 }

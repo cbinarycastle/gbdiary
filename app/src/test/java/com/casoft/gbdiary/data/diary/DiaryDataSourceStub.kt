@@ -33,7 +33,7 @@ class DiaryDataSourceStub : DiaryDataSource {
             listOf(
                 DiaryItemEntity(
                     date = Date(year = 2022, month = 7, dayOfMonth = 31),
-                    sticker = listOf(
+                    stickers = listOf(
                         Sticker.ANGER,
                         Sticker.CONFUSION,
                         Sticker.DEPRESSION
@@ -42,7 +42,7 @@ class DiaryDataSourceStub : DiaryDataSource {
                 ),
                 DiaryItemEntity(
                     date = Date(year = 2022, month = 8, dayOfMonth = 11),
-                    sticker = listOf(Sticker.HOPEFUL),
+                    stickers = listOf(Sticker.HOPEFUL),
                     contents = "22년 8월 1일"
                 )
             )

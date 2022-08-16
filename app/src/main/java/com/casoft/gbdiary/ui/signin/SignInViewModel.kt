@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.domain.CheckExistingSignedInUserUseCase
 import com.casoft.gbdiary.domain.ObserveAccountUseCase
-import com.casoft.gbdiary.extensions.WhileViewSubscribed
 import com.casoft.gbdiary.model.Result
+import com.casoft.gbdiary.util.WhileViewSubscribed
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task

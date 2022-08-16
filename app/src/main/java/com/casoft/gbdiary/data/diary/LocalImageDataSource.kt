@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.InputStream
 
-class DefaultImageDataSource(
+class LocalImageDataSource(
     @ApplicationContext private val context: Context,
 ) : ImageDataSource {
 
@@ -21,7 +21,7 @@ class DefaultImageDataSource(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         }
 
-        val projection = arrayOf(MediaStore.Images.Media._ID)
+        val projection = arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA)
 
         context.contentResolver.query(
             collection,
@@ -31,10 +31,12 @@ class DefaultImageDataSource(
             null
         )?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+            val dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
             val images = mutableListOf<LocalImage>()
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
-                images += LocalImage(id)
+                val path = cursor.getString(dataColumn)
+                images += LocalImage(id, path)
             }
             images
         } ?: listOf()
@@ -42,9 +44,9 @@ class DefaultImageDataSource(
 
     override fun getImageFile(fileName: String) = File(context.filesDir, fileName)
 
-    override fun copyImageFile(fileName: String, inputStream: InputStream): File {
+    override fun copyTo(fileName: String, source: InputStream): File {
         return getImageFile(fileName).also {
-            inputStream.copyTo(it.outputStream())
+            source.copyTo(it.outputStream())
         }
     }
 }

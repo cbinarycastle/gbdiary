@@ -13,7 +13,7 @@ data class Week(val days: List<Day>)
 fun Week(
     week: Week,
     today: LocalDate,
-    stickers: Map<LocalDate, Sticker>,
+    stickers: Map<LocalDate, Sticker?>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {

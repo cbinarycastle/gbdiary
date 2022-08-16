@@ -2,7 +2,7 @@ package com.casoft.gbdiary.ui.diary
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.animation.AnimatedVisibility
@@ -34,10 +34,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
-import com.casoft.gbdiary.model.Sticker
-import com.casoft.gbdiary.model.StickerType
-import com.casoft.gbdiary.model.imageResId
+import com.casoft.gbdiary.model.*
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.GBDiaryDialog
@@ -48,9 +45,11 @@ import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
+import com.casoft.gbdiary.util.toast
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
+import java.io.File
 
 private const val NUMBER_OF_STICKERS_BY_ROW = 3
 
@@ -68,7 +67,6 @@ private val SuggestionBarHeight = 44.dp
 fun DiaryScreen(
     viewModel: DiaryViewModel,
     savedStateHandle: SavedStateHandle?,
-    date: LocalDate,
     onAlbumClick: (Int) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -81,9 +79,12 @@ fun DiaryScreen(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val date by viewModel.date.collectAsState()
+    val existingDiary by viewModel.existingDiary.collectAsState()
     val stickers by viewModel.stickers.collectAsState()
-    val text by viewModel.text.collectAsState()
-    val imageUris by viewModel.images.collectAsState()
+    val content by viewModel.content.collectAsState()
+    val images by viewModel.images.collectAsState()
+    val isValidToSave by viewModel.isValidToSave.collectAsState()
 
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
@@ -92,16 +93,27 @@ fun DiaryScreen(
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
-            onAlbumClick(MAX_NUMBER_OF_IMAGES - imageUris.size)
+            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
         } else {
             permissionDeniedDialogVisible = true
         }
     }
 
-    savedStateHandle?.CollectOnce<List<Uri>>(
+    BackHandler {
+        viewModel.saveDiary(shouldShowMessage = false)
+        onBack()
+    }
+
+    savedStateHandle?.CollectOnce<List<LocalImage>>(
         key = SELECTED_IMAGE_URIS_RESULT_KEY,
         defaultValue = listOf()
     ) { selectedImages -> viewModel.addImages(selectedImages) }
+
+    LaunchedEffect(viewModel) {
+        viewModel.message.collect {
+            context.toast(it)
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetContent = {
@@ -127,8 +139,12 @@ fun DiaryScreen(
         ) {
             Column(Modifier.fillMaxSize()) {
                 AppBar(
-                    onBack = onBack,
-                    onMoreClick = { /*TODO*/ }
+                    onBack = {
+                        viewModel.saveDiary(shouldShowMessage = false)
+                        onBack()
+                    },
+                    onMoreClick = { /*TODO*/ },
+                    moreButtonVisible = existingDiary != null
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,19 +173,19 @@ fun DiaryScreen(
                     DateText(date = date)
                     Spacer(Modifier.height(24.dp))
                     Box(Modifier.fillMaxWidth()) {
-                        if (text.isEmpty()) {
+                        if (content.isEmpty()) {
                             TextInputPlaceholder(textAlign = textAlign)
                         }
                         TextInput(
-                            text = text,
+                            text = content,
                             textAlign = textAlign,
                             onValueChange = { viewModel.inputText(it) }
                         )
                     }
-                    if (imageUris.isNotEmpty()) {
+                    if (images.isNotEmpty()) {
                         Spacer(Modifier.height(24.dp))
                         SelectedImages(
-                            imageUris = imageUris,
+                            images = images,
                             visibleRemoveButtonIndex = visibleRemoveImageButtonIndex,
                             onImageLongPress = { index -> visibleRemoveImageButtonIndex = index },
                             onCancelRemove = { visibleRemoveImageButtonIndex = null },
@@ -188,14 +204,18 @@ fun DiaryScreen(
                             Manifest.permission.READ_EXTERNAL_STORAGE
                         ) == PackageManager.PERMISSION_GRANTED
                         if (permissionGranted) {
-                            onAlbumClick(MAX_NUMBER_OF_IMAGES - imageUris.size)
+                            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
                         } else {
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
                     },
                     onAlignClick = { textAlign = textAlign.toggleSelect() },
-                    onHideKeyboardClick = { keyboardController?.hide() },
-                    textAlign = textAlign
+                    onDoneClick = {
+                        keyboardController?.hide()
+                        viewModel.saveDiary()
+                    },
+                    textAlign = textAlign,
+                    doneButtonVisible = isValidToSave
                 )
             }
 
@@ -232,6 +252,7 @@ fun DiaryScreen(
 private fun AppBar(
     onBack: () -> Unit,
     onMoreClick: () -> Unit,
+    moreButtonVisible: Boolean = false,
 ) {
     GBDiaryAppBar {
         Row(
@@ -244,11 +265,13 @@ private fun AppBar(
                     contentDescription = "뒤로"
                 )
             }
-            IconButton(onClick = onMoreClick) {
-                Icon(
-                    painter = painterResource(R.drawable.more),
-                    contentDescription = "더보기"
-                )
+            if (moreButtonVisible) {
+                IconButton(onClick = onMoreClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.more),
+                        contentDescription = "더보기"
+                    )
+                }
             }
         }
     }
@@ -356,7 +379,7 @@ private fun TextInput(
 
 @Composable
 private fun SelectedImages(
-    imageUris: List<Uri>,
+    images: List<File>,
     visibleRemoveButtonIndex: Int?,
     onImageLongPress: (Int) -> Unit,
     onCancelRemove: () -> Unit,
@@ -367,9 +390,9 @@ private fun SelectedImages(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        imageUris.forEachIndexed { index, uri ->
+        images.forEachIndexed { index, image ->
             SelectedImage(
-                imageUri = uri,
+                image = image,
                 removeButtonVisible = index == visibleRemoveButtonIndex,
                 onLongPress = { onImageLongPress(index) },
                 onCancelRemove = onCancelRemove,
@@ -381,7 +404,7 @@ private fun SelectedImages(
 
 @Composable
 private fun SelectedImage(
-    imageUri: Uri,
+    image: File,
     removeButtonVisible: Boolean,
     onLongPress: () -> Unit,
     onCancelRemove: () -> Unit,
@@ -394,7 +417,7 @@ private fun SelectedImage(
             .aspectRatio(1f)
     ) {
         Image(
-            painter = rememberAsyncImagePainter(model = imageUri),
+            painter = rememberAsyncImagePainter(model = image),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -429,13 +452,16 @@ private fun SelectedImage(
 private fun SuggestionBar(
     onAlbumClick: () -> Unit,
     onAlignClick: () -> Unit,
-    onHideKeyboardClick: () -> Unit,
+    onDoneClick: () -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
+    doneButtonVisible: Boolean = false,
 ) {
     val borderColor = GBDiaryTheme.colors.onBackground
 
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .height(SuggestionBarHeight)
@@ -444,9 +470,7 @@ private fun SuggestionBar(
                 top = 1.dp,
                 alpha = 0.05f
             )
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp)
     ) {
         Row {
             SuggestionBarIcon(onClick = onAlbumClick) {
@@ -473,11 +497,11 @@ private fun SuggestionBar(
                 }
             }
         }
-        if (WindowInsets.isImeVisible) {
-            SuggestionBarIcon(onClick = onHideKeyboardClick) {
+        if (doneButtonVisible && WindowInsets.isImeVisible) {
+            SuggestionBarIcon(onClick = onDoneClick) {
                 Icon(
-                    painter = painterResource(R.drawable.keyboard_down),
-                    contentDescription = "키보드 닫기"
+                    painter = painterResource(R.drawable.done),
+                    contentDescription = "완료"
                 )
             }
         }

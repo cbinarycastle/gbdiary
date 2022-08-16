@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.extensions
+package com.casoft.gbdiary.util
 
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth

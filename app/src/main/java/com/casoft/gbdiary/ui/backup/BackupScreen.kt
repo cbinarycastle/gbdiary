@@ -11,7 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.casoft.gbdiary.extensions.toast
+import com.casoft.gbdiary.util.toast
 import kotlinx.coroutines.launch
 
 @Composable

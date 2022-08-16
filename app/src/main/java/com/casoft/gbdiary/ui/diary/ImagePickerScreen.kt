@@ -18,9 +18,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.extensions.toast
+import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.extension.toContentUri
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.util.toast
 
 const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
 
@@ -28,7 +30,7 @@ const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
 fun ImagePickerScreen(
     viewModel: ImagePickerViewModel,
     maxSelectionCount: Int,
-    onSelect: (List<Uri>) -> Unit,
+    onSelect: (List<LocalImage>) -> Unit,
     onClose: () -> Unit,
 ) {
     val state = rememberImagePickerState(viewModel)
@@ -53,7 +55,7 @@ fun ImagePickerScreen(
                 onSelect(
                     images.flatten()
                         .filter { image -> image.selected }
-                        .map { image -> image.uri }
+                        .map { image -> image.localImage }
                 )
             },
             onClose = onClose
@@ -71,7 +73,7 @@ fun ImagePickerScreen(
                             )
                         } else {
                             SelectableImage(
-                                uri = image.uri,
+                                uri = image.localImage.toContentUri(),
                                 selected = image.selected,
                                 onClick = {
                                     if (image.selected || numberOfSelectedImages < maxSelectionCount) {

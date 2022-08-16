@@ -3,22 +3,35 @@ package com.casoft.gbdiary.model
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
 import com.casoft.gbdiary.data.backup.BackupDataItem
+import com.casoft.gbdiary.data.diary.Date
+import com.casoft.gbdiary.data.diary.DiaryItemEntity
 import org.threeten.bp.LocalDate
 
 const val MAX_NUMBER_OF_IMAGES = 3
 
 data class DiaryItem(
     val date: LocalDate,
-    val sticker: List<Sticker>,
-    val contents: String,
+    val stickers: List<Sticker>,
+    val content: String,
     val images: List<String> = listOf(),
 )
 
 fun DiaryItem.toBackupData(images: List<String>) = BackupDataItem(
     day = date.format(BackupDataDateFormatter),
-    contents = contents,
+    contents = content,
     images = images,
-    sticker = sticker.map { it.name }
+    sticker = stickers.map { it.name }
+)
+
+fun DiaryItem.toDiaryItemEntity() = DiaryItemEntity(
+    date = Date(
+        year = date.year,
+        month = date.monthValue,
+        dayOfMonth = date.dayOfMonth
+    ),
+    stickers = stickers,
+    contents = content,
+    images = images,
 )
 
 enum class Sticker(val type: StickerType) {

@@ -1,8 +1,7 @@
 package com.casoft.gbdiary.ui.diary
 
-import android.net.Uri
 import androidx.compose.runtime.*
-import com.casoft.gbdiary.ui.extension.contentUri
+import com.casoft.gbdiary.model.LocalImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -26,7 +25,7 @@ class ImagePickerState(
     val images = viewModel.images
         .map { images ->
             images
-                .map { image -> Image(image.contentUri()) }
+                .map { image -> ImageUiState(image) }
                 .chunked(NUMBER_OF_IMAGES_BY_ROW)
         }
         .stateIn(
@@ -37,8 +36,8 @@ class ImagePickerState(
 }
 
 @Stable
-class Image(
-    val uri: Uri,
+class ImageUiState(
+    val localImage: LocalImage,
     selected: Boolean = false,
 ) {
     var selected by mutableStateOf(selected)

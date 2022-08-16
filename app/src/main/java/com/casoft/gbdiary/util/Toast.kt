@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.extensions
+package com.casoft.gbdiary.util
 
 import android.content.Context
 import android.widget.Toast

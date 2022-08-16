@@ -20,7 +20,7 @@ data class Month(
 fun Month(
     month: Month,
     today: LocalDate,
-    stickers: Map<LocalDate, Sticker>,
+    stickers: Map<LocalDate, Sticker?>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {

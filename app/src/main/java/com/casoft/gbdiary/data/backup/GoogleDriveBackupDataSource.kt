@@ -51,9 +51,12 @@ class GoogleDriveBackupDataSource(
         gson.fromJson(backupDataJson, BackupData::class.java)
     }
 
-    override suspend fun download(account: Account, fileId: String): InputStream {
+    override suspend fun download(
+        account: Account,
+        fileId: String,
+    ): InputStream = withContext(ioDispatcher) {
         val drive = createDrive(account)
-        return ByteArrayOutputStream().also {
+        ByteArrayOutputStream().also {
             drive.files().get(fileId).executeMediaAndDownloadTo(it)
         }.toByteArray().inputStream()
     }

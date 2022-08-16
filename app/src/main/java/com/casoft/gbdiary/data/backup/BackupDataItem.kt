@@ -23,7 +23,7 @@ fun BackupDataItem.toDiaryItemEntity(images: List<String>) = DiaryItemEntity(
             dayOfMonth = it.dayOfMonth
         )
     },
-    sticker = sticker.map { Sticker.valueOf(it) },
+    stickers = sticker.map { Sticker.valueOf(it) },
     contents = contents,
     images = images,
     isSync = true

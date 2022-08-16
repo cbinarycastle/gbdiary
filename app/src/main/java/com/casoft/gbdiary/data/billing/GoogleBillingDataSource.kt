@@ -2,7 +2,7 @@ package com.casoft.gbdiary.data.billing
 
 import android.content.Context
 import com.android.billingclient.api.*
-import com.casoft.gbdiary.extensions.throttle
+import com.casoft.gbdiary.util.throttle
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow

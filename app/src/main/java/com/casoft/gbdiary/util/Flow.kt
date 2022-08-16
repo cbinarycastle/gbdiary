@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.extensions
+package com.casoft.gbdiary.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

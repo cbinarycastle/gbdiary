@@ -1,6 +1,5 @@
 package com.casoft.gbdiary.ui.diary
 
-import android.net.Uri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
@@ -8,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.casoft.gbdiary.model.LocalImage
 import org.threeten.bp.LocalDate
 
 object DiaryDestinations {
@@ -33,10 +33,10 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         val month = arguments.getInt(DiaryDestinations.HOME_MONTH_KEY)
         val dayOfMonth = arguments.getInt(DiaryDestinations.HOME_DAY_OF_MONTH_KEY)
         val diaryViewModel = hiltViewModel<DiaryViewModel>()
+            .apply { setDate(LocalDate.of(year, month, dayOfMonth)) }
         DiaryScreen(
             viewModel = diaryViewModel,
             savedStateHandle = actions.savedStateHandle,
-            date = LocalDate.of(year, month, dayOfMonth),
             onBack = { actions.navigateUp() },
             onAlbumClick = { maxSelectionCount ->
                 actions.navigateToImagePicker(maxSelectionCount)
@@ -59,8 +59,8 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         ImagePickerScreen(
             viewModel = imagePickerViewModel,
             maxSelectionCount = maxSelectionCount,
-            onSelect = { imageUris ->
-                actions.setSelectedImageUris(imageUris)
+            onSelect = { images ->
+                actions.setSelectedImages(images)
                 actions.navigateUp()
             },
             onClose = { actions.navigateUp() }
@@ -79,10 +79,10 @@ class DiaryActions(private val navController: NavController) {
         )
     }
 
-    fun setSelectedImageUris(uris: List<Uri>) {
+    fun setSelectedImages(images: List<LocalImage>) {
         navController.previousBackStackEntry
             ?.savedStateHandle
-            ?.set(SELECTED_IMAGE_URIS_RESULT_KEY, uris)
+            ?.set(SELECTED_IMAGE_URIS_RESULT_KEY, images)
     }
 
     fun navigateUp() {
