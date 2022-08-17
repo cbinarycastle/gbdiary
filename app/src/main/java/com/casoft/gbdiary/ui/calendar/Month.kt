@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.casoft.gbdiary.model.Sticker
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -19,8 +18,8 @@ data class Month(
 @Composable
 fun Month(
     month: Month,
+    dayStateList: DayStateList,
     today: LocalDate,
-    stickers: Map<LocalDate, Sticker?>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -31,8 +30,8 @@ fun Month(
         month.weeks.forEach { week ->
             Week(
                 week = week,
+                dayStateList = dayStateList,
                 today = today,
-                stickers = stickers,
                 onDayClick = onDayClick
             )
         }

@@ -59,14 +59,14 @@ fun CalendarScreen(
                             .align(Alignment.CenterHorizontally),
                         state = state,
                     ) { month ->
-                        val stickers by viewModel.getStickers(month.yearMonth)
-                            .collectAsState(mapOf())
+                        val dayStateList by viewModel.getDayStateList(month.yearMonth)
+                            .collectAsState(DayStateList.empty())
                         Month(
                             month = month,
+                            dayStateList = dayStateList,
                             today = today,
-                            modifier = Modifier.fillMaxHeight(),
-                            stickers = stickers,
                             onDayClick = onDayClick,
+                            modifier = Modifier.fillMaxHeight()
                         )
                     }
                 }

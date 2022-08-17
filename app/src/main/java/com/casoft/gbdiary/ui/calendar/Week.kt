@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.casoft.gbdiary.model.Sticker
 import org.threeten.bp.LocalDate
 
 data class Week(val days: List<Day>)
@@ -12,8 +11,8 @@ data class Week(val days: List<Day>)
 @Composable
 fun Week(
     week: Week,
+    dayStateList: DayStateList,
     today: LocalDate,
-    stickers: Map<LocalDate, Sticker?>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -25,7 +24,7 @@ fun Week(
             Day(
                 day = day,
                 today = today,
-                sticker = stickers[day.date],
+                state = dayStateList[day.date],
                 onClick = onDayClick
             )
         }

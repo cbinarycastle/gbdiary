@@ -1,10 +1,8 @@
 package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
@@ -13,8 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
@@ -29,7 +29,7 @@ data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 fun RowScope.Day(
     day: Day,
     today: LocalDate,
-    sticker: Sticker?,
+    state: DayState?,
     onClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -39,7 +39,7 @@ fun RowScope.Day(
             .aspectRatio(1f)
     ) {
         if (day.inCurrentMonth) {
-            if (sticker == null) {
+            if (state?.sticker == null) {
                 if (day.date == today) {
                     TodayMarker(Modifier.alignTopToCenterOfParent())
                 }
@@ -56,8 +56,18 @@ fun RowScope.Day(
                         ),
                     style = GBDiaryTheme.typography.caption
                 )
+                if (state != null) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 8.dp, end = 8.dp)
+                            .size(4.dp)
+                            .align(Alignment.TopEnd)
+                            .clip(CircleShape)
+                            .background(GBDiaryTheme.colors.onBackground)
+                    )
+                }
             } else {
-                Sticker(sticker)
+                Sticker(state.sticker)
             }
 
             if (day.date <= today) {
