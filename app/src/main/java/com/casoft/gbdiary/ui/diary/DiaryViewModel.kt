@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.di.ApplicationScope
 import com.casoft.gbdiary.domain.GetDiaryItemUseCase
+import com.casoft.gbdiary.domain.GetTextAlignUseCase
 import com.casoft.gbdiary.domain.SaveDiaryItemUseCase
-import com.casoft.gbdiary.model.LocalImage
-import com.casoft.gbdiary.model.Result
-import com.casoft.gbdiary.model.Sticker
-import com.casoft.gbdiary.model.data
+import com.casoft.gbdiary.domain.SetTextAlignUseCase
+import com.casoft.gbdiary.model.*
 import com.casoft.gbdiary.ui.extension.toFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +25,8 @@ const val MAX_STICKERS = 4
 class DiaryViewModel @Inject constructor(
     private val getDiaryItemUseCase: GetDiaryItemUseCase,
     private val saveDiaryItemUseCase: SaveDiaryItemUseCase,
+    getTextAlignUseCase: GetTextAlignUseCase,
+    private val setTextAlignUseCase: SetTextAlignUseCase,
     @ApplicationScope private val applicationScope: CoroutineScope,
 ) : ViewModel() {
 
@@ -75,6 +76,14 @@ class DiaryViewModel @Inject constructor(
         initialValue = false
     )
 
+    val textAlign = getTextAlignUseCase(Unit)
+        .map { it.successOr(TextAlign.LEFT) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = TextAlign.LEFT
+        )
+
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
@@ -105,6 +114,12 @@ class DiaryViewModel @Inject constructor(
         _images.value = _images.value.filterIndexed { i, _ -> i != index }
     }
 
+    fun toggleTextAlign() {
+        viewModelScope.launch {
+            setTextAlignUseCase(textAlign.value.toggleSelect())
+        }
+    }
+
     fun saveDiary(shouldShowMessage: Boolean = true) {
         if (isValidToSave.value.not()) {
             return
@@ -128,5 +143,13 @@ class DiaryViewModel @Inject constructor(
                 }
             }
         }
+    }
+}
+
+private fun TextAlign.toggleSelect(): TextAlign {
+    return if (this == TextAlign.LEFT) {
+        TextAlign.CENTER
+    } else {
+        TextAlign.LEFT
     }
 }

@@ -66,6 +66,7 @@ dependencies {
 
     implementation(Libs.AndroidX.APPCOMPAT)
     implementation(Libs.AndroidX.CORE_KTX)
+    implementation(Libs.AndroidX.DATASTORE_PREFERENCES)
     implementation(Libs.AndroidX.Activity.ACTIVITY_KTX)
 
     implementation(Libs.AndroidX.Compose.MATERIAL)

@@ -85,10 +85,10 @@ fun DiaryScreen(
     val content by viewModel.content.collectAsState()
     val images by viewModel.images.collectAsState()
     val isValidToSave by viewModel.isValidToSave.collectAsState()
+    val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var textAlign by remember { mutableStateOf(TextAlign.Start) }
     var permissionDeniedDialogVisible by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
@@ -209,7 +209,7 @@ fun DiaryScreen(
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
                     },
-                    onAlignClick = { textAlign = textAlign.toggleSelect() },
+                    onAlignClick = { viewModel.toggleTextAlign() },
                     onDoneClick = {
                         keyboardController?.hide()
                         viewModel.saveDiary()
@@ -482,7 +482,7 @@ private fun SuggestionBar(
             Spacer(Modifier.width(8.dp))
             SuggestionBarIcon(onClick = onAlignClick) {
                 when (textAlign) {
-                    TextAlign.Start -> {
+                    TextAlign.Left -> {
                         Icon(
                             painter = painterResource(R.drawable.align_left),
                             contentDescription = "왼쪽 정렬"
@@ -705,10 +705,9 @@ private fun PermissionDeniedDialog(
     )
 }
 
-private fun TextAlign.toggleSelect(): TextAlign {
-    return if (this == TextAlign.Start) {
-        TextAlign.Center
-    } else {
-        TextAlign.Start
+private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
+    return when (this) {
+        com.casoft.gbdiary.model.TextAlign.LEFT -> TextAlign.Left
+        com.casoft.gbdiary.model.TextAlign.CENTER -> TextAlign.Center
     }
 }

@@ -14,6 +14,7 @@ object Libs {
     object AndroidX {
         const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.2"
         const val CORE_KTX = "androidx.core:core-ktx:1.8.0"
+        const val DATASTORE_PREFERENCES = "androidx.datastore:datastore-preferences:1.0.0"
 
         object Activity {
             const val ACTIVITY_COMPOSE = "androidx.activity:activity-compose:1.5.0"
