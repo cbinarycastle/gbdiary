@@ -87,15 +87,17 @@ fun DiaryScreen(
     val isValidToSave by viewModel.isValidToSave.collectAsState()
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
+    var bottomSheetType by remember { mutableStateOf(BottomSheetType.STICKER_SELECTION) }
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var permissionDeniedDialogVisible by remember { mutableStateOf(false) }
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
             onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
         } else {
-            permissionDeniedDialogVisible = true
+            showPermissionDeniedDialog = true
         }
     }
 
@@ -117,13 +119,23 @@ fun DiaryScreen(
 
     ModalBottomSheetLayout(
         sheetContent = {
-            StickerSelectionBottomSheet(
-                date = date,
-                onStickerSelected = {
-                    viewModel.addSticker(it)
-                    coroutineScope.launch { bottomSheetState.hide() }
-                }
-            )
+            when (bottomSheetType) {
+                BottomSheetType.STICKER_SELECTION -> StickerSelectionBottomSheet(
+                    date = date,
+                    onStickerSelected = {
+                        viewModel.addSticker(it)
+                        coroutineScope.launch { bottomSheetState.hide() }
+                    }
+                )
+                BottomSheetType.MORE -> MoreBottomSheet(
+                    onDelete = {
+                        coroutineScope.launch {
+                            bottomSheetState.hide()
+                            showConfirmDeleteDialog = true
+                        }
+                    }
+                )
+            }
         },
         sheetState = bottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
@@ -143,7 +155,12 @@ fun DiaryScreen(
                         viewModel.saveDiary(shouldShowMessage = false)
                         onBack()
                     },
-                    onMoreClick = { /*TODO*/ },
+                    onMoreClick = {
+                        coroutineScope.launch {
+                            bottomSheetType = BottomSheetType.MORE
+                            bottomSheetState.show()
+                        }
+                    },
                     moreButtonVisible = existingDiary != null
                 )
                 Column(
@@ -158,7 +175,10 @@ fun DiaryScreen(
                     if (stickers.size < MAX_STICKERS) {
                         AddStickerButton(
                             onClick = {
-                                coroutineScope.launch { bottomSheetState.show() }
+                                coroutineScope.launch {
+                                    bottomSheetType = BottomSheetType.STICKER_SELECTION
+                                    bottomSheetState.show()
+                                }
                             }
                         )
                     } else {
@@ -235,13 +255,24 @@ fun DiaryScreen(
                     .align(Alignment.TopCenter)
             )
 
-            if (permissionDeniedDialogVisible) {
+            if (showPermissionDeniedDialog) {
                 PermissionDeniedDialog(
                     onConfirm = {
-                        permissionDeniedDialogVisible = false
+                        showPermissionDeniedDialog = false
                         context.navigateToAppSettings()
                     },
-                    onDismiss = { permissionDeniedDialogVisible = false }
+                    onDismiss = { showPermissionDeniedDialog = false }
+                )
+            }
+
+            if (showConfirmDeleteDialog) {
+                ConfirmDeleteDialog(
+                    onConfirm = {
+                        showConfirmDeleteDialog = false
+                        viewModel.deleteDiary()
+                        onBack()
+                    },
+                    onDismiss = { showConfirmDeleteDialog = false }
                 )
             }
         }
@@ -687,6 +718,33 @@ private fun SelectableStickers(onClick: (Sticker) -> Unit) {
 }
 
 @Composable
+private fun MoreBottomSheet(onDelete: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .navigationBarsPadding()
+            .padding(top = 24.dp, bottom = 48.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(43.dp)
+                .clickable { onDelete() }
+                .padding(horizontal = 24.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.delete),
+                contentDescription = "삭제"
+            )
+            Text(
+                text = "삭제",
+                style = GBDiaryTheme.typography.subtitle1
+            )
+        }
+    }
+}
+
+@Composable
 private fun PermissionDeniedDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
@@ -694,13 +752,22 @@ private fun PermissionDeniedDialog(
     GBDiaryDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
-        message = {
-            Text(
-                text = "사진 업로드를 위한 접근 권한 변경이 필요합니다.",
-                textAlign = TextAlign.Center
-            )
-        },
+        message = { Text("사진 업로드를 위한 접근 권한 변경이 필요합니다.") },
         confirmText = { Text("설정") },
+        dismissText = { Text("취소") }
+    )
+}
+
+@Composable
+private fun ConfirmDeleteDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    GBDiaryDialog(
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        message = { Text("정말로 일기를 삭제할까요?") },
+        confirmText = { Text("삭제") },
         dismissText = { Text("취소") }
     )
 }
@@ -710,4 +777,8 @@ private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
         com.casoft.gbdiary.model.TextAlign.LEFT -> TextAlign.Left
         com.casoft.gbdiary.model.TextAlign.CENTER -> TextAlign.Center
     }
+}
+
+private enum class BottomSheetType {
+    STICKER_SELECTION, MORE
 }

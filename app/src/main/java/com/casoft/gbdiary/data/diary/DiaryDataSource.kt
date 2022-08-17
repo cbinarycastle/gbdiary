@@ -15,7 +15,9 @@ interface DiaryDataSource {
 
     fun getNotSyncedDiaryItems(): List<DiaryItemEntity>
 
-    suspend fun save(diaryItem: DiaryItem)
+    suspend fun save(item: DiaryItem)
+
+    suspend fun deleteDiaryitem(item: DiaryItem)
 
     fun deleteAllAndInsertAll(items: List<DiaryItemEntity>)
 }

@@ -3,10 +3,7 @@ package com.casoft.gbdiary.ui.diary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.di.ApplicationScope
-import com.casoft.gbdiary.domain.GetDiaryItemUseCase
-import com.casoft.gbdiary.domain.GetTextAlignUseCase
-import com.casoft.gbdiary.domain.SaveDiaryItemUseCase
-import com.casoft.gbdiary.domain.SetTextAlignUseCase
+import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.*
 import com.casoft.gbdiary.ui.extension.toFile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +22,7 @@ const val MAX_STICKERS = 4
 class DiaryViewModel @Inject constructor(
     private val getDiaryItemUseCase: GetDiaryItemUseCase,
     private val saveDiaryItemUseCase: SaveDiaryItemUseCase,
+    private val deleteDiaryItemUseCase: DeleteDiaryItemUseCase,
     getTextAlignUseCase: GetTextAlignUseCase,
     private val setTextAlignUseCase: SetTextAlignUseCase,
     @ApplicationScope private val applicationScope: CoroutineScope,
@@ -141,6 +139,14 @@ class DiaryViewModel @Inject constructor(
                     is Result.Error -> _message.emit("저장 도중 오류가 발생했습니다.")
                     Result.Loading -> {}
                 }
+            }
+        }
+    }
+
+    fun deleteDiary() {
+        existingDiary.value?.let {
+            viewModelScope.launch {
+                deleteDiaryItemUseCase(it)
             }
         }
     }

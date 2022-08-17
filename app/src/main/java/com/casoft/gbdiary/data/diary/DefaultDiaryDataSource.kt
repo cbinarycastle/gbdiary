@@ -27,8 +27,12 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataS
         return diaryItemDao.getNotSynced()
     }
 
-    override suspend fun save(diaryItem: DiaryItem) {
-        diaryItemDao.insertOrUpdate(diaryItem.toDiaryItemEntity())
+    override suspend fun save(item: DiaryItem) {
+        diaryItemDao.insertOrUpdate(item.toDiaryItemEntity())
+    }
+
+    override suspend fun deleteDiaryitem(item: DiaryItem) {
+        diaryItemDao.delete(item.toDiaryItemEntity())
     }
 
     override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
