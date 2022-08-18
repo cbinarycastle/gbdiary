@@ -37,7 +37,6 @@ import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.*
 import com.casoft.gbdiary.ui.AppBarHeight
 import com.casoft.gbdiary.ui.GBDiaryAppBar
-import com.casoft.gbdiary.ui.GBDiaryDialog
 import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings
@@ -46,6 +45,7 @@ import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
 import com.casoft.gbdiary.util.toast
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
@@ -59,25 +59,21 @@ private val AddStickerButtonSize = 32.dp
 private val SelectedStickerSize = 64.dp
 private val SuggestionBarHeight = 44.dp
 
-@OptIn(
-    ExperimentalComposeUiApi::class,
-    ExperimentalMaterialApi::class,
-)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DiaryScreen(
     viewModel: DiaryViewModel,
     savedStateHandle: SavedStateHandle?,
     onAlbumClick: (Int) -> Unit,
     onBack: () -> Unit,
-) {
-    val coroutineScope = rememberCoroutineScope()
-    val bottomSheetState = rememberModalBottomSheetState(
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
-    )
-    val scrollState = rememberScrollState()
+    ),
+    scrollState: ScrollState = rememberScrollState(),
+) {
     val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     val date by viewModel.date.collectAsState()
     val existingDiary by viewModel.existingDiary.collectAsState()
@@ -87,22 +83,7 @@ fun DiaryScreen(
     val isValidToSave by viewModel.isValidToSave.collectAsState()
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
-    var bottomSheetType by remember { mutableStateOf(BottomSheetType.STICKER_SELECTION) }
-    var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
-
-    val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
-        if (granted) {
-            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
-        } else {
-            showPermissionDeniedDialog = true
-        }
-    }
-
     BackHandler {
-        viewModel.saveDiary(shouldShowMessage = false)
         onBack()
     }
 
@@ -117,17 +98,86 @@ fun DiaryScreen(
         }
     }
 
+    DiaryScreen(
+        date = date,
+        existsDiary = existingDiary != null,
+        stickers = stickers,
+        content = content,
+        images = images,
+        isValidToSave = isValidToSave,
+        textAlign = textAlign,
+        onStickerSelected = {
+            viewModel.addSticker(it)
+            coroutineScope.launch { bottomSheetState.hide() }
+        },
+        onRemoveSticker = { index -> viewModel.removeSticker(index) },
+        onContentChange = { viewModel.inputText(it) },
+        onRemoveImage = { index -> viewModel.removeImage(index) },
+        onAlbumClick = onAlbumClick,
+        onAlignClick = { viewModel.toggleTextAlign() },
+        onDoneClick = { viewModel.saveDiary() },
+        onDeleteDiary = {
+            viewModel.deleteDiary()
+            onBack()
+        },
+        onBack = {
+            viewModel.saveDiary(shouldShowMessage = false)
+            onBack()
+        },
+        coroutineScope = coroutineScope,
+        bottomSheetState = bottomSheetState,
+        scrollState = scrollState,
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@Composable
+private fun DiaryScreen(
+    date: LocalDate,
+    existsDiary: Boolean,
+    stickers: List<Sticker>,
+    content: String,
+    images: List<File>,
+    isValidToSave: Boolean,
+    textAlign: TextAlign,
+    onStickerSelected: (Sticker) -> Unit,
+    onRemoveSticker: (Int) -> Unit,
+    onContentChange: (String) -> Unit,
+    onRemoveImage: (Int) -> Unit,
+    onAlbumClick: (Int) -> Unit,
+    onAlignClick: () -> Unit,
+    onDoneClick: () -> Unit,
+    onDeleteDiary: () -> Unit,
+    onBack: () -> Unit,
+    coroutineScope: CoroutineScope,
+    bottomSheetState: ModalBottomSheetState,
+    scrollState: ScrollState,
+) {
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    var diaryBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER_SELECTION) }
+    var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
+    var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
+        if (granted) {
+            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
+        } else {
+            showPermissionDeniedDialog = true
+        }
+    }
+
     ModalBottomSheetLayout(
         sheetContent = {
-            when (bottomSheetType) {
-                BottomSheetType.STICKER_SELECTION -> StickerSelectionBottomSheet(
+            when (diaryBottomSheet) {
+                DiaryBottomSheet.STICKER_SELECTION -> StickerSelectionBottomSheet(
                     date = date,
-                    onStickerSelected = {
-                        viewModel.addSticker(it)
-                        coroutineScope.launch { bottomSheetState.hide() }
-                    }
+                    onStickerSelected = onStickerSelected
                 )
-                BottomSheetType.MORE -> MoreBottomSheet(
+                DiaryBottomSheet.MORE -> MoreBottomSheet(
                     onDelete = {
                         coroutineScope.launch {
                             bottomSheetState.hide()
@@ -152,16 +202,15 @@ fun DiaryScreen(
             Column(Modifier.fillMaxSize()) {
                 AppBar(
                     onBack = {
-                        viewModel.saveDiary(shouldShowMessage = false)
                         onBack()
                     },
                     onMoreClick = {
                         coroutineScope.launch {
-                            bottomSheetType = BottomSheetType.MORE
+                            diaryBottomSheet = DiaryBottomSheet.MORE
                             bottomSheetState.show()
                         }
                     },
-                    moreButtonVisible = existingDiary != null
+                    moreButtonVisible = existsDiary
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -176,7 +225,7 @@ fun DiaryScreen(
                         AddStickerButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    bottomSheetType = BottomSheetType.STICKER_SELECTION
+                                    diaryBottomSheet = DiaryBottomSheet.STICKER_SELECTION
                                     bottomSheetState.show()
                                 }
                             }
@@ -199,7 +248,7 @@ fun DiaryScreen(
                         TextInput(
                             text = content,
                             textAlign = textAlign,
-                            onValueChange = { viewModel.inputText(it) }
+                            onValueChange = onContentChange
                         )
                     }
                     if (images.isNotEmpty()) {
@@ -210,7 +259,7 @@ fun DiaryScreen(
                             onImageLongPress = { index -> visibleRemoveImageButtonIndex = index },
                             onCancelRemove = { visibleRemoveImageButtonIndex = null },
                             onRemove = { index ->
-                                viewModel.removeImage(index)
+                                onRemoveImage(index)
                                 visibleRemoveImageButtonIndex = null
                             }
                         )
@@ -229,10 +278,10 @@ fun DiaryScreen(
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }
                     },
-                    onAlignClick = { viewModel.toggleTextAlign() },
+                    onAlignClick = onAlignClick,
                     onDoneClick = {
                         keyboardController?.hide()
-                        viewModel.saveDiary()
+                        onDoneClick()
                     },
                     textAlign = textAlign,
                     doneButtonVisible = isValidToSave
@@ -248,7 +297,7 @@ fun DiaryScreen(
                 visibleIndex = visibleRemoveStickerButtonIndex,
                 onClick = { index ->
                     visibleRemoveStickerButtonIndex = null
-                    viewModel.removeSticker(index)
+                    onRemoveSticker(index)
                 },
                 modifier = Modifier
                     .padding(top = 176.dp)
@@ -269,8 +318,7 @@ fun DiaryScreen(
                 ConfirmDeleteDialog(
                     onConfirm = {
                         showConfirmDeleteDialog = false
-                        viewModel.deleteDiary()
-                        onBack()
+                        onDeleteDiary()
                     },
                     onDismiss = { showConfirmDeleteDialog = false }
                 )
@@ -744,34 +792,6 @@ private fun MoreBottomSheet(onDelete: () -> Unit) {
     }
 }
 
-@Composable
-private fun PermissionDeniedDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    GBDiaryDialog(
-        onConfirm = onConfirm,
-        onDismiss = onDismiss,
-        message = { Text("사진 업로드를 위한 접근 권한 변경이 필요합니다.") },
-        confirmText = { Text("설정") },
-        dismissText = { Text("취소") }
-    )
-}
-
-@Composable
-private fun ConfirmDeleteDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    GBDiaryDialog(
-        onConfirm = onConfirm,
-        onDismiss = onDismiss,
-        message = { Text("정말로 일기를 삭제할까요?") },
-        confirmText = { Text("삭제") },
-        dismissText = { Text("취소") }
-    )
-}
-
 private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
     return when (this) {
         com.casoft.gbdiary.model.TextAlign.LEFT -> TextAlign.Left
@@ -779,6 +799,6 @@ private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
     }
 }
 
-private enum class BottomSheetType {
+private enum class DiaryBottomSheet {
     STICKER_SELECTION, MORE
 }
