@@ -1,6 +1,5 @@
 package com.casoft.gbdiary.ui
 
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -21,8 +20,6 @@ fun DiaryApp() {
             )
         }
 
-        Surface(color = GBDiaryTheme.colors.background) {
-            GBDiaryNavGraph()
-        }
+        GBDiaryNavGraph()
     }
 }

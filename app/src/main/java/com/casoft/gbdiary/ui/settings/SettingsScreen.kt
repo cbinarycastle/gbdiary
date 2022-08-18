@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.settings
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.GBDiaryAppBar
@@ -154,5 +156,14 @@ private fun SettingsItem(
             )
         }
         widget()
+    }
+}
+
+@Preview(name = "Settings screen")
+@Preview(name = "Settings screen (dark)", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun SettingsScreenPreview() {
+    GBDiaryTheme {
+        SettingsScreen(onBack = {})
     }
 }

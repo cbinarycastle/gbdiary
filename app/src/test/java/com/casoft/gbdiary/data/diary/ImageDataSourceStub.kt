@@ -11,9 +11,9 @@ class ImageDataSourceStub : ImageDataSource {
         get() = _files.toList()
 
     override suspend fun getLocalImages(): List<LocalImage> = listOf(
-        LocalImage(1),
-        LocalImage(2),
-        LocalImage(3),
+        LocalImage(id = 1, path = ""),
+        LocalImage(id = 2, path = ""),
+        LocalImage(id = 3, path = ""),
     )
 
     override fun getImageFile(fileName: String): File {

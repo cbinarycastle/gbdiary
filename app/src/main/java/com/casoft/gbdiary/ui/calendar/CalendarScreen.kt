@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.calendar
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -10,12 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.TextStyle
@@ -23,7 +27,6 @@ import java.util.*
 
 internal val HorizontalSpaceBetweenCells = 3.dp
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel,
@@ -34,6 +37,26 @@ fun CalendarScreen(
     val state = rememberCalendarState()
     val today = LocalDate.now()
 
+    CalendarScreen(
+        state = state,
+        today = today,
+        getDayStateList = { yearMonth -> viewModel.getDayStateList(yearMonth) },
+        onDayClick = onDayClick,
+        onSettingsClick = onSettingsClick,
+        onWriteClick = onWriteClick
+    )
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun CalendarScreen(
+    state: CalendarState,
+    today: LocalDate,
+    getDayStateList: (YearMonth) -> Flow<DayStateList>,
+    onDayClick: (LocalDate) -> Unit,
+    onSettingsClick: () -> Unit,
+    onWriteClick: (LocalDate) -> Unit,
+) {
     Box(
         modifier = Modifier
             .statusBarsPadding()
@@ -59,7 +82,7 @@ fun CalendarScreen(
                             .align(Alignment.CenterHorizontally),
                         state = state,
                     ) { month ->
-                        val dayStateList by viewModel.getDayStateList(month.yearMonth)
+                        val dayStateList by getDayStateList(month.yearMonth)
                             .collectAsState(DayStateList.empty())
                         Month(
                             month = month,
@@ -163,6 +186,22 @@ private fun WriteButton(
         Icon(
             painter = painterResource(R.drawable.edit),
             contentDescription = "작성"
+        )
+    }
+}
+
+@Preview(name = "Calendar screen")
+@Preview(name = "Calendar screen (dark)", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun CalendarScreenPreview() {
+    GBDiaryTheme {
+        CalendarScreen(
+            state = rememberCalendarState(initialYearMonth = YearMonth.of(2022, 1)),
+            today = LocalDate.of(2022, 1, 1),
+            getDayStateList = { flowOf(DayStateList.empty()) },
+            onDayClick = {},
+            onSettingsClick = {},
+            onWriteClick = {}
         )
     }
 }

@@ -1,8 +1,11 @@
 package com.casoft.gbdiary.data.diary
 
+import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
+import com.casoft.gbdiary.model.toDiaryItemEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
 class DiaryDataSourceStub : DiaryDataSource {
@@ -17,8 +20,21 @@ class DiaryDataSourceStub : DiaryDataSource {
         diaryItems.filter { YearMonth.of(it.date.year, it.date.month) == yearMonth }
     }
 
+    override fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity> = flow {
+        diaryItems.first { it.date.toLocalDate() == date }
+    }
+
     override fun getNotSyncedDiaryItems(): List<DiaryItemEntity> {
         return diaryItems.filter { it.isSync.not() }
+    }
+
+    override suspend fun save(item: DiaryItem) {
+        deleteDiaryitem(item)
+        _diaryItems.add(item.toDiaryItemEntity())
+    }
+
+    override suspend fun deleteDiaryitem(item: DiaryItem) {
+        _diaryItems.removeAll { it.date.toLocalDate() == item.date }
     }
 
     override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {

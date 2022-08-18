@@ -60,7 +60,9 @@ fun GBDiaryTheme(
             LocalGBDiaryColors provides gbDiaryColors,
             LocalContentColor provides contentColorFor(colors.background)
         ) {
-            content()
+            Surface(color = colors.background) {
+                content()
+            }
         }
     }
 }

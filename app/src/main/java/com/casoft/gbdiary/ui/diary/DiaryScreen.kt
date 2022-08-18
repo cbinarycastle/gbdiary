@@ -2,6 +2,7 @@ package com.casoft.gbdiary.ui.diary
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
@@ -48,6 +50,7 @@ import com.casoft.gbdiary.util.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 
@@ -789,6 +792,36 @@ private fun MoreBottomSheet(onDelete: () -> Unit) {
                 style = GBDiaryTheme.typography.subtitle1
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Preview(name = "Diary screen")
+@Preview(name = "Diary screen (dark)", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun DiaryScreenPreview() {
+    GBDiaryTheme {
+        DiaryScreen(
+            date = LocalDate.now(ZoneOffset.UTC),
+            existsDiary = true,
+            stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
+            content = "내용",
+            images = listOf(),
+            isValidToSave = false,
+            textAlign = TextAlign.Left,
+            onStickerSelected = {},
+            onRemoveSticker = {},
+            onContentChange = {},
+            onRemoveImage = {},
+            onAlbumClick = {},
+            onAlignClick = {},
+            onDoneClick = {},
+            onDeleteDiary = {},
+            onBack = {},
+            coroutineScope = rememberCoroutineScope(),
+            bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
+            scrollState = rememberScrollState()
+        )
     }
 }
 

@@ -18,7 +18,7 @@ data class DiaryItemEntity(
 )
 
 fun DiaryItemEntity.toDiaryItem() = DiaryItem(
-    date = date.let { LocalDate.of(it.year, it.month, it.dayOfMonth) },
+    date = date.toLocalDate(),
     stickers = stickers,
     content = contents,
     images = images
@@ -29,3 +29,5 @@ data class Date(
     val month: Int,
     val dayOfMonth: Int,
 )
+
+fun Date.toLocalDate() = LocalDate.of(year, month, dayOfMonth)
