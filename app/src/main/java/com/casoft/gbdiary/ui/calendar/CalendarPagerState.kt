@@ -27,12 +27,22 @@ class CalendarPagerState constructor(
     init {
         snapshotFlow { calendarState.currentYearMonth }
             .distinctUntilChanged()
-            .onEach { pagerState.scrollToPage(getPageFromYearMonth(it)) }
+            .onEach {
+                val newPage = getPageFromYearMonth(it)
+                if (pagerState.currentPage != newPage) {
+                    pagerState.scrollToPage(newPage)
+                }
+            }
             .launchIn(coroutineScope)
 
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
-            .onEach { calendarState.currentYearMonth = getYearMonthByPage(page = it) }
+            .onEach {
+                val newYearMonth = getYearMonthByPage(page = it)
+                if (calendarState.currentYearMonth != newYearMonth) {
+                    calendarState.currentYearMonth = newYearMonth
+                }
+            }
             .launchIn(coroutineScope)
     }
 
