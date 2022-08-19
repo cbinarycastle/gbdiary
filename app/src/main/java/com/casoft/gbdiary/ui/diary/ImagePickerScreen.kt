@@ -121,10 +121,7 @@ private fun AppBar(
                     contentColor = GBDiaryTheme.colors.onBackground
                 )
             ) {
-                Text(
-                    text = "선택 $selectionCount",
-                    style = GBDiaryTheme.typography.subtitle1
-                )
+                Text("선택 $selectionCount")
             }
         }
     }

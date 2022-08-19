@@ -67,6 +67,7 @@ private val SuggestionBarHeight = 44.dp
 fun DiaryScreen(
     viewModel: DiaryViewModel,
     savedStateHandle: SavedStateHandle?,
+    onImageClick: (Int) -> Unit,
     onAlbumClick: (Int) -> Unit,
     onBack: () -> Unit,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
@@ -116,6 +117,7 @@ fun DiaryScreen(
         onRemoveSticker = { index -> viewModel.removeSticker(index) },
         onContentChange = { viewModel.inputText(it) },
         onRemoveImage = { index -> viewModel.removeImage(index) },
+        onImageClick = onImageClick,
         onAlbumClick = onAlbumClick,
         onAlignClick = { viewModel.toggleTextAlign() },
         onDoneClick = { viewModel.saveDiary() },
@@ -147,6 +149,7 @@ private fun DiaryScreen(
     onRemoveSticker: (Int) -> Unit,
     onContentChange: (String) -> Unit,
     onRemoveImage: (Int) -> Unit,
+    onImageClick: (Int) -> Unit,
     onAlbumClick: (Int) -> Unit,
     onAlignClick: () -> Unit,
     onDoneClick: () -> Unit,
@@ -259,6 +262,7 @@ private fun DiaryScreen(
                         SelectedImages(
                             images = images,
                             visibleRemoveButtonIndex = visibleRemoveImageButtonIndex,
+                            onImageClick = { index -> onImageClick(index) },
                             onImageLongPress = { index -> visibleRemoveImageButtonIndex = index },
                             onCancelRemove = { visibleRemoveImageButtonIndex = null },
                             onRemove = { index ->
@@ -463,6 +467,7 @@ private fun TextInput(
 private fun SelectedImages(
     images: List<File>,
     visibleRemoveButtonIndex: Int?,
+    onImageClick: (Int) -> Unit,
     onImageLongPress: (Int) -> Unit,
     onCancelRemove: () -> Unit,
     onRemove: (Int) -> Unit,
@@ -476,6 +481,7 @@ private fun SelectedImages(
             SelectedImage(
                 image = image,
                 removeButtonVisible = index == visibleRemoveButtonIndex,
+                onClick = { onImageClick(index) },
                 onLongPress = { onImageLongPress(index) },
                 onCancelRemove = onCancelRemove,
                 onRemove = { onRemove(index) }
@@ -488,6 +494,7 @@ private fun SelectedImages(
 private fun SelectedImage(
     image: File,
     removeButtonVisible: Boolean,
+    onClick: () -> Unit,
     onLongPress: () -> Unit,
     onCancelRemove: () -> Unit,
     onRemove: () -> Unit,
@@ -505,7 +512,10 @@ private fun SelectedImage(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectTapGestures(onLongPress = { onLongPress() })
+                    detectTapGestures(
+                        onLongPress = { onLongPress() },
+                        onTap = { onClick() }
+                    )
                 }
         )
         AnimatedVisibility(
@@ -813,6 +823,7 @@ fun DiaryScreenPreview() {
             onRemoveSticker = {},
             onContentChange = {},
             onRemoveImage = {},
+            onImageClick = {},
             onAlbumClick = {},
             onAlignClick = {},
             onDoneClick = {},

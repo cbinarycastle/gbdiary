@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.casoft.gbdiary.model.LocalImage
 import org.threeten.bp.LocalDate
+import java.io.File
 
 object DiaryDestinations {
     const val HOME_ROUTE = "diary/home"
@@ -18,6 +19,9 @@ object DiaryDestinations {
     const val HOME_DAY_OF_MONTH_KEY = "dayOfMonth"
     const val IMAGE_PICKER_ROUTE = "diary/image/select"
     const val IMAGE_PICKER_MAX_SELECTION_COUNT_KEY = "maxSelectionCount"
+    const val IMAGE_VIEWER_ROUTE = "diary/image/view"
+    const val IMAGE_VIEWER_INITIAL_PAGE_KEY = "initialPage"
+    const val IMAGE_VIEWER_IMAGES_KEY = "images"
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -29,8 +33,8 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
             navArgument(DiaryDestinations.HOME_MONTH_KEY) { type = NavType.IntType },
             navArgument(DiaryDestinations.HOME_DAY_OF_MONTH_KEY) { type = NavType.IntType },
         )
-    ) {
-        val arguments = requireNotNull(it.arguments)
+    ) { backStackEntry ->
+        val arguments = requireNotNull(backStackEntry.arguments)
         val year = arguments.getInt(DiaryDestinations.HOME_YEAR_KEY)
         val month = arguments.getInt(DiaryDestinations.HOME_MONTH_KEY)
         val dayOfMonth = arguments.getInt(DiaryDestinations.HOME_DAY_OF_MONTH_KEY)
@@ -39,10 +43,16 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         DiaryScreen(
             viewModel = diaryViewModel,
             savedStateHandle = actions.savedStateHandle,
-            onBack = { actions.navigateUp() },
+            onImageClick = { index ->
+                actions.navigateToImageViewer(
+                    images = diaryViewModel.images.value,
+                    initialPage = index
+                )
+            },
             onAlbumClick = { maxSelectionCount ->
                 actions.navigateToImagePicker(maxSelectionCount)
-            }
+            },
+            onBack = { actions.navigateUp() }
         )
     }
     composable(
@@ -52,8 +62,8 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
                 type = NavType.IntType
             }
         )
-    ) {
-        val arguments = requireNotNull(it.arguments)
+    ) { backStackEntry ->
+        val arguments = requireNotNull(backStackEntry.arguments)
         val maxSelectionCount = arguments.getInt(
             DiaryDestinations.IMAGE_PICKER_MAX_SELECTION_COUNT_KEY
         )
@@ -68,12 +78,35 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
             onClose = { actions.navigateUp() }
         )
     }
+    composable(
+        route = "${DiaryDestinations.IMAGE_VIEWER_ROUTE}/{${DiaryDestinations.IMAGE_VIEWER_INITIAL_PAGE_KEY}}",
+        arguments = listOf(
+            navArgument(DiaryDestinations.IMAGE_VIEWER_INITIAL_PAGE_KEY) {
+                type = NavType.IntType
+            }
+        )
+    ) { backStackEntry ->
+        val arguments = requireNotNull(backStackEntry.arguments)
+        val initialPage = arguments.getInt(DiaryDestinations.IMAGE_VIEWER_INITIAL_PAGE_KEY)
+        val images = actions.getImagesForViewer()
+        ImageViewerScreen(
+            images = images,
+            initialPage = initialPage,
+            onClose = { actions.navigateUp() }
+        )
+    }
 }
 
 class DiaryActions(private val navController: NavController) {
 
     val savedStateHandle: SavedStateHandle?
         get() = navController.currentBackStackEntry?.savedStateHandle
+
+    val images: List<File>
+        get() = navController.previousBackStackEntry
+            ?.savedStateHandle
+            ?.get(DiaryDestinations.IMAGE_VIEWER_IMAGES_KEY)
+            ?: listOf()
 
     fun navigateToImagePicker(maxSelectionCount: Int) {
         navController.navigate(
@@ -85,6 +118,21 @@ class DiaryActions(private val navController: NavController) {
         navController.previousBackStackEntry
             ?.savedStateHandle
             ?.set(SELECTED_IMAGE_URIS_RESULT_KEY, images)
+    }
+
+    fun navigateToImageViewer(images: List<File>, initialPage: Int) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.set(DiaryDestinations.IMAGE_VIEWER_IMAGES_KEY, images)
+
+        navController.navigate("${DiaryDestinations.IMAGE_VIEWER_ROUTE}/$initialPage")
+    }
+
+    fun getImagesForViewer(): List<File> {
+        return navController.previousBackStackEntry
+            ?.savedStateHandle
+            ?.get(DiaryDestinations.IMAGE_VIEWER_IMAGES_KEY)
+            ?: listOf()
     }
 
     fun navigateUp() {
