@@ -676,7 +676,7 @@ private fun StickerSelectionBottomSheet(
     date: LocalDate,
     onStickerSelected: (Sticker) -> Unit,
 ) {
-    var selectedType by remember { mutableStateOf(StickerType.MOOD) }
+    var selectedStickerType by remember { mutableStateOf(StickerType.MOOD) }
 
     BoxWithConstraints {
         Column(
@@ -704,17 +704,20 @@ private fun StickerSelectionBottomSheet(
             Row {
                 StickerTypeTab(
                     text = StickerType.MOOD.text,
-                    selected = selectedType == StickerType.MOOD,
-                    onClick = { selectedType = StickerType.MOOD }
+                    selected = selectedStickerType == StickerType.MOOD,
+                    onClick = { selectedStickerType = StickerType.MOOD }
                 )
                 StickerTypeTab(
                     text = StickerType.DAILY.text,
-                    selected = selectedType == StickerType.DAILY,
-                    onClick = { selectedType = StickerType.DAILY }
+                    selected = selectedStickerType == StickerType.DAILY,
+                    onClick = { selectedStickerType = StickerType.DAILY }
                 )
             }
             Spacer(Modifier.height(24.dp))
-            SelectableStickers(onClick = onStickerSelected)
+            SelectableStickers(
+                stickerType = selectedStickerType,
+                onClick = onStickerSelected
+            )
         }
     }
 }
@@ -728,7 +731,7 @@ private fun StickerTypeTab(
     Box(
         modifier = Modifier
             .width(80.dp)
-            .height(IntrinsicSize.Min)
+            .height(27.dp)
             .clickable { onClick() }
     ) {
         if (selected) {
@@ -755,9 +758,14 @@ private fun StickerTypeTab(
 }
 
 @Composable
-private fun SelectableStickers(onClick: (Sticker) -> Unit) {
+private fun SelectableStickers(
+    stickerType: StickerType,
+    onClick: (Sticker) -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        Sticker.values().toList()
+        Sticker.values()
+            .filter { it.type == stickerType }
+            .toList()
             .chunked(NUMBER_OF_STICKERS_BY_ROW)
             .forEach { stickers ->
                 Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
