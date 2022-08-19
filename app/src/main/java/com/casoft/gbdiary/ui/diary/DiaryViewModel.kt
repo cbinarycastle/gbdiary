@@ -31,20 +31,36 @@ class DiaryViewModel @Inject constructor(
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     val date = _date.asStateFlow()
 
-    val existingDiary = _date.filterNotNull()
+    private val existingDiary = _date.filterNotNull()
         .flatMapLatest { getDiaryItemUseCase(it) }
-        .map { it.data ?: _message.emit("작성된 일기를 불러오지 못했습니다.").let { null } }
+        .map { result ->
+            when (result) {
+                is Result.Success -> result.data
+                is Result.Error -> {
+                    _message.emit("작성된 일기를 불러오지 못했습니다.")
+                    null
+                }
+                Result.Loading -> null
+            }
+        }
+        .onEach { diaryItem -> _existsDiary.value = diaryItem != null }
         .filterNotNull()
-        .onEach {
-            _stickers.value = it.stickers
-            _content.value = it.content
-            _images.value = it.images.map { filePath -> File(filePath) }
+        .onEach { diaryItem ->
+            _stickers.value = diaryItem.stickers
+            _content.value = diaryItem.content
+            _images.value = diaryItem.images.map { filePath -> File(filePath) }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    private val _existsDiary = MutableStateFlow<Boolean?>(null)
+    val existsDiary = _existsDiary.asStateFlow()
+
+    private val _initialStickerBottomSheetShown = MutableStateFlow(false)
+    val initialStickerBottomSheetShown = _initialStickerBottomSheetShown.asStateFlow()
 
     private val _stickers = MutableStateFlow<List<Sticker>>(emptyList())
     val stickers = _stickers.asStateFlow()
@@ -149,6 +165,10 @@ class DiaryViewModel @Inject constructor(
                 deleteDiaryItemUseCase(it)
             }
         }
+    }
+
+    fun onShowStickerBottomSheetInitially() {
+        _initialStickerBottomSheetShown.value = true
     }
 }
 

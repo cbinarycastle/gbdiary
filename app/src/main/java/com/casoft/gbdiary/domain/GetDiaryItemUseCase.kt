@@ -7,7 +7,6 @@ import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import org.threeten.bp.LocalDate
 import javax.inject.Inject
@@ -15,11 +14,10 @@ import javax.inject.Inject
 class GetDiaryItemUseCase @Inject constructor(
     private val diaryDataSource: DiaryDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
-) : FlowUseCase<LocalDate, DiaryItem>(ioDispatcher) {
+) : FlowUseCase<LocalDate, DiaryItem?>(ioDispatcher) {
 
-    override fun execute(params: LocalDate): Flow<Result<DiaryItem>> {
+    override fun execute(params: LocalDate): Flow<Result<DiaryItem?>> {
         return diaryDataSource.getDiaryItemsByDate(params)
-            .filterNotNull()
-            .map { Result.Success(it.toDiaryItem()) }
+            .map { Result.Success(it?.toDiaryItem()) }
     }
 }

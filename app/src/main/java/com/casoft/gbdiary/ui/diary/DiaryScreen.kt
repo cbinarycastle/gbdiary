@@ -80,7 +80,8 @@ fun DiaryScreen(
     val context = LocalContext.current
 
     val date by viewModel.date.collectAsState()
-    val existingDiary by viewModel.existingDiary.collectAsState()
+    val existsDiary by viewModel.existsDiary.collectAsState()
+    val initialStickerBottomSheetShown by viewModel.initialStickerBottomSheetShown.collectAsState()
     val stickers by viewModel.stickers.collectAsState()
     val content by viewModel.content.collectAsState()
     val images by viewModel.images.collectAsState()
@@ -105,23 +106,25 @@ fun DiaryScreen(
 
     DiaryScreen(
         date = date,
-        existsDiary = existingDiary != null,
+        existsDiary = existsDiary,
+        initialStickerBottomSheetShown = initialStickerBottomSheetShown,
         stickers = stickers,
         content = content,
         images = images,
         isValidToSave = isValidToSave,
         textAlign = textAlign,
+        onShowStickerBottomSheetInitially = viewModel::onShowStickerBottomSheetInitially,
         onStickerSelected = {
             viewModel.addSticker(it)
             coroutineScope.launch { bottomSheetState.hide() }
         },
-        onRemoveSticker = { index -> viewModel.removeSticker(index) },
-        onContentChange = { viewModel.inputText(it) },
-        onRemoveImage = { index -> viewModel.removeImage(index) },
+        onRemoveSticker = viewModel::removeSticker,
+        onContentChange = viewModel::inputText,
+        onRemoveImage = viewModel::removeImage,
         onImageClick = onImageClick,
         onAlbumClick = onAlbumClick,
-        onAlignClick = { viewModel.toggleTextAlign() },
-        onDoneClick = { viewModel.saveDiary() },
+        onAlignClick = viewModel::toggleTextAlign,
+        onDoneClick = viewModel::saveDiary,
         onDeleteDiary = {
             viewModel.deleteDiary()
             onBack()
@@ -140,12 +143,14 @@ fun DiaryScreen(
 @Composable
 private fun DiaryScreen(
     date: LocalDate,
-    existsDiary: Boolean,
+    existsDiary: Boolean?,
+    initialStickerBottomSheetShown: Boolean,
     stickers: List<Sticker>,
     content: String,
     images: List<File>,
     isValidToSave: Boolean,
     textAlign: TextAlign,
+    onShowStickerBottomSheetInitially: () -> Unit,
     onStickerSelected: (Sticker) -> Unit,
     onRemoveSticker: (Int) -> Unit,
     onContentChange: (String) -> Unit,
@@ -163,7 +168,7 @@ private fun DiaryScreen(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var diaryBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER_SELECTION) }
+    var visibleBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER) }
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
@@ -177,10 +182,18 @@ private fun DiaryScreen(
         }
     }
 
+    LaunchedEffect(existsDiary) {
+        if (existsDiary != null && existsDiary.not() && initialStickerBottomSheetShown.not()) {
+            visibleBottomSheet = DiaryBottomSheet.STICKER
+            bottomSheetState.show()
+            onShowStickerBottomSheetInitially()
+        }
+    }
+
     ModalBottomSheetLayout(
         sheetContent = {
-            when (diaryBottomSheet) {
-                DiaryBottomSheet.STICKER_SELECTION -> StickerSelectionBottomSheet(
+            when (visibleBottomSheet) {
+                DiaryBottomSheet.STICKER -> StickerBottomSheet(
                     date = date,
                     onStickerSelected = onStickerSelected
                 )
@@ -213,11 +226,11 @@ private fun DiaryScreen(
                     },
                     onMoreClick = {
                         coroutineScope.launch {
-                            diaryBottomSheet = DiaryBottomSheet.MORE
+                            visibleBottomSheet = DiaryBottomSheet.MORE
                             bottomSheetState.show()
                         }
                     },
-                    moreButtonVisible = existsDiary
+                    moreButtonVisible = existsDiary ?: false
                 )
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -232,7 +245,7 @@ private fun DiaryScreen(
                         AddStickerButton(
                             onClick = {
                                 coroutineScope.launch {
-                                    diaryBottomSheet = DiaryBottomSheet.STICKER_SELECTION
+                                    visibleBottomSheet = DiaryBottomSheet.STICKER
                                     bottomSheetState.show()
                                 }
                             }
@@ -673,7 +686,7 @@ private fun TouchBlock(onClick: () -> Unit) {
 }
 
 @Composable
-private fun StickerSelectionBottomSheet(
+private fun StickerBottomSheet(
     date: LocalDate,
     onStickerSelected: (Sticker) -> Unit,
 ) {
@@ -761,7 +774,7 @@ private fun StickerTypeTab(
 @Composable
 private fun SelectableStickers(
     stickerType: StickerType,
-    onClick: (Sticker) -> Unit
+    onClick: (Sticker) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Sticker.values()
@@ -823,11 +836,13 @@ fun DiaryScreenPreview() {
         DiaryScreen(
             date = LocalDate.now(ZoneOffset.UTC),
             existsDiary = true,
+            initialStickerBottomSheetShown = false,
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
             content = "내용",
             images = listOf(),
             isValidToSave = false,
             textAlign = TextAlign.Left,
+            onShowStickerBottomSheetInitially = {},
             onStickerSelected = {},
             onRemoveSticker = {},
             onContentChange = {},
@@ -853,5 +868,5 @@ private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
 }
 
 private enum class DiaryBottomSheet {
-    STICKER_SELECTION, MORE
+    STICKER, MORE
 }
