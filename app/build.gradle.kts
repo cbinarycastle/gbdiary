@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     id("dagger.hilt.android.plugin")
 }
 
@@ -94,6 +96,10 @@ dependencies {
     implementation(Libs.GoogleDrive.HTTP_CLIENT)
     implementation(Libs.GoogleDrive.API_CLIENT)
     implementation(Libs.GoogleDrive.DRIVE)
+
+    implementation(platform(Libs.Firebase.BOM))
+    implementation(Libs.Firebase.ANALYTICS)
+    implementation(Libs.Firebase.CRASHLYTICS)
 
     implementation(Libs.Hilt.ANDROID)
     kapt(Libs.Hilt.COMPILER)

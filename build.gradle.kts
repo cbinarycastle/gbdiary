@@ -9,6 +9,7 @@ buildscript {
         classpath(Plugins.ANDROID_GRADLE_PLUGIN)
         classpath(Plugins.KOTLIN)
         classpath(Plugins.GOOGLE_SERVICES)
+        classpath(Plugins.FIREBASE_CRASHLYTICS)
         classpath(Plugins.HILT_AGP)
     }
 }

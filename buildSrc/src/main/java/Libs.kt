@@ -61,6 +61,12 @@ object Libs {
         const val TEST = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$VERSION"
     }
 
+    object Firebase {
+        const val BOM = "com.google.firebase:firebase-bom:30.3.2"
+        const val ANALYTICS = "com.google.firebase:firebase-analytics-ktx"
+        const val CRASHLYTICS = "com.google.firebase:firebase-crashlytics-ktx"
+    }
+
     object GooglePlayServices {
         const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
     }
@@ -96,7 +102,8 @@ object Libs {
 
 object Plugins {
     const val ANDROID_GRADLE_PLUGIN = "com.android.tools.build:gradle:7.2.1"
-    const val GOOGLE_SERVICES = "com.google.gms:google-services:4.3.12"
+    const val FIREBASE_CRASHLYTICS = "com.google.firebase:firebase-crashlytics-gradle:2.9.1"
+    const val GOOGLE_SERVICES = "com.google.gms:google-services:4.3.13"
     const val HILT_AGP = "com.google.dagger:hilt-android-gradle-plugin:2.42"
     const val KOTLIN = "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0"
 }
