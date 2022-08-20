@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.diary
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
@@ -10,9 +11,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -76,5 +79,17 @@ private fun AppBar(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "Image viewer screen")
+@Preview(name = "Image viewer screen (dark)", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ImageViewerScreenPreview() {
+    GBDiaryTheme {
+        ImageViewerScreen(
+            images = listOf(),
+            onClose = {}
+        )
     }
 }

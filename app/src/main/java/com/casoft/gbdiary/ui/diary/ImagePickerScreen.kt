@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.diary
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -18,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.ui.Message
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
+import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.rememberAlertDialogState
 import com.casoft.gbdiary.ui.extension.toContentUri
@@ -39,11 +42,11 @@ fun ImagePickerScreen(
     onFinishSelect: (List<LocalImage>) -> Unit,
     onClose: () -> Unit,
 ) {
+    val alertDialogState = rememberAlertDialogState()
     val context = LocalContext.current
 
     val images by viewModel.images.collectAsState()
     val numberOfSelectedImages by viewModel.numberOfSelectedImages.collectAsState()
-    val alertDialogState = rememberAlertDialogState()
 
     LaunchedEffect(viewModel) {
         viewModel.message.collect {
@@ -58,6 +61,25 @@ fun ImagePickerScreen(
         viewModel.maxSelectionCount = maxSelectionCount
     }
 
+    ImagePickerScreen(
+        alertDialogState = alertDialogState,
+        images = images,
+        numberOfSelectedImages = numberOfSelectedImages,
+        onImageSelect = { viewModel.selectImage(it) },
+        onFinishSelect = onFinishSelect,
+        onClose = onClose
+    )
+}
+
+@Composable
+private fun ImagePickerScreen(
+    alertDialogState: AlertDialogState,
+    images: List<List<ImageUiState>>,
+    numberOfSelectedImages: Int,
+    onImageSelect: (ImageUiState) -> Unit,
+    onFinishSelect: (List<LocalImage>) -> Unit,
+    onClose: () -> Unit,
+) {
     AlertDialogLayout(state = alertDialogState) {
         Column(
             modifier = Modifier
@@ -91,7 +113,7 @@ fun ImagePickerScreen(
                                 SelectableImage(
                                     uri = image.localImage.toContentUri(),
                                     selected = image.selected,
-                                    onClick = { viewModel.selectImage(image) },
+                                    onClick = { onImageSelect(image) },
                                     modifier = Modifier
                                         .weight(1f)
                                         .aspectRatio(1f)
@@ -171,5 +193,21 @@ private fun SelectableImage(
                 )
             }
         }
+    }
+}
+
+@Preview(name = "Image picker screen")
+@Preview(name = "Image picker screen (dark)", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ImagePickerScreenPreview() {
+    GBDiaryTheme {
+        ImagePickerScreen(
+            alertDialogState = rememberAlertDialogState(),
+            images = listOf(),
+            numberOfSelectedImages = 0,
+            onImageSelect = {},
+            onFinishSelect = {},
+            onClose = {}
+        )
     }
 }
