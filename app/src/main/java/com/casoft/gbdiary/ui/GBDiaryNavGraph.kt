@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.casoft.gbdiary.ui.MainDestinations.BACKUP_ROUTE
-import com.casoft.gbdiary.ui.MainDestinations.CALENDAR_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.DIARY_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.HOME_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SETTINGS_ROUTE
@@ -38,13 +37,6 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
         startDestination = HOME_ROUTE,
     ) {
         composable(HOME_ROUTE) {
-            HomeScreen(
-                navigateToCalendar = { actions.navigateToCalendar() },
-                navigateToSignIn = { actions.navigateToSignIn() },
-                navigateToBackup = { actions.navigateToBackup() }
-            )
-        }
-        composable(CALENDAR_ROUTE) {
             val calendarViewModel = hiltViewModel<CalendarViewModel>()
             CalendarScreen(
                 viewModel = calendarViewModel,
@@ -80,17 +72,12 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
 object MainDestinations {
     const val HOME_ROUTE = "home"
     const val DIARY_ROUTE = "diary"
-    const val CALENDAR_ROUTE = "calendar"
     const val SETTINGS_ROUTE = "settings"
     const val SIGN_IN_ROUTE = "signIn"
     const val BACKUP_ROUTE = "backup"
 }
 
 class MainActions(private val navController: NavHostController) {
-
-    fun navigateToCalendar() {
-        navController.navigate(CALENDAR_ROUTE)
-    }
 
     fun navigateToDiary(date: LocalDate) {
         navController.navigate(
