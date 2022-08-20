@@ -14,6 +14,8 @@ class CalendarViewModel @Inject constructor(
     private val getDiaryItemsUseCase: GetDiaryItemsUseCase,
 ) : ViewModel() {
 
+    var currentYearMonth: YearMonth = YearMonth.now()
+
     fun getDayStateList(yearMonth: YearMonth): Flow<DayStateList> {
         return getDiaryItemsUseCase(yearMonth)
             .map { result ->

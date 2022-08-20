@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,9 +34,12 @@ fun CalendarScreen(
     onDayClick: (LocalDate) -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
+    state: CalendarState = rememberCalendarState(),
+    today: LocalDate = LocalDate.now(),
 ) {
-    val state = rememberCalendarState()
-    val today = LocalDate.now()
+    LaunchedEffect(state.currentYearMonth) {
+        viewModel.currentYearMonth = state.currentYearMonth
+    }
 
     CalendarScreen(
         state = state,

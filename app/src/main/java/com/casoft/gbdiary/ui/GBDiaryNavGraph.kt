@@ -18,6 +18,7 @@ import com.casoft.gbdiary.ui.backup.BackupScreen
 import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
 import com.casoft.gbdiary.ui.calendar.CalendarViewModel
+import com.casoft.gbdiary.ui.calendar.rememberCalendarState
 import com.casoft.gbdiary.ui.diary.DiaryActions
 import com.casoft.gbdiary.ui.diary.DiaryDestinations
 import com.casoft.gbdiary.ui.diary.diaryNavGraph
@@ -49,7 +50,8 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
                 viewModel = calendarViewModel,
                 onDayClick = { actions.navigateToDiary(date = it) },
                 onSettingsClick = { actions.navigateToSettings() },
-                onWriteClick = { actions.navigateToDiary(date = it) }
+                onWriteClick = { actions.navigateToDiary(date = it) },
+                state = rememberCalendarState(calendarViewModel.currentYearMonth)
             )
         }
         navigation(
