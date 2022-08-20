@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.*
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -6,6 +9,9 @@ plugins {
     id("com.google.firebase.crashlytics")
     id("dagger.hilt.android.plugin")
 }
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply { load(FileInputStream(keystorePropertiesFile)) }
 
 android {
     compileSdk = Versions.COMPILE_SDK
@@ -17,6 +23,15 @@ android {
         versionCode = Versions.VERSION_CODE
         versionName = Versions.VERSION_NAME
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storePassword = keystoreProperties["storePassword"] as? String
+            keyAlias = keystoreProperties["keyAlias"] as? String
+            keyPassword = keystoreProperties["keyPassword"] as? String
+        }
     }
 
     buildTypes {
@@ -60,6 +75,10 @@ android {
     buildFeatures {
         compose = true
     }
+
+    lint {
+        disable.add("DuplicatePlatformClasses")
+    }
 }
 
 dependencies {
@@ -94,8 +113,12 @@ dependencies {
     implementation(Libs.GooglePlayServices.AUTH)
 
     implementation(Libs.GoogleDrive.HTTP_CLIENT)
-    implementation(Libs.GoogleDrive.API_CLIENT)
-    implementation(Libs.GoogleDrive.DRIVE)
+    implementation(Libs.GoogleDrive.API_CLIENT) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+    implementation(Libs.GoogleDrive.DRIVE) {
+        exclude(group = "org.apache.httpcomponents")
+    }
 
     implementation(platform(Libs.Firebase.BOM))
     implementation(Libs.Firebase.ANALYTICS)
