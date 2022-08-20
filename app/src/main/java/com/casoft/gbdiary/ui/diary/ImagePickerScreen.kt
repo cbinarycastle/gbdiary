@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +22,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.LocalImage
-import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.Message
+import com.casoft.gbdiary.ui.components.AlertDialogLayout
+import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.rememberAlertDialogState
 import com.casoft.gbdiary.ui.extension.toContentUri
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.toast
@@ -30,65 +36,67 @@ const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
 fun ImagePickerScreen(
     viewModel: ImagePickerViewModel,
     maxSelectionCount: Int,
-    onSelect: (List<LocalImage>) -> Unit,
+    onFinishSelect: (List<LocalImage>) -> Unit,
     onClose: () -> Unit,
 ) {
-    val state = rememberImagePickerState(viewModel)
     val context = LocalContext.current
-    val images by state.images.collectAsState()
-    var numberOfSelectedImages by remember { mutableStateOf(0) }
+
+    val images by viewModel.images.collectAsState()
+    val numberOfSelectedImages by viewModel.numberOfSelectedImages.collectAsState()
+    val alertDialogState = rememberAlertDialogState()
 
     LaunchedEffect(viewModel) {
         viewModel.message.collect {
-            context.toast(it)
+            when (it) {
+                is Message.ToastMessage -> context.toast(it.text)
+                is Message.AlertDialogMessage -> alertDialogState.message = it
+            }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding()
-    ) {
-        AppBar(
-            selectionCount = numberOfSelectedImages,
-            onSelect = {
-                onSelect(
-                    images.flatten()
-                        .filter { image -> image.selected }
-                        .map { image -> image.localImage }
-                )
-            },
-            onClose = onClose
-        )
-        LazyColumn(Modifier.fillMaxSize()) {
-            items(images) { row ->
-                Row {
-                    repeat(NUMBER_OF_IMAGES_BY_ROW) { index ->
-                        val image = row.getOrNull(index)
-                        if (image == null) {
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f)
-                            )
-                        } else {
-                            SelectableImage(
-                                uri = image.localImage.toContentUri(),
-                                selected = image.selected,
-                                onClick = {
-                                    if (image.selected || numberOfSelectedImages < maxSelectionCount) {
-                                        image.toggleSelect()
-                                        if (image.selected) {
-                                            numberOfSelectedImages++
-                                        } else {
-                                            numberOfSelectedImages--
-                                        }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f)
-                            )
+    LaunchedEffect(maxSelectionCount) {
+        viewModel.maxSelectionCount = maxSelectionCount
+    }
+
+    AlertDialogLayout(state = alertDialogState) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            AppBar(
+                selectionCount = numberOfSelectedImages,
+                onSelect = {
+                    onFinishSelect(
+                        images.flatten()
+                            .filter { image -> image.selected }
+                            .map { image -> image.localImage }
+                    )
+                },
+                onClose = onClose
+            )
+            LazyColumn(Modifier.weight(1f)) {
+                items(images) { row ->
+                    Row {
+                        repeat(NUMBER_OF_IMAGES_BY_ROW) { index ->
+                            val image = row.getOrNull(index)
+                            if (image == null) {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                )
+                            } else {
+                                SelectableImage(
+                                    uri = image.localImage.toContentUri(),
+                                    selected = image.selected,
+                                    onClick = { viewModel.selectImage(image) },
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                )
+                            }
                         }
                     }
                 }

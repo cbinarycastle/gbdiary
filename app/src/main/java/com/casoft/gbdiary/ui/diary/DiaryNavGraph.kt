@@ -71,7 +71,7 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         ImagePickerScreen(
             viewModel = imagePickerViewModel,
             maxSelectionCount = maxSelectionCount,
-            onSelect = { images ->
+            onFinishSelect = { images ->
                 actions.setSelectedImages(images)
                 actions.navigateUp()
             },

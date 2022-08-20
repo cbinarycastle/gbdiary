@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi

@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui
+package com.casoft.gbdiary.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,8 +18,8 @@ fun GBDiaryDialog(
     onDismiss: () -> Unit,
     message: @Composable () -> Unit,
     confirmText: @Composable () -> Unit,
-    dismissText: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    dismissText: (@Composable () -> Unit)? = null,
 ) {
     val borderColor = GBDiaryTheme.colors.onSurface
 
@@ -39,19 +39,21 @@ fun GBDiaryDialog(
                     message()
                 }
                 Row {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { onDismiss() }
-                            .border(
-                                color = borderColor,
-                                top = 1.dp,
-                                alpha = 0.05f
-                            )
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        dismissText()
+                    if (dismissText != null) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { onDismiss() }
+                                .border(
+                                    color = borderColor,
+                                    top = 1.dp,
+                                    alpha = 0.05f
+                                )
+                                .padding(horizontal = 24.dp, vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            dismissText()
+                        }
                     }
                     Box(
                         modifier = Modifier

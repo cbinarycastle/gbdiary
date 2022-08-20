@@ -2,7 +2,7 @@ package com.casoft.gbdiary.ui.diary
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import com.casoft.gbdiary.ui.GBDiaryDialog
+import com.casoft.gbdiary.ui.components.GBDiaryDialog
 
 @Composable
 fun PermissionDeniedDialog(

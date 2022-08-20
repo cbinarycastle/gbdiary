@@ -37,8 +37,8 @@ import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.*
-import com.casoft.gbdiary.ui.AppBarHeight
-import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.AppBarHeight
+import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings

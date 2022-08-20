@@ -12,7 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.ui.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
