@@ -89,8 +89,14 @@ fun DiaryScreen(
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
     BackHandler {
-        viewModel.saveDiary(shouldShowMessage = false)
-        onBack()
+        if (bottomSheetState.isVisible) {
+            coroutineScope.launch {
+                bottomSheetState.hide()
+            }
+        } else {
+            viewModel.saveDiary(shouldShowMessage = false)
+            onBack()
+        }
     }
 
     savedStateHandle?.CollectOnce<List<LocalImage>>(
