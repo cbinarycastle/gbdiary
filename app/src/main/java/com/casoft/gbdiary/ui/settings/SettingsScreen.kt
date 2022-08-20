@@ -23,7 +23,12 @@ private val HorizontalPadding = 24.dp
 
 @Composable
 fun SettingsScreen(onBack: () -> Unit) {
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+    ) {
         AppBar(onBack = onBack)
         Spacer(Modifier.height(16.dp))
         Column(Modifier.fillMaxWidth()) {
