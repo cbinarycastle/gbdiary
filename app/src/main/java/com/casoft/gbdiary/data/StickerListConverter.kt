@@ -2,6 +2,7 @@ package com.casoft.gbdiary.data
 
 import androidx.room.TypeConverter
 import com.casoft.gbdiary.model.Sticker
+import com.casoft.gbdiary.model.sticker
 import com.google.gson.Gson
 
 class StickerListConverter {
@@ -9,9 +10,14 @@ class StickerListConverter {
     private val gson = Gson()
 
     @TypeConverter
-    fun fromString(value: String): List<Sticker> =
-        gson.fromJson(value, Array<Sticker>::class.java).toList()
+    fun fromString(value: String): List<Sticker> {
+        return gson.fromJson(value, Array<Int>::class.java)
+            .map { it.sticker }
+    }
 
     @TypeConverter
-    fun toString(stickers: List<Sticker>): String = gson.toJson(stickers)
+    fun toString(stickers: List<Sticker>): String {
+        return stickers.map { it.value }
+            .let { gson.toJson(it) }
+    }
 }

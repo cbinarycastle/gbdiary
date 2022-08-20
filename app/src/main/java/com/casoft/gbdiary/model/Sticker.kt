@@ -2,43 +2,47 @@ package com.casoft.gbdiary.model
 
 import com.casoft.gbdiary.R
 
-enum class Sticker(val type: StickerType) {
-    SMILE(StickerType.MOOD),
-    HAPPINESS(StickerType.MOOD),
-    HOPEFUL(StickerType.MOOD),
-    SATISFACTION(StickerType.MOOD),
-    JOY(StickerType.MOOD),
-    SADNESS(StickerType.MOOD),
-    PANIC(StickerType.MOOD),
-    SLEEPINESS(StickerType.MOOD),
-    ANGER(StickerType.MOOD),
-    DEPRESSION(StickerType.MOOD),
-    UNPLEASANT(StickerType.MOOD),
-    IMPASSIVE(StickerType.MOOD),
-    SICK(StickerType.MOOD),
-    CONFUSION(StickerType.MOOD),
-    TIRED(StickerType.MOOD),
-    BEER(StickerType.DAILY),
-    COFFEE(StickerType.DAILY),
-    MEAL(StickerType.DAILY),
-    SUNNY(StickerType.DAILY),
-    AVOCADO(StickerType.DAILY),
-    WORK(StickerType.DAILY),
-    RAINY(StickerType.DAILY),
-    HOME(StickerType.DAILY),
-    NETFLIX(StickerType.DAILY),
-    DESSERT(StickerType.DAILY),
-    BIRTHDAY_CAKE(StickerType.DAILY),
-    MOVIE(StickerType.DAILY),
-    MEDICINE(StickerType.DAILY),
-    CLOUDY(StickerType.DAILY),
-    PLANT(StickerType.DAILY),
+enum class Sticker(val value: Int, val type: StickerType) {
+
+    SMILE(1, StickerType.MOOD),
+    HAPPINESS(2, StickerType.MOOD),
+    HOPEFUL(3, StickerType.MOOD),
+    SATISFACTION(4, StickerType.MOOD),
+    JOY(5, StickerType.MOOD),
+    SADNESS(6, StickerType.MOOD),
+    PANIC(7, StickerType.MOOD),
+    SLEEPINESS(8, StickerType.MOOD),
+    ANGER(9, StickerType.MOOD),
+    DEPRESSION(10, StickerType.MOOD),
+    UNPLEASANT(11, StickerType.MOOD),
+    IMPASSIVE(12, StickerType.MOOD),
+    SICK(13, StickerType.MOOD),
+    CONFUSION(14, StickerType.MOOD),
+    TIRED(15, StickerType.MOOD),
+    BEER(16, StickerType.DAILY),
+    COFFEE(17, StickerType.DAILY),
+    MEAL(18, StickerType.DAILY),
+    SUNNY(19, StickerType.DAILY),
+    AVOCADO(20, StickerType.DAILY),
+    WORK(21, StickerType.DAILY),
+    RAINY(22, StickerType.DAILY),
+    HOME(23, StickerType.DAILY),
+    NETFLIX(24, StickerType.DAILY),
+    DESSERT(25, StickerType.DAILY),
+    BIRTHDAY_CAKE(26, StickerType.DAILY),
+    MOVIE(27, StickerType.DAILY),
+    MEDICINE(28, StickerType.DAILY),
+    CLOUDY(29, StickerType.DAILY),
+    PLANT(30, StickerType.DAILY);
 }
 
 enum class StickerType(val text: String) {
     MOOD("기분"),
     DAILY("일상"),
 }
+
+val Int.sticker: Sticker
+    get() = Sticker.values().first { it.value == this }
 
 val Sticker.imageResId
     get() = when (this) {
