@@ -176,21 +176,24 @@ private fun MonthHeader(yearMonth: YearMonth) {
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun TodayButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Button(
+    Surface(
         onClick = onClick,
-        modifier = modifier,
         shape = CircleShape,
-        contentPadding = PaddingValues(horizontal = 14.dp)
+        elevation = 1.dp,
+        modifier = modifier
     ) {
-        Text(
-            text = "오늘",
-            style = GBDiaryTheme.typography.body2
-        )
+        Box(Modifier.padding(horizontal = 14.dp, vertical = 8.dp)) {
+            Text(
+                text = "오늘",
+                style = GBDiaryTheme.typography.body2
+            )
+        }
     }
 }
 
