@@ -30,6 +30,7 @@ internal val HorizontalSpaceBetweenCells = 3.dp
 fun CalendarScreen(
     viewModel: CalendarViewModel,
     onDayClick: (LocalDate) -> Unit,
+    onTimelineClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
     state: CalendarState = rememberCalendarState(),
@@ -44,6 +45,7 @@ fun CalendarScreen(
         today = today,
         getDayStateList = { yearMonth -> viewModel.getDayStateList(yearMonth) },
         onDayClick = onDayClick,
+        onTimelineClick = onTimelineClick,
         onSettingsClick = onSettingsClick,
         onWriteClick = onWriteClick
     )
@@ -56,6 +58,7 @@ private fun CalendarScreen(
     today: LocalDate,
     getDayStateList: (YearMonth) -> Flow<DayStateList>,
     onDayClick: (LocalDate) -> Unit,
+    onTimelineClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
 ) {
@@ -68,6 +71,7 @@ private fun CalendarScreen(
     ) {
         Column(Modifier.fillMaxSize()) {
             AppBar(
+                onTimelineClick = onTimelineClick,
                 onSettingsClick = onSettingsClick,
                 onCalendarClick = { showMonthPickerDialog = true }
             )
@@ -132,6 +136,7 @@ private fun CalendarScreen(
 
 @Composable
 private fun AppBar(
+    onTimelineClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onCalendarClick: () -> Unit,
 ) {
@@ -141,7 +146,7 @@ private fun AppBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onTimelineClick) {
                     Icon(
                         painter = painterResource(R.drawable.timeline),
                         contentDescription = "타임라인"
@@ -223,6 +228,7 @@ private fun CalendarScreenPreview() {
             state = rememberCalendarState(initialYearMonth = YearMonth.of(2022, 1)),
             today = LocalDate.of(2022, 1, 1),
             getDayStateList = { flowOf(DayStateList.empty()) },
+            onTimelineClick = {},
             onDayClick = {},
             onSettingsClick = {},
             onWriteClick = {}

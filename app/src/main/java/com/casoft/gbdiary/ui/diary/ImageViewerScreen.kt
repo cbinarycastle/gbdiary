@@ -68,7 +68,7 @@ fun ImageViewerScreen(
             ) { page ->
                 val image = images[page]
                 Image(
-                    painter = rememberAsyncImagePainter(model = image),
+                    painter = rememberAsyncImagePainter(image),
                     contentDescription = "이미지 ${page + 1}",
                     modifier = Modifier.fillMaxWidth()
                 )

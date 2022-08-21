@@ -13,6 +13,7 @@ import com.casoft.gbdiary.ui.MainDestinations.DIARY_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.HOME_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SETTINGS_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SIGN_IN_ROUTE
+import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_ROUTE
 import com.casoft.gbdiary.ui.backup.BackupScreen
 import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
@@ -25,6 +26,8 @@ import com.casoft.gbdiary.ui.settings.SettingsDestination
 import com.casoft.gbdiary.ui.settings.settingsNavGraph
 import com.casoft.gbdiary.ui.signin.SignInScreen
 import com.casoft.gbdiary.ui.signin.SignInViewModel
+import com.casoft.gbdiary.ui.timeline.TimelineScreen
+import com.casoft.gbdiary.ui.timeline.TimelineViewModel
 import org.threeten.bp.LocalDate
 
 @Composable
@@ -40,9 +43,10 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             val calendarViewModel = hiltViewModel<CalendarViewModel>()
             CalendarScreen(
                 viewModel = calendarViewModel,
-                onDayClick = { actions.navigateToDiary(date = it) },
-                onSettingsClick = { actions.navigateToSettings() },
-                onWriteClick = { actions.navigateToDiary(date = it) },
+                onDayClick = actions::navigateToDiary,
+                onTimelineClick = actions::navigateToTimeline,
+                onSettingsClick = actions::navigateToSettings,
+                onWriteClick = actions::navigateToDiary,
                 state = rememberCalendarState(calendarViewModel.currentYearMonth)
             )
         }
@@ -52,11 +56,18 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
         ) {
             diaryNavGraph(diaryActions)
         }
+        composable(TIMELINE_ROUTE) {
+            val timelineViewModel = hiltViewModel<TimelineViewModel>()
+            TimelineScreen(
+                viewModel = timelineViewModel,
+                onBack = actions::navigateUp
+            )
+        }
         navigation(
             route = SETTINGS_ROUTE,
             startDestination = SettingsDestination.HOME_ROUTE
         ) {
-            settingsNavGraph(onBack = { actions.navigateUp() })
+            settingsNavGraph(onBack = actions::navigateUp)
         }
         composable(SIGN_IN_ROUTE) {
             val signInViewModel = hiltViewModel<SignInViewModel>()
@@ -72,6 +83,7 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
 object MainDestinations {
     const val HOME_ROUTE = "home"
     const val DIARY_ROUTE = "diary"
+    const val TIMELINE_ROUTE = "timeline"
     const val SETTINGS_ROUTE = "settings"
     const val SIGN_IN_ROUTE = "signIn"
     const val BACKUP_ROUTE = "backup"
@@ -83,6 +95,10 @@ class MainActions(private val navController: NavHostController) {
         navController.navigate(
             "${DiaryDestinations.HOME_ROUTE}/${date.year}/${date.monthValue}/${date.dayOfMonth}"
         )
+    }
+
+    fun navigateToTimeline() {
+        navController.navigate(TIMELINE_ROUTE)
     }
 
     fun navigateToSettings() {

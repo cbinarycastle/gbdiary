@@ -526,7 +526,7 @@ private fun SelectedImage(
             .aspectRatio(1f)
     ) {
         Image(
-            painter = rememberAsyncImagePainter(model = image),
+            painter = rememberAsyncImagePainter(image),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
