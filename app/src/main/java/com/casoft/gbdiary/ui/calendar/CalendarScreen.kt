@@ -4,10 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -61,13 +59,18 @@ private fun CalendarScreen(
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
 ) {
+    var showMonthPickerDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
         Column(Modifier.fillMaxSize()) {
-            AppBar(onSettingsClick = onSettingsClick)
+            AppBar(
+                onSettingsClick = onSettingsClick,
+                onCalendarClick = { showMonthPickerDialog = true }
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -113,11 +116,25 @@ private fun CalendarScreen(
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 34.dp)
         )
+        if (showMonthPickerDialog) {
+            MonthPickerDialog(
+                initialYear = state.currentYearMonth.year,
+                today = today.yearMonth,
+                onSelect = { yearMonth ->
+                    showMonthPickerDialog = false
+                    state.currentYearMonth = yearMonth
+                },
+                onDismiss = { showMonthPickerDialog = false }
+            )
+        }
     }
 }
 
 @Composable
-private fun AppBar(onSettingsClick: () -> Unit) {
+private fun AppBar(
+    onSettingsClick: () -> Unit,
+    onCalendarClick: () -> Unit,
+) {
     GBDiaryAppBar {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -130,10 +147,10 @@ private fun AppBar(onSettingsClick: () -> Unit) {
                         contentDescription = "타임라인"
                     )
                 }
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onCalendarClick) {
                     Icon(
                         painter = painterResource(R.drawable.calendar),
-                        contentDescription = "캘린더"
+                        contentDescription = "월 이동"
                     )
                 }
             }

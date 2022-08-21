@@ -11,7 +11,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,6 +43,7 @@ import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
+import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
 import com.casoft.gbdiary.util.toast
@@ -548,10 +548,7 @@ private fun SelectedImage(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(GBDiaryTheme.gbDiaryColors.dimmingOverlay)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { onCancelRemove() }
+                    .noRippleClickable { onCancelRemove() }
             ) {
                 RemoveButton(onClick = onRemove)
             }
@@ -683,11 +680,7 @@ private fun TouchBlock(onClick: () -> Unit) {
     Spacer(
         modifier = Modifier
             .fillMaxSize()
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null,
-                onClick = onClick
-            )
+            .noRippleClickable { onClick() }
     )
 }
 
@@ -795,10 +788,7 @@ private fun SelectableStickers(
                             contentDescription = sticker.name,
                             modifier = Modifier
                                 .size(72.dp)
-                                .clickable(
-                                    interactionSource = MutableInteractionSource(),
-                                    indication = null
-                                ) { onClick(sticker) }
+                                .noRippleClickable { onClick(sticker) }
                         )
                     }
                 }

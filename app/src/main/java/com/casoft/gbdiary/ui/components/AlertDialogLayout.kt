@@ -17,7 +17,7 @@ fun AlertDialogLayout(
     Box(modifier.fillMaxSize()) {
         content()
         state.message?.let { message ->
-            GBDiaryDialog(
+            GBDiaryAlertDialog(
                 onConfirm = onConfirm,
                 onDismiss = onDismiss,
                 message = { Text(message.text) },

@@ -13,7 +13,7 @@ import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 
 @Composable
-fun GBDiaryDialog(
+fun GBDiaryAlertDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     message: @Composable () -> Unit,

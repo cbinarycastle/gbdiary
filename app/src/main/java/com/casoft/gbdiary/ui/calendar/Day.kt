@@ -4,23 +4,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
-import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
-import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
+import com.casoft.gbdiary.ui.components.DateBox
+import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.ui.theme.markerPainter
 import org.threeten.bp.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
@@ -40,21 +33,12 @@ fun RowScope.Day(
     ) {
         if (day.inCurrentMonth) {
             if (state?.sticker == null) {
-                if (day.date == today) {
-                    TodayMarker(Modifier.alignTopToCenterOfParent())
-                }
-                Text(
+                DateBox(
                     text = day.date.dayOfMonth.toString(),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .then(
-                            if (day.date > today) {
-                                Modifier.alpha(GBDiaryContentAlpha.disabled)
-                            } else {
-                                Modifier
-                            }
-                        ),
-                    style = GBDiaryTheme.typography.caption
+                    onClick = { onClick(day.date) },
+                    enabled = day.date <= today,
+                    isToday = day.date == today,
+                    modifier = Modifier.fillMaxSize()
                 )
                 if (state != null) {
                     Box(
@@ -67,47 +51,13 @@ fun RowScope.Day(
                     )
                 }
             } else {
-                Sticker(state.sticker)
-            }
-
-            if (day.date <= today) {
-                ClickableArea(
-                    onClick = { onClick(day.date) },
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(Modifier.noRippleClickable { onClick(day.date) }) {
+                    Image(
+                        painter = painterResource(state.sticker.imageResId),
+                        contentDescription = state.sticker.name
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-private fun TodayMarker(modifier: Modifier = Modifier) {
-    Image(
-        painter = markerPainter(),
-        contentDescription = "오늘",
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun Sticker(sticker: Sticker) {
-    Image(
-        painter = painterResource(sticker.imageResId),
-        contentDescription = sticker.name
-    )
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun ClickableArea(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        onClick = onClick,
-        modifier = modifier,
-        shape = CircleShape,
-        color = Color.Transparent,
-        content = {}
-    )
 }
