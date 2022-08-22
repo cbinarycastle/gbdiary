@@ -56,28 +56,41 @@ private fun TimelineScreen(
     onNextMonth: () -> Unit,
     onBack: () -> Unit,
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        AppBar(
-            yearMonth = yearMonth,
-            onBack = onBack,
-            onBefore = onBeforeMonth,
-            onNext = onNextMonth
-        )
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
         ) {
-            items(diaryItems) { item ->
-                DiaryCard(
-                    item = item,
-                    modifier = Modifier.fillMaxWidth()
-                )
+            AppBar(
+                yearMonth = yearMonth,
+                onBack = onBack,
+                onBefore = onBeforeMonth,
+                onNext = onNextMonth
+            )
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(diaryItems) { item ->
+                    DiaryCard(
+                        item = item,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
+        }
+        if (diaryItems.isEmpty()) {
+            Text(
+                text = "작성된 일기가 없어요",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .alpha(0.3f)
+            )
         }
     }
 }
