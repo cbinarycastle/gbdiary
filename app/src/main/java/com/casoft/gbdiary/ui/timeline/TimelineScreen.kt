@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.DiaryItem
+import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -72,7 +73,7 @@ private fun TimelineScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             items(diaryItems) { item ->
-                DiaryItem(
+                DiaryCard(
                     item = item,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -119,7 +120,7 @@ private fun AppBar(
 }
 
 @Composable
-private fun DiaryItem(
+private fun DiaryCard(
     item: DiaryItem,
     modifier: Modifier = Modifier,
 ) {
@@ -136,18 +137,10 @@ private fun DiaryItem(
         ) {
             Column(Modifier.fillMaxWidth()) {
                 if (item.stickers.isNotEmpty()) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    Stickers(
+                        stickers = item.stickers,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        item.stickers.forEach { sticker ->
-                            Image(
-                                painter = painterResource(sticker.imageResId),
-                                contentDescription = sticker.name,
-                                modifier = Modifier.size(64.dp)
-                            )
-                        }
-                    }
+                    )
                     Spacer(Modifier.height(4.dp))
                 }
                 Text(
@@ -158,8 +151,31 @@ private fun DiaryItem(
                         .alpha(0.4f)
                 )
             }
-            Text(item.content)
-            Images(item.images)
+            if (item.content.isNotEmpty()) {
+                Text(item.content)
+            }
+            if (item.images.isNotEmpty()) {
+                Images(item.images)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Stickers(
+    stickers: List<Sticker>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier
+    ) {
+        stickers.forEach { sticker ->
+            Image(
+                painter = painterResource(sticker.imageResId),
+                contentDescription = sticker.name,
+                modifier = Modifier.size(64.dp)
+            )
         }
     }
 }
