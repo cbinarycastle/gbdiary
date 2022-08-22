@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +23,7 @@ import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -34,6 +32,7 @@ private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 @Composable
 fun TimelineScreen(
     viewModel: TimelineViewModel,
+    onDiaryClick: (LocalDate) -> Unit,
     onBack: () -> Unit,
 ) {
     val yearMonth by viewModel.yearMonth.collectAsState()
@@ -44,6 +43,7 @@ fun TimelineScreen(
         diaryItems = diaryItems,
         onBeforeMonth = viewModel::moveToBeforeMonth,
         onNextMonth = viewModel::moveToNextMonth,
+        onDiaryClick = onDiaryClick,
         onBack = onBack
     )
 }
@@ -54,6 +54,7 @@ private fun TimelineScreen(
     diaryItems: List<DiaryItem>,
     onBeforeMonth: () -> Unit,
     onNextMonth: () -> Unit,
+    onDiaryClick: (LocalDate) -> Unit,
     onBack: () -> Unit,
 ) {
     Box(
@@ -79,6 +80,7 @@ private fun TimelineScreen(
                 items(diaryItems) { item ->
                     DiaryCard(
                         item = item,
+                        onClick = { onDiaryClick(item.date) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -132,12 +134,15 @@ private fun AppBar(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun DiaryCard(
     item: DiaryItem,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
+        onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         elevation = 1.dp,
         modifier = modifier

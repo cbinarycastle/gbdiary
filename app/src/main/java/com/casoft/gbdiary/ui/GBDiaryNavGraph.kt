@@ -60,6 +60,7 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             val timelineViewModel = hiltViewModel<TimelineViewModel>()
             TimelineScreen(
                 viewModel = timelineViewModel,
+                onDiaryClick = actions::navigateToDiary,
                 onBack = actions::navigateUp
             )
         }
