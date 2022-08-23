@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,11 +21,34 @@ import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 private val HorizontalPadding = 24.dp
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit,
+) {
+    val notificationEnabled by viewModel.notificationEnabled.collectAsState()
+    val notificationTime by viewModel.notificationTime.collectAsState()
+
+    SettingsScreen(
+        notificationEnabled = notificationEnabled,
+        notificationTime = notificationTime,
+        onNotificationEnabledChange = viewModel::setNotificationEnabled,
+        onBack = onBack
+    )
+}
+
+@Composable
+private fun SettingsScreen(
+    notificationEnabled: Boolean,
+    notificationTime: LocalTime?,
+    onNotificationEnabledChange: (Boolean) -> Unit,
+    onBack: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,11 +64,17 @@ fun SettingsScreen(onBack: () -> Unit) {
                     .padding(horizontal = HorizontalPadding)
             )
             Spacer(Modifier.height(16.dp))
-            NotificationItem(Modifier.fillMaxWidth())
-            ThemeItem(Modifier.fillMaxWidth())
-            BackupItem(Modifier.fillMaxWidth())
+            NotificationItem(
+                checked = notificationEnabled,
+                onCheckedChange = onNotificationEnabledChange
+            )
+            if (notificationTime != null) {
+                NotificationTimeItem(notificationTime)
+            }
+            ThemeItem()
+            BackupItem()
             Divider(Modifier.padding(horizontal = HorizontalPadding, vertical = 16.dp))
-            ReviewItem(Modifier.fillMaxWidth())
+            ReviewItem()
         }
     }
 }
@@ -93,9 +125,11 @@ private fun PurchaseButton(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun NotificationItem(modifier: Modifier = Modifier) {
-    var checked by remember { mutableStateOf(false) }
-
+private fun NotificationItem(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsItem(
         name = "일기 알림",
         icon = painterResource(R.drawable.notification),
@@ -103,7 +137,24 @@ private fun NotificationItem(modifier: Modifier = Modifier) {
     ) {
         GBDiarySwitch(
             checked = checked,
-            onCheckedChange = { checked = !checked }
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+private fun NotificationTimeItem(
+    time: LocalTime,
+    modifier: Modifier = Modifier,
+) {
+    SettingsItem(
+        name = "알림 시간",
+        icon = painterResource(R.drawable.time),
+        modifier = modifier
+    ) {
+        Text(
+            text = time.format(DateTimeFormatter.ofPattern("a hh:mm")),
+            modifier = Modifier.alpha(0.4f)
         )
     }
 }
@@ -143,24 +194,28 @@ private fun SettingsItem(
     widget: @Composable () -> Unit = {},
 ) {
     Row(
-        modifier = modifier.padding(horizontal = HorizontalPadding),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = HorizontalPadding),
         horizontalArrangement = SpaceBetween,
         verticalAlignment = CenterVertically
     ) {
-        Row {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.align(CenterVertically)
-            )
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = name,
-                modifier = Modifier.padding(top = 8.dp, bottom = 15.dp),
-                style = GBDiaryTheme.typography.subtitle1
-            )
+        ProvideTextStyle(GBDiaryTheme.typography.subtitle1) {
+            Row {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.align(CenterVertically)
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = name,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 15.dp),
+                    style = GBDiaryTheme.typography.subtitle1
+                )
+            }
+            widget()
         }
-        widget()
     }
 }
 
@@ -169,6 +224,11 @@ private fun SettingsItem(
 @Composable
 fun SettingsScreenPreview() {
     GBDiaryTheme {
-        SettingsScreen(onBack = {})
+        SettingsScreen(
+            notificationEnabled = false,
+            notificationTime = LocalTime.of(22, 0),
+            onNotificationEnabledChange = {},
+            onBack = {}
+        )
     }
 }

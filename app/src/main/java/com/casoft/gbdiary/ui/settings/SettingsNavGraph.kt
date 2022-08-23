@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.settings
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
@@ -9,6 +10,10 @@ object SettingsDestination {
 
 fun NavGraphBuilder.settingsNavGraph(onBack: () -> Unit) {
     composable(SettingsDestination.HOME_ROUTE) {
-        SettingsScreen(onBack = onBack)
+        val settingsViewModel = hiltViewModel<SettingsViewModel>()
+        SettingsScreen(
+            viewModel = settingsViewModel,
+            onBack = onBack
+        )
     }
 }

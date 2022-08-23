@@ -34,7 +34,14 @@
             <meta-data
                 android:name="com.casoft.gbdiary.util.initializers.TimberInitializer"
                 android:value="androidx.startup" />
+            <meta-data
+                android:name="com.casoft.gbdiary.util.initializers.NotificationChannelInitializer"
+                android:value="androidx.startup" />
         </provider>
+
+        <receiver
+            android:name=".notification.AlarmBroadcastReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
