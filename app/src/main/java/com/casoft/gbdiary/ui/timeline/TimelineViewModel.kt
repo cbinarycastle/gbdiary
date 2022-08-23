@@ -17,7 +17,8 @@ class TimelineViewModel @Inject constructor(
     getDiaryItemsUseCase: GetDiaryItemsUseCase,
 ) : ViewModel() {
 
-    val yearMonth = MutableStateFlow(YearMonth.now())
+    private val _yearMonth = MutableStateFlow(YearMonth.now())
+    val yearMonth = _yearMonth.asStateFlow()
 
     val diaryItems = yearMonth
         .flatMapLatest { getDiaryItemsUseCase(it) }
@@ -41,14 +42,14 @@ class TimelineViewModel @Inject constructor(
     val message = _message.asSharedFlow()
 
     fun moveToYearMonth(yearMonth: YearMonth) {
-        this.yearMonth.value = yearMonth
+        _yearMonth.value = yearMonth
     }
 
     fun moveToBeforeMonth() {
-        yearMonth.value = yearMonth.value.minusMonths(1)
+        _yearMonth.value = yearMonth.value.minusMonths(1)
     }
 
     fun moveToNextMonth() {
-        yearMonth.value = yearMonth.value.plusMonths(1)
+        _yearMonth.value = yearMonth.value.plusMonths(1)
     }
 }

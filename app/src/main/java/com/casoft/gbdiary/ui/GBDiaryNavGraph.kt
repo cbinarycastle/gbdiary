@@ -4,16 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.casoft.gbdiary.ui.MainDestinations.BACKUP_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.DIARY_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.HOME_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SETTINGS_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SIGN_IN_ROUTE
+import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_MONTH_KEY
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_ROUTE
+import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_YEAR_KEY
 import com.casoft.gbdiary.ui.backup.BackupScreen
 import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
@@ -29,6 +33,7 @@ import com.casoft.gbdiary.ui.signin.SignInViewModel
 import com.casoft.gbdiary.ui.timeline.TimelineScreen
 import com.casoft.gbdiary.ui.timeline.TimelineViewModel
 import org.threeten.bp.LocalDate
+import org.threeten.bp.YearMonth
 
 @Composable
 fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) {
@@ -44,7 +49,7 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             CalendarScreen(
                 viewModel = calendarViewModel,
                 onDayClick = actions::navigateToDiary,
-                onTimelineClick = actions::navigateToTimeline,
+                onTimelineClick = { actions.navigateToTimeline(calendarViewModel.currentYearMonth) },
                 onSettingsClick = actions::navigateToSettings,
                 onWriteClick = actions::navigateToDiary,
                 state = rememberCalendarState(calendarViewModel.currentYearMonth)
@@ -56,8 +61,19 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
         ) {
             diaryNavGraph(diaryActions)
         }
-        composable(TIMELINE_ROUTE) {
+        composable(
+            route = "$TIMELINE_ROUTE/{$TIMELINE_YEAR_KEY}/{$TIMELINE_MONTH_KEY}",
+            arguments = listOf(
+                navArgument(TIMELINE_YEAR_KEY) { type = NavType.IntType },
+                navArgument(TIMELINE_MONTH_KEY) { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
+            val year = arguments.getInt(TIMELINE_YEAR_KEY)
+            val month = arguments.getInt(TIMELINE_MONTH_KEY)
             val timelineViewModel = hiltViewModel<TimelineViewModel>()
+
+            timelineViewModel.moveToYearMonth(YearMonth.of(year, month))
             TimelineScreen(
                 viewModel = timelineViewModel,
                 onDiaryClick = actions::navigateToDiary,
@@ -85,6 +101,8 @@ object MainDestinations {
     const val HOME_ROUTE = "home"
     const val DIARY_ROUTE = "diary"
     const val TIMELINE_ROUTE = "timeline"
+    const val TIMELINE_YEAR_KEY = "year"
+    const val TIMELINE_MONTH_KEY = "month"
     const val SETTINGS_ROUTE = "settings"
     const val SIGN_IN_ROUTE = "signIn"
     const val BACKUP_ROUTE = "backup"
@@ -98,8 +116,8 @@ class MainActions(private val navController: NavHostController) {
         )
     }
 
-    fun navigateToTimeline() {
-        navController.navigate(TIMELINE_ROUTE)
+    fun navigateToTimeline(initialYearMonth: YearMonth) {
+        navController.navigate("$TIMELINE_ROUTE/${initialYearMonth.year}/${initialYearMonth.monthValue}")
     }
 
     fun navigateToSettings() {
