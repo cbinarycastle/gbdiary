@@ -49,10 +49,10 @@ import com.casoft.gbdiary.ui.theme.markerPainter
 import com.casoft.gbdiary.util.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
-import org.threeten.bp.ZoneOffset
-import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 private const val NUMBER_OF_STICKERS_BY_ROW = 3
 

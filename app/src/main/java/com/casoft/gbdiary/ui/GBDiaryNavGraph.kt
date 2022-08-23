@@ -32,8 +32,8 @@ import com.casoft.gbdiary.ui.signin.SignInScreen
 import com.casoft.gbdiary.ui.signin.SignInViewModel
 import com.casoft.gbdiary.ui.timeline.TimelineScreen
 import com.casoft.gbdiary.ui.timeline.TimelineViewModel
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 
 @Composable
 fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) {

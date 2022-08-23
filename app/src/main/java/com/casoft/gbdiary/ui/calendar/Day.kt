@@ -14,7 +14,7 @@ import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.DateBox
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 data class Day(val date: LocalDate, val inCurrentMonth: Boolean)
 

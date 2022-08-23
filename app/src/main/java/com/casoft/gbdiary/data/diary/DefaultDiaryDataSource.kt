@@ -3,8 +3,8 @@ package com.casoft.gbdiary.data.diary
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.toDiaryItemEntity
 import kotlinx.coroutines.flow.Flow
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 
 class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataSource {
 

@@ -12,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.format.TextStyle
+import java.time.DayOfWeek
+import java.time.format.TextStyle
 import java.util.*
 
 @Composable

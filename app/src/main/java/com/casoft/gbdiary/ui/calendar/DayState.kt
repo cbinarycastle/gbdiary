@@ -1,7 +1,7 @@
 package com.casoft.gbdiary.ui.calendar
 
 import com.casoft.gbdiary.model.Sticker
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 data class DayStateList(private val states: Map<LocalDate, DayState>) {
 

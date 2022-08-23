@@ -6,7 +6,7 @@ import com.casoft.gbdiary.model.successOr
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.threeten.bp.YearMonth
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel

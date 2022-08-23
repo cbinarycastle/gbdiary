@@ -32,9 +32,6 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="com.casoft.gbdiary.util.initializers.AndroidThreeTenInitializer"
-                android:value="androidx.startup" />
-            <meta-data
                 android:name="com.casoft.gbdiary.util.initializers.TimberInitializer"
                 android:value="androidx.startup" />
         </provider>

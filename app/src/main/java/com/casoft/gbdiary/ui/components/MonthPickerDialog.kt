@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import org.threeten.bp.YearMonth
+import java.time.YearMonth
 
 private val MonthsByRow = (1..12).chunked(4)
 

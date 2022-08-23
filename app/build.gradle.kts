@@ -49,6 +49,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -84,6 +86,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(Libs.Android.DESUGARING)
+
     implementation(Libs.Android.BILLING)
     implementation(Libs.Android.MATERIAL)
 
@@ -134,8 +138,6 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.JUNIT_EXT)
     testImplementation(Libs.Kotlin.TEST_JUNIT)
     testImplementation(Libs.Mockito.CORE)
-
-    implementation(Libs.ThreeTen.THREE_TEN)
 
     implementation(Libs.Timber.TIMBER)
 }

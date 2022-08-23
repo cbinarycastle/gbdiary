@@ -4,7 +4,7 @@ import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
 import com.casoft.gbdiary.data.backup.BackupDataItem
 import com.casoft.gbdiary.data.diary.Date
 import com.casoft.gbdiary.data.diary.DiaryItemEntity
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 const val MAX_NUMBER_OF_IMAGES = 3
 

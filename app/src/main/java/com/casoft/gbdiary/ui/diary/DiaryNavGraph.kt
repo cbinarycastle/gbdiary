@@ -9,8 +9,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.casoft.gbdiary.model.LocalImage
-import org.threeten.bp.LocalDate
 import java.io.File
+import java.time.LocalDate
 
 object DiaryDestinations {
     const val HOME_ROUTE = "diary/home"

@@ -10,9 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.YearMonth
-import org.threeten.bp.temporal.ChronoUnit
+import java.time.DayOfWeek
+import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 
 internal const val PAGE_COUNT = 10000
 internal const val INITIAL_PAGE = PAGE_COUNT / 2

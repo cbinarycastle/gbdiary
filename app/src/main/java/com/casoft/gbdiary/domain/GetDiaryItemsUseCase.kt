@@ -8,7 +8,7 @@ import com.casoft.gbdiary.model.Result
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import org.threeten.bp.YearMonth
+import java.time.YearMonth
 import javax.inject.Inject
 
 class GetDiaryItemsUseCase @Inject constructor(

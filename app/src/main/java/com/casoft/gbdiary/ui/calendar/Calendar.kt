@@ -9,7 +9,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerScope
 import com.google.accompanist.pager.VerticalPager
 import com.google.accompanist.pager.rememberPagerState
-import org.threeten.bp.DayOfWeek
+import java.time.DayOfWeek
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable

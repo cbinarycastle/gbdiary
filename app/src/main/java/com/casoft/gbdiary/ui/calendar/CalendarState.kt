@@ -2,10 +2,10 @@ package com.casoft.gbdiary.ui.calendar
 
 import androidx.compose.runtime.*
 import com.casoft.gbdiary.util.yearMonth
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
-import org.threeten.bp.temporal.ChronoUnit
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 
 internal const val DAYS_IN_WEEK = 7
 

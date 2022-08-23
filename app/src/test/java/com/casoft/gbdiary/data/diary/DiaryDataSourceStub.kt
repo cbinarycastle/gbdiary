@@ -5,8 +5,8 @@ import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.toDiaryItemEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 
 class DiaryDataSourceStub : DiaryDataSource {
 

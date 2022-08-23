@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.threeten.bp.LocalDate
+import java.time.LocalDate
 
 data class Week(val days: List<Day>)
 

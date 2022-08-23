@@ -2,8 +2,8 @@ package com.casoft.gbdiary.data.diary
 
 import com.casoft.gbdiary.model.DiaryItem
 import kotlinx.coroutines.flow.Flow
-import org.threeten.bp.LocalDate
-import org.threeten.bp.YearMonth
+import java.time.LocalDate
+import java.time.YearMonth
 
 const val IMAGE_FILE_EXTENSION = "jpg"
 

@@ -11,8 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDate
 import java.io.File
+import java.time.LocalDate
 import javax.inject.Inject
 
 const val MAX_STICKERS = 4
