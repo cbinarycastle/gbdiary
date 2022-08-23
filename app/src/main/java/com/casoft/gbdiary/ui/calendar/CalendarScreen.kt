@@ -26,6 +26,8 @@ import java.util.*
 
 internal val HorizontalSpaceBetweenCells = 3.dp
 
+private const val PagesFromToday = (PAGE_COUNT / 2 - 1).toLong()
+
 @Composable
 fun CalendarScreen(
     viewModel: CalendarViewModel,
@@ -124,6 +126,11 @@ private fun CalendarScreen(
             MonthPickerDialog(
                 initialYear = state.currentYearMonth.year,
                 today = today.yearMonth,
+                isEnabled = { yearMonth ->
+                    val minYearMonth = today.yearMonth.minusMonths(PagesFromToday)
+                    val maxYearMonth = today.yearMonth.plusMonths(PagesFromToday)
+                    yearMonth >= minYearMonth || yearMonth <= maxYearMonth
+                },
                 onSelect = { yearMonth ->
                     showMonthPickerDialog = false
                     state.currentYearMonth = yearMonth

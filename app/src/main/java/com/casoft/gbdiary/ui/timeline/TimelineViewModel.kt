@@ -40,6 +40,10 @@ class TimelineViewModel @Inject constructor(
     private val _message = MutableSharedFlow<Message>()
     val message = _message.asSharedFlow()
 
+    fun moveToYearMonth(yearMonth: YearMonth) {
+        this.yearMonth.value = yearMonth
+    }
+
     fun moveToBeforeMonth() {
         yearMonth.value = yearMonth.value.minusMonths(1)
     }

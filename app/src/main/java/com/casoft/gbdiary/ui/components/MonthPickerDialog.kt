@@ -6,28 +6,24 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.ui.calendar.PAGE_COUNT
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import org.threeten.bp.YearMonth
 
 private val MonthsByRow = (1..12).chunked(4)
-private val PagesFromToday = (PAGE_COUNT / 2 - 1).toLong()
 
 @Composable
 fun MonthPickerDialog(
     initialYear: Int,
     today: YearMonth,
+    isEnabled: (YearMonth) -> Boolean = { true },
     onSelect: (YearMonth) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var currentYear by remember { mutableStateOf(initialYear) }
-    val minYearMonth by remember(today) { mutableStateOf(today.minusMonths(PagesFromToday)) }
-    val maxYearMonth by remember(today) { mutableStateOf(today.plusMonths(PagesFromToday)) }
 
     Dialog(onDismissRequest = onDismiss) {
         CompositionLocalProvider(LocalTextStyle provides GBDiaryTheme.typography.subtitle1) {
@@ -45,23 +41,14 @@ fun MonthPickerDialog(
                 ) {
                     Header(
                         year = currentYear,
-                        onBeforeClick = {
-                            if (currentYear > minYearMonth.year) {
-                                currentYear--
-                            }
-                        },
-                        onNextClick = {
-                            if (currentYear < maxYearMonth.year) {
-                                currentYear++
-                            }
-                        }
+                        onBeforeClick = { currentYear-- },
+                        onNextClick = { currentYear++ }
                     )
                     Spacer(Modifier.height(12.dp))
                     Months(
                         year = currentYear,
                         today = today,
-                        minYearMonth = minYearMonth,
-                        maxYearMonth = maxYearMonth,
+                        isEnabled = isEnabled,
                         onMonthClick = { month -> onSelect(YearMonth.of(currentYear, month)) }
                     )
                 }
@@ -101,8 +88,7 @@ private fun Header(
 private fun Months(
     year: Int,
     today: YearMonth,
-    minYearMonth: YearMonth,
-    maxYearMonth: YearMonth,
+    isEnabled: (YearMonth) -> Boolean,
     onMonthClick: (Int) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -116,16 +102,9 @@ private fun Months(
                     DateBox(
                         text = month.toString(),
                         onClick = { onMonthClick(month) },
+                        enabled = isEnabled(yearMonth),
                         isToday = yearMonth == today,
-                        modifier = Modifier
-                            .size(44.dp)
-                            .then(
-                                if (yearMonth < minYearMonth || yearMonth > maxYearMonth) {
-                                    Modifier.alpha(0.2f)
-                                } else {
-                                    Modifier
-                                }
-                            )
+                        modifier = Modifier.size(44.dp)
                     )
                 }
             }

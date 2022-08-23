@@ -6,9 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,6 +20,8 @@ import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.MonthPickerDialog
+import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
@@ -41,6 +41,7 @@ fun TimelineScreen(
     TimelineScreen(
         yearMonth = yearMonth,
         diaryItems = diaryItems,
+        moveToYearMonth = viewModel::moveToYearMonth,
         onBeforeMonth = viewModel::moveToBeforeMonth,
         onNextMonth = viewModel::moveToNextMonth,
         onDiaryClick = onDiaryClick,
@@ -52,11 +53,14 @@ fun TimelineScreen(
 private fun TimelineScreen(
     yearMonth: YearMonth,
     diaryItems: List<DiaryItem>,
+    moveToYearMonth: (YearMonth) -> Unit,
     onBeforeMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onDiaryClick: (LocalDate) -> Unit,
     onBack: () -> Unit,
 ) {
+    var showMonthPickerDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -69,9 +73,10 @@ private fun TimelineScreen(
         ) {
             AppBar(
                 yearMonth = yearMonth,
-                onBack = onBack,
+                onYearMonthClick = { showMonthPickerDialog = true },
                 onBefore = onBeforeMonth,
-                onNext = onNextMonth
+                onNext = onNextMonth,
+                onBack = onBack
             )
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -94,12 +99,25 @@ private fun TimelineScreen(
                     .alpha(0.3f)
             )
         }
+        if (showMonthPickerDialog) {
+            MonthPickerDialog(
+                initialYear = yearMonth.year,
+                today = YearMonth.now(),
+                isEnabled = { it <= yearMonth },
+                onSelect = {
+                    showMonthPickerDialog = false
+                    moveToYearMonth(it)
+                },
+                onDismiss = { showMonthPickerDialog = false }
+            )
+        }
     }
 }
 
 @Composable
 private fun AppBar(
     yearMonth: YearMonth,
+    onYearMonthClick: () -> Unit,
     onBefore: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
@@ -122,7 +140,10 @@ private fun AppBar(
                         contentDescription = "이전"
                     )
                 }
-                Text("${yearMonth.year}년 ${yearMonth.monthValue}월")
+                Text(
+                    text = "${yearMonth.year}년 ${yearMonth.monthValue}월",
+                    modifier = Modifier.noRippleClickable { onYearMonthClick() }
+                )
                 IconButton(onClick = onNext) {
                     Icon(
                         painter = painterResource(R.drawable.chevron_circle_right),
