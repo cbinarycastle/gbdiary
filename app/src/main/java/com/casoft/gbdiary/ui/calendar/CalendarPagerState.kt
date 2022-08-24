@@ -7,7 +7,6 @@ import androidx.compose.runtime.snapshotFlow
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.time.DayOfWeek
@@ -26,7 +25,6 @@ class CalendarPagerState constructor(
 ) {
     init {
         snapshotFlow { calendarState.currentYearMonth }
-            .distinctUntilChanged()
             .onEach {
                 val newPage = getPageFromYearMonth(it)
                 if (pagerState.currentPage != newPage) {
@@ -36,7 +34,6 @@ class CalendarPagerState constructor(
             .launchIn(coroutineScope)
 
         snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged()
             .onEach {
                 val newYearMonth = getYearMonthByPage(page = it)
                 if (calendarState.currentYearMonth != newYearMonth) {
