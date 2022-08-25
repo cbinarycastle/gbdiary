@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.DisableNotificationUseCase
 import com.casoft.gbdiary.domain.EnableNotificationUseCase
 import com.casoft.gbdiary.domain.GetNotificationTimeUseCase
+import com.casoft.gbdiary.domain.SetNotificationTimeUseCase
 import com.casoft.gbdiary.model.data
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +20,7 @@ class SettingsViewModel @Inject constructor(
     getNotificationTimeUseCase: GetNotificationTimeUseCase,
     private val enableNotificationUseCase: EnableNotificationUseCase,
     private val disableNotificationUseCase: DisableNotificationUseCase,
+    private val setNotificationTimeUseCase: SetNotificationTimeUseCase,
 ) : ViewModel() {
 
     val notificationTime = getNotificationTimeUseCase(Unit)
@@ -43,6 +46,12 @@ class SettingsViewModel @Inject constructor(
             } else {
                 disableNotificationUseCase(Unit)
             }
+        }
+    }
+
+    fun setNotificationTime(time: LocalTime) {
+        viewModelScope.launch {
+            setNotificationTimeUseCase(time)
         }
     }
 }

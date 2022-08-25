@@ -20,7 +20,7 @@ fun AlertDialogLayout(
             GBDiaryAlertDialog(
                 onConfirm = onConfirm,
                 onDismiss = onDismiss,
-                message = { Text(message.text) },
+                content = { Text(message.text) },
                 confirmText = { Text(message.confirmText) },
                 dismissText = message.dismissText?.let { dismissText ->
                     { Text(dismissText) }

@@ -16,7 +16,7 @@ import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 fun GBDiaryAlertDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    message: @Composable () -> Unit,
+    content: @Composable () -> Unit,
     confirmText: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     dismissText: (@Composable () -> Unit)? = null,
@@ -36,7 +36,7 @@ fun GBDiaryAlertDialog(
                         .padding(horizontal = 24.dp, vertical = 32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    message()
+                    content()
                 }
                 Row {
                     if (dismissText != null) {
