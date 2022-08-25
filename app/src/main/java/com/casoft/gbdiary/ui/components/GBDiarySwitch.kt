@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui.settings
+package com.casoft.gbdiary.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation

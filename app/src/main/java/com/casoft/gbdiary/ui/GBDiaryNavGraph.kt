@@ -26,6 +26,7 @@ import com.casoft.gbdiary.ui.calendar.rememberCalendarState
 import com.casoft.gbdiary.ui.diary.DiaryActions
 import com.casoft.gbdiary.ui.diary.DiaryDestinations
 import com.casoft.gbdiary.ui.diary.diaryNavGraph
+import com.casoft.gbdiary.ui.settings.SettingsActions
 import com.casoft.gbdiary.ui.settings.SettingsDestination
 import com.casoft.gbdiary.ui.settings.settingsNavGraph
 import com.casoft.gbdiary.ui.signin.SignInScreen
@@ -84,7 +85,7 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             route = SETTINGS_ROUTE,
             startDestination = SettingsDestination.HOME_ROUTE
         ) {
-            settingsNavGraph(onBack = actions::navigateUp)
+            settingsNavGraph(actions = SettingsActions(navController))
         }
         composable(SIGN_IN_ROUTE) {
             val signInViewModel = hiltViewModel<SignInViewModel>()

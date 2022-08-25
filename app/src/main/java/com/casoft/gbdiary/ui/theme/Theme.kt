@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.model.Theme
 
 private val LightColors = lightColors(
     primary = Light2,
@@ -43,6 +44,26 @@ private val DarkGBDiaryColors = GBDiaryColors(
     dimmingOverlay = DarkDimmingOverlay,
     border = Dark3
 )
+
+@Composable
+fun GBDiaryTheme(
+    viewModel: ThemeViewModel,
+    content: @Composable () -> Unit,
+) {
+    val theme by viewModel.theme.collectAsState()
+    val systemInDarkTheme = isSystemInDarkTheme()
+    val darkTheme = remember(theme, systemInDarkTheme) {
+        when (theme) {
+            Theme.SYSTEM -> systemInDarkTheme
+            Theme.DARK -> true
+            Theme.LIGHT -> false
+        }
+    }
+
+    GBDiaryTheme(darkTheme) {
+        content()
+    }
+}
 
 @Composable
 fun GBDiaryTheme(

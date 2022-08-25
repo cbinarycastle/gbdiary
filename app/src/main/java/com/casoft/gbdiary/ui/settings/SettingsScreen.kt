@@ -11,22 +11,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.GBDiarySwitch
 import com.casoft.gbdiary.ui.components.TimePickerDialog
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-private val HorizontalPadding = 24.dp
-
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    onThemeClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
@@ -37,6 +36,7 @@ fun SettingsScreen(
         notificationTime = notificationTime,
         onNotificationEnabledChange = viewModel::setNotificationEnabled,
         onNotificationTimeChange = viewModel::setNotificationTime,
+        onThemeClick = onThemeClick,
         onBack = onBack
     )
 }
@@ -47,6 +47,7 @@ private fun SettingsScreen(
     notificationTime: LocalTime?,
     onNotificationEnabledChange: (Boolean) -> Unit,
     onNotificationTimeChange: (LocalTime) -> Unit,
+    onThemeClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showTimePickerDialog by remember { mutableStateOf(false) }
@@ -64,7 +65,7 @@ private fun SettingsScreen(
                 PurchaseButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = HorizontalPadding)
+                        .padding(horizontal = 24.dp)
                 )
                 Spacer(Modifier.height(16.dp))
                 NotificationItem(
@@ -77,9 +78,9 @@ private fun SettingsScreen(
                         onClick = { showTimePickerDialog = true }
                     )
                 }
-                ThemeItem()
+                ThemeItem(onClick = onThemeClick)
                 BackupItem()
-                Divider(Modifier.padding(horizontal = HorizontalPadding, vertical = 16.dp))
+                Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
                 ReviewItem()
             }
         }
@@ -179,10 +180,14 @@ private fun NotificationTimeItem(
 }
 
 @Composable
-private fun ThemeItem(modifier: Modifier = Modifier) {
+private fun ThemeItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsItem(
         name = "테마 설정",
         icon = painterResource(R.drawable.theme),
+        onClick = onClick,
         modifier = modifier
     )
 }
@@ -205,46 +210,6 @@ private fun ReviewItem(modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-private fun SettingsItem(
-    name: String,
-    icon: Painter,
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
-    widget: @Composable () -> Unit = {},
-) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(43.dp)
-            .then(
-                if (onClick == null) {
-                    Modifier
-                } else {
-                    Modifier.clickable { onClick() }
-                }
-            )
-            .padding(horizontal = HorizontalPadding)
-    ) {
-        ProvideTextStyle(GBDiaryTheme.typography.subtitle1) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = icon,
-                    contentDescription = null
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    text = name,
-                    style = GBDiaryTheme.typography.subtitle1
-                )
-            }
-            widget()
-        }
-    }
-}
-
 @Preview(name = "Settings screen")
 @Preview(name = "Settings screen (dark)", uiMode = UI_MODE_NIGHT_YES)
 @Composable
@@ -255,6 +220,7 @@ fun SettingsScreenPreview() {
             notificationTime = LocalTime.of(22, 0),
             onNotificationEnabledChange = {},
             onNotificationTimeChange = {},
+            onThemeClick = {},
             onBack = {}
         )
     }

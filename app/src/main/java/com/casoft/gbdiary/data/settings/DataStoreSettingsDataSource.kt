@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.casoft.gbdiary.model.TextAlign
+import com.casoft.gbdiary.model.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalTime
@@ -18,11 +19,8 @@ class DataStoreSettingsDataSource(
 
     override fun getNotificationTime(): Flow<LocalTime?> {
         return preferencesDataStore.data.map { prefs ->
-            val data = prefs[PreferencesKeys.NOTIFICATION_TIME]
-            if (data == null) {
-                null
-            } else {
-                LocalTime.parse(data, NotificationTimeFormatter)
+            prefs[PreferencesKeys.NOTIFICATION_TIME]?.let {
+                LocalTime.parse(it, NotificationTimeFormatter)
             }
         }
     }
@@ -34,6 +32,19 @@ class DataStoreSettingsDataSource(
             } else {
                 prefs[PreferencesKeys.NOTIFICATION_TIME] = time.format(NotificationTimeFormatter)
             }
+        }
+    }
+
+    override fun getTheme(): Flow<Theme> {
+        return preferencesDataStore.data.map { prefs ->
+            prefs[PreferencesKeys.THEME]?.let { Theme.valueOf(it) }
+                ?: Theme.SYSTEM
+        }
+    }
+
+    override suspend fun setTheme(theme: Theme) {
+        preferencesDataStore.edit { prefs ->
+            prefs[PreferencesKeys.THEME] = theme.name
         }
     }
 
@@ -53,6 +64,7 @@ class DataStoreSettingsDataSource(
 
     object PreferencesKeys {
         val NOTIFICATION_TIME = stringPreferencesKey("notification_time")
+        val THEME = stringPreferencesKey("theme")
         val TEXT_ALIGN = stringPreferencesKey("text_align")
     }
 

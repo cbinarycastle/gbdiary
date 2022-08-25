@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase
+    private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
 ) : ViewModel() {
 
     fun checkExistingSignedInUser() {
