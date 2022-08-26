@@ -20,9 +20,9 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         )
     }
     composable(SettingsDestination.THEME_ROUTE) {
-        val themeSettingViewModel = hiltViewModel<ThemeSettingViewModel>()
-        ThemeSettingScreen(
-            viewModel = themeSettingViewModel,
+        val themeViewModel = hiltViewModel<ThemeViewModel>()
+        ThemeScreen(
+            viewModel = themeViewModel,
             onBack = actions::navigateUp
         )
     }

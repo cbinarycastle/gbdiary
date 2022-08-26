@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ThemeSettingViewModel @Inject constructor(
+class ThemeViewModel @Inject constructor(
     getThemeUseCase: GetThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
 ) : ViewModel() {

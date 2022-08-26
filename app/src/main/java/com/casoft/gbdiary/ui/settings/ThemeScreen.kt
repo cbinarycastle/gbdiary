@@ -19,13 +19,13 @@ import com.casoft.gbdiary.ui.components.GBDiaryRadioButton
 private val Themes = listOf(Theme.SYSTEM, Theme.LIGHT, Theme.DARK)
 
 @Composable
-fun ThemeSettingScreen(
-    viewModel: ThemeSettingViewModel,
+fun ThemeScreen(
+    viewModel: ThemeViewModel,
     onBack: () -> Unit,
 ) {
     val theme by viewModel.theme.collectAsState()
 
-    ThemeSettingsScreen(
+    ThemeScreen(
         selectedTheme = theme,
         onThemeSelect = viewModel::setTheme,
         onBack = onBack
@@ -33,7 +33,7 @@ fun ThemeSettingScreen(
 }
 
 @Composable
-private fun ThemeSettingsScreen(
+private fun ThemeScreen(
     selectedTheme: Theme,
     onThemeSelect: (Theme) -> Unit,
     onBack: () -> Unit,
