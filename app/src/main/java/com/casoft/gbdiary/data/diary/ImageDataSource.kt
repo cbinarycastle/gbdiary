@@ -8,7 +8,5 @@ interface ImageDataSource {
 
     suspend fun getLocalImages(): List<LocalImage>
 
-    fun getImageFile(fileName: String): File
-
-    fun copyTo(fileName: String, source: InputStream): File
+    fun saveImage(source: InputStream): File
 }

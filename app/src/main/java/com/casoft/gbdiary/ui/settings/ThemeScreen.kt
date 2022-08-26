@@ -66,7 +66,7 @@ private fun AppBar(onBack: () -> Unit) {
                 )
             }
             Text(
-                text = "테마 설정",
+                text = Settings.THEME.text,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

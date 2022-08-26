@@ -40,7 +40,7 @@ class DiaryViewModel @Inject constructor(
                     _message.emit("작성된 일기를 불러오지 못했습니다.")
                     null
                 }
-                Result.Loading -> null
+                is Result.Loading -> null
             }
         }
         .onEach { diaryItem -> _existsDiary.value = diaryItem != null }
@@ -153,7 +153,7 @@ class DiaryViewModel @Inject constructor(
                 when (result) {
                     is Result.Success -> _message.emit("저장이 완료되었습니다.")
                     is Result.Error -> _message.emit("저장 도중 오류가 발생했습니다.")
-                    Result.Loading -> {}
+                    is Result.Loading -> {}
                 }
             }
         }

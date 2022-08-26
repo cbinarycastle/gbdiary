@@ -18,6 +18,9 @@ interface DiaryItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdate(item: DiaryItemEntity)
 
+    @Query("UPDATE DiaryItem SET isSync = :isSync WHERE isSync != :isSync")
+    fun updateSyncAll(isSync: Boolean)
+
     @Insert
     fun insertAll(items: List<DiaryItemEntity>)
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.GetLocalImagesUseCase
 import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
 import com.casoft.gbdiary.model.Result
-import com.casoft.gbdiary.ui.Message
+import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

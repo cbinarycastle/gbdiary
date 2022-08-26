@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onThemeClick: () -> Unit,
+    onBackupClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
@@ -37,6 +38,7 @@ fun SettingsScreen(
         onNotificationEnabledChange = viewModel::setNotificationEnabled,
         onNotificationTimeChange = viewModel::setNotificationTime,
         onThemeClick = onThemeClick,
+        onBackupClick = onBackupClick,
         onBack = onBack
     )
 }
@@ -48,6 +50,7 @@ private fun SettingsScreen(
     onNotificationEnabledChange: (Boolean) -> Unit,
     onNotificationTimeChange: (LocalTime) -> Unit,
     onThemeClick: () -> Unit,
+    onBackupClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showTimePickerDialog by remember { mutableStateOf(false) }
@@ -79,7 +82,7 @@ private fun SettingsScreen(
                     )
                 }
                 ThemeItem(onClick = onThemeClick)
-                BackupItem()
+                BackupItem(onClick = onBackupClick)
                 Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
                 ReviewItem()
             }
@@ -149,7 +152,7 @@ private fun NotificationItem(
     modifier: Modifier = Modifier,
 ) {
     SettingsItem(
-        name = "일기 알림",
+        name = Settings.NOTIFICATION.text,
         icon = painterResource(R.drawable.notification),
         modifier = modifier
     ) {
@@ -167,7 +170,7 @@ private fun NotificationTimeItem(
     modifier: Modifier = Modifier,
 ) {
     SettingsItem(
-        name = "알림 시간",
+        name = Settings.NOTIFICATION_TIME.text,
         icon = painterResource(R.drawable.time),
         onClick = onClick,
         modifier = modifier
@@ -185,7 +188,7 @@ private fun ThemeItem(
     modifier: Modifier = Modifier,
 ) {
     SettingsItem(
-        name = "테마 설정",
+        name = Settings.THEME.text,
         icon = painterResource(R.drawable.theme),
         onClick = onClick,
         modifier = modifier
@@ -193,10 +196,14 @@ private fun ThemeItem(
 }
 
 @Composable
-private fun BackupItem(modifier: Modifier = Modifier) {
+private fun BackupItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsItem(
-        name = "백업/복원",
+        name = Settings.BACKUP.text,
         icon = painterResource(R.drawable.data),
+        onClick = onClick,
         modifier = modifier
     )
 }
@@ -204,7 +211,7 @@ private fun BackupItem(modifier: Modifier = Modifier) {
 @Composable
 private fun ReviewItem(modifier: Modifier = Modifier) {
     SettingsItem(
-        name = "앱 평가하기",
+        name = Settings.REVIEW.text,
         icon = painterResource(R.drawable.app_review),
         modifier = modifier
     )
@@ -221,6 +228,7 @@ fun SettingsScreenPreview() {
             onNotificationEnabledChange = {},
             onNotificationTimeChange = {},
             onThemeClick = {},
+            onBackupClick = {},
             onBack = {}
         )
     }

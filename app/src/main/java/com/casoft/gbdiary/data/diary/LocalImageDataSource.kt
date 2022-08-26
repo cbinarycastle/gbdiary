@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import com.casoft.gbdiary.model.LocalImage
+import com.casoft.gbdiary.util.createUniqueFileName
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -42,10 +43,8 @@ class LocalImageDataSource(
         } ?: listOf()
     }
 
-    override fun getImageFile(fileName: String) = File(context.filesDir, fileName)
-
-    override fun copyTo(fileName: String, source: InputStream): File {
-        return getImageFile(fileName).also {
+    override fun saveImage(source: InputStream): File {
+        return File(context.filesDir, createUniqueFileName()).also {
             source.copyTo(it.outputStream())
         }
     }

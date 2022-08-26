@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.LocalImage
-import com.casoft.gbdiary.ui.Message
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
 import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.rememberAlertDialogState
 import com.casoft.gbdiary.ui.extension.toContentUri
+import com.casoft.gbdiary.ui.model.Message
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.toast
 

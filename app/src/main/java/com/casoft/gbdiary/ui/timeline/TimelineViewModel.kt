@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.GetDiaryItemsUseCase
 import com.casoft.gbdiary.model.Result
-import com.casoft.gbdiary.ui.Message
+import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -29,7 +29,7 @@ class TimelineViewModel @Inject constructor(
                     _message.emit(Message.ToastMessage("타임라인을 불러오지 못했습니다."))
                     listOf()
                 }
-                Result.Loading -> listOf()
+                is Result.Loading -> listOf()
             }
         }
         .stateIn(

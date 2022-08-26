@@ -1,7 +1,7 @@
 package com.casoft.gbdiary.ui.components
 
 import androidx.compose.runtime.*
-import com.casoft.gbdiary.ui.Message
+import com.casoft.gbdiary.ui.model.Message
 
 @Composable
 fun rememberAlertDialogState() = remember { AlertDialogState() }

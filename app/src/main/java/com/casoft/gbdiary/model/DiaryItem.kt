@@ -15,10 +15,10 @@ data class DiaryItem(
     val images: List<String> = listOf(),
 )
 
-fun DiaryItem.toBackupData(images: List<String>) = BackupDataItem(
+fun DiaryItem.toBackupData(imageIds: List<String>) = BackupDataItem(
     day = date.format(BackupDataDateFormatter),
     contents = content,
-    images = images,
+    images = imageIds,
     sticker = stickers.map { it.name }
 )
 

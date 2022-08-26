@@ -79,14 +79,14 @@ class GoogleDriveBackupDataSource(
     override suspend fun uploadImage(
         account: Account,
         fileName: String,
-        filePath: java.io.File,
+        filePath: String,
     ): File = withContext(ioDispatcher) {
         val drive = createDrive(account)
         val metadata = File().apply {
             parents = listOf(APP_DATA_FOLDER)
             name = fileName
         }
-        val mediaContent = FileContent(MIME_TYPE_JPEG, filePath)
+        val mediaContent = FileContent(MIME_TYPE_JPEG, java.io.File(filePath))
 
         drive.files().create(metadata, mediaContent).execute()
             .also { file -> Timber.d("Uploaded image file ID: ${file.id}") }

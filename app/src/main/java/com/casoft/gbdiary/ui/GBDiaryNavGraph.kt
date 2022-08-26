@@ -10,16 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.casoft.gbdiary.ui.MainDestinations.BACKUP_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.DIARY_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.HOME_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SETTINGS_ROUTE
-import com.casoft.gbdiary.ui.MainDestinations.SIGN_IN_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_MONTH_KEY
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_YEAR_KEY
-import com.casoft.gbdiary.ui.backup.BackupScreen
-import com.casoft.gbdiary.ui.backup.BackupViewModel
 import com.casoft.gbdiary.ui.calendar.CalendarScreen
 import com.casoft.gbdiary.ui.calendar.CalendarViewModel
 import com.casoft.gbdiary.ui.calendar.rememberCalendarState
@@ -29,8 +25,6 @@ import com.casoft.gbdiary.ui.diary.diaryNavGraph
 import com.casoft.gbdiary.ui.settings.SettingsActions
 import com.casoft.gbdiary.ui.settings.SettingsDestination
 import com.casoft.gbdiary.ui.settings.settingsNavGraph
-import com.casoft.gbdiary.ui.signin.SignInScreen
-import com.casoft.gbdiary.ui.signin.SignInViewModel
 import com.casoft.gbdiary.ui.timeline.TimelineScreen
 import com.casoft.gbdiary.ui.timeline.TimelineViewModel
 import java.time.LocalDate
@@ -87,14 +81,6 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
         ) {
             settingsNavGraph(actions = SettingsActions(navController))
         }
-        composable(SIGN_IN_ROUTE) {
-            val signInViewModel = hiltViewModel<SignInViewModel>()
-            SignInScreen(viewModel = signInViewModel)
-        }
-        composable(BACKUP_ROUTE) {
-            val backupViewModel = hiltViewModel<BackupViewModel>()
-            BackupScreen(viewModel = backupViewModel)
-        }
     }
 }
 
@@ -105,8 +91,6 @@ object MainDestinations {
     const val TIMELINE_YEAR_KEY = "year"
     const val TIMELINE_MONTH_KEY = "month"
     const val SETTINGS_ROUTE = "settings"
-    const val SIGN_IN_ROUTE = "signIn"
-    const val BACKUP_ROUTE = "backup"
 }
 
 class MainActions(private val navController: NavHostController) {
@@ -123,14 +107,6 @@ class MainActions(private val navController: NavHostController) {
 
     fun navigateToSettings() {
         navController.navigate(SETTINGS_ROUTE)
-    }
-
-    fun navigateToSignIn() {
-        navController.navigate(SIGN_IN_ROUTE)
-    }
-
-    fun navigateToBackup() {
-        navController.navigate(BACKUP_ROUTE)
     }
 
     fun navigateUp() {

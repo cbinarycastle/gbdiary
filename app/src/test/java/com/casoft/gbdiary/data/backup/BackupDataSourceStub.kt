@@ -10,7 +10,8 @@ class BackupDataSourceStub : BackupDataSource {
 
     var backupData: BackupData? = null
         private set
-    private val images = mutableMapOf<String, java.io.File>()
+
+    private val images = mutableMapOf<String, String>()
 
     override suspend fun getData(account: Account): BackupData {
         return backupData ?: throw BackupDataNotFoundException()
@@ -26,7 +27,7 @@ class BackupDataSourceStub : BackupDataSource {
     override suspend fun uploadImage(
         account: Account,
         fileName: String,
-        filePath: java.io.File,
+        filePath: String,
     ): File {
         images[fileName] = filePath
         return File()

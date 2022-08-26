@@ -1,13 +1,11 @@
 package com.casoft.gbdiary.di
 
 import android.content.Context
-import com.casoft.gbdiary.data.auth.AccountDataSource
-import com.casoft.gbdiary.data.auth.GoogleAccountDataSource
+import com.casoft.gbdiary.data.auth.GoogleUserDataSource
+import com.casoft.gbdiary.data.auth.UserDataSource
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.Scope
-import com.google.api.services.drive.DriveScopes
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,7 +28,7 @@ object AuthModule {
 
     @Singleton
     @Provides
-    fun provideAccountDataSource(
+    fun provideUserDataSource(
         @ApplicationContext applicationContext: Context,
-    ): AccountDataSource = GoogleAccountDataSource(applicationContext)
+    ): UserDataSource = GoogleUserDataSource(applicationContext)
 }

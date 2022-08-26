@@ -17,6 +17,8 @@ interface DiaryDataSource {
 
     suspend fun save(item: DiaryItem)
 
+    suspend fun updateSyncAll(isSync: Boolean)
+
     suspend fun deleteDiaryitem(item: DiaryItem)
 
     fun deleteAllAndInsertAll(items: List<DiaryItemEntity>)

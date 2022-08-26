@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui
+package com.casoft.gbdiary.ui.model
 
 sealed interface Message {
 

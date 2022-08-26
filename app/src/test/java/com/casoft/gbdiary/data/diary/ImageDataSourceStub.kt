@@ -16,12 +16,8 @@ class ImageDataSourceStub : ImageDataSource {
         LocalImage(id = 3, path = ""),
     )
 
-    override fun getImageFile(fileName: String): File {
-        return File.createTempFile("temp", ".jpg")
-    }
-
-    override fun copyTo(fileName: String, source: InputStream): File {
-        return getImageFile(fileName).also {
+    override fun saveImage(source: InputStream): File {
+        return File.createTempFile("temp", ".jpg").also {
             source.copyTo(it.outputStream())
             _files.add(it)
         }

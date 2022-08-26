@@ -2,6 +2,4 @@
     <string name="app_name">꼬박다이어리</string>
 
     <string name="notification_channel_diary">일기 알림</string>
-
-    <string name="sign_in_failed">로그인에 실패했습니다.</string>
 </resources>

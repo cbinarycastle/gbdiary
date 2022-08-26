@@ -50,6 +50,7 @@ fun SettingsItem(
                     style = GBDiaryTheme.typography.subtitle1
                 )
             }
+            Spacer(Modifier.width(12.dp))
             widget()
         }
     }

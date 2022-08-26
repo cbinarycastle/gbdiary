@@ -1,18 +1,18 @@
 package com.casoft.gbdiary.data.auth
 
-import android.accounts.Account
 import android.content.Context
+import com.casoft.gbdiary.model.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class GoogleAccountDataSource(private val context: Context) : AccountDataSource {
+class GoogleUserDataSource(private val context: Context) : UserDataSource {
 
-    private val _account = MutableStateFlow<Account?>(null)
-    override val account: Flow<Account?> = _account
+    private val _user = MutableStateFlow<User?>(null)
+    override val user: Flow<User?> = _user
 
     override fun checkExistingSignedInUser() {
         val lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(context)
-        _account.value = lastSignedInAccount?.account
+        _user.value = lastSignedInAccount?.let { User(lastSignedInAccount) }
     }
 }

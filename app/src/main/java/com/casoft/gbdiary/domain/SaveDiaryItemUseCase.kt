@@ -5,7 +5,6 @@ import com.casoft.gbdiary.data.diary.ImageDataSource
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
-import com.casoft.gbdiary.util.uniqueFileName
 import kotlinx.coroutines.CoroutineDispatcher
 import java.io.File
 import java.time.LocalDate
@@ -18,18 +17,16 @@ class SaveDiaryItemUseCase @Inject constructor(
 ) : UseCase<SaveDiaryItemUseCase.Params, Unit>(ioDispatcher) {
 
     override suspend fun execute(params: Params) {
-        val imageFilePaths = params.images.map { image ->
-            imageDataSource.copyTo(
-                fileName = uniqueFileName,
-                source = image.inputStream()
-            ).path
+        val images = params.images.map { image ->
+            imageDataSource.saveImage(source = image.inputStream()).path
         }
+
         diaryDataSource.save(
             DiaryItem(
                 date = params.date,
                 stickers = params.stickers,
                 content = params.content,
-                images = imageFilePaths
+                images = images
             )
         )
     }

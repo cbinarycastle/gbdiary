@@ -12,7 +12,7 @@ interface BackupDataSource {
 
     suspend fun uploadData(account: Account, backupData: BackupData)
 
-    suspend fun uploadImage(account: Account, fileName: String, filePath: java.io.File): File
+    suspend fun uploadImage(account: Account, fileName: String, filePath: String): File
 
     suspend fun deleteData(account: Account)
 

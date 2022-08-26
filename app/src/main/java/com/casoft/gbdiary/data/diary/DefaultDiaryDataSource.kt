@@ -31,6 +31,10 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataS
         diaryItemDao.insertOrUpdate(item.toDiaryItemEntity())
     }
 
+    override suspend fun updateSyncAll(isSync: Boolean) {
+        diaryItemDao.updateSyncAll(isSync)
+    }
+
     override suspend fun deleteDiaryitem(item: DiaryItem) {
         diaryItemDao.delete(item.toDiaryItemEntity())
     }
