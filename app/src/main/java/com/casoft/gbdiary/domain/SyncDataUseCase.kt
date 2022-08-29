@@ -10,7 +10,6 @@ import com.casoft.gbdiary.model.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 class SyncDataUseCase @Inject constructor(
@@ -26,8 +25,10 @@ class SyncDataUseCase @Inject constructor(
 
         val backupData = backupDataSource.getData(account = params)
         val backupDataItems = backupData.data
-        val progressUnit = 0.95f / backupDataItems.size
-        val finishedJobs = AtomicInteger()
+        val progress = JobProgress(
+            numberOfJobs = backupDataItems.size,
+            maxProgress = 0.95f
+        )
 
         coroutineScope {
             val diaryItems = backupDataItems
@@ -43,8 +44,8 @@ class SyncDataUseCase @Inject constructor(
 
                         val diaryItem = backupDataItem.toDiaryItemEntity(images = images)
 
-                        val progress = finishedJobs.incrementAndGet() * progressUnit
-                        send(Result.Loading(progress))
+                        val currentProgress = progress.increment()
+                        send(Result.Loading(currentProgress))
 
                         diaryItem
                     }

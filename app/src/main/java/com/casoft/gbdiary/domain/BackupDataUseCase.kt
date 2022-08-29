@@ -8,13 +8,12 @@ import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
 import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.Result
-import com.casoft.gbdiary.model.toBackupData
+import com.casoft.gbdiary.model.toBackupDataItem
 import com.google.api.services.drive.model.File
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import java.time.LocalDate
-import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 class BackupDataUseCase @Inject constructor(
@@ -33,8 +32,10 @@ class BackupDataUseCase @Inject constructor(
         send(Result.Loading.Start)
         delay(200)
 
-        val progressUnit = 0.95f / diaryItemsToBackup.size
-        val finishedJobs = AtomicInteger()
+        val progress = JobProgress(
+            numberOfJobs = diaryItemsToBackup.size,
+            maxProgress = 0.95f
+        )
 
         val existingBackupDataItems = backupDataSource.getData(account = params)
             .data
@@ -50,7 +51,7 @@ class BackupDataUseCase @Inject constructor(
                         images = diaryItem.images
                     ).map { it.id }
 
-                    val backupDataItem = diaryItem.toBackupData(imageIds = uploadedImageIds)
+                    val backupDataItem = diaryItem.toBackupDataItem(imageIds = uploadedImageIds)
                     val existingBackupDataItemIndex = existingBackupDataItems.indexOfFirst {
                         it.day == backupDataItem.day
                     }
@@ -61,8 +62,8 @@ class BackupDataUseCase @Inject constructor(
                         existingBackupDataItems.add(backupDataItem)
                     }
 
-                    val progress = progressUnit * finishedJobs.incrementAndGet()
-                    send(Result.Loading(progress))
+                    val currentProgress = progress.increment()
+                    send(Result.Loading(currentProgress))
                 }
             }.awaitAll()
 
