@@ -43,6 +43,49 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_MAIN_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3254740572701956/9418407327\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_TIMELINE_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3254740572701956/3897082362\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_SETTINGS_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3254740572701956/6872683773\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_BACKUP_REWARDED_INTERSTITIAL_AD_UNIT_ID",
+                value = "\"ca-app-pub-3254740572701956/4246520436\""
+            )
+        }
+        getByName("debug") {
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_MAIN_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3940256099942544/6300978111\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_TIMELINE_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3940256099942544/6300978111\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_SETTINGS_BANNER_AD_UNIT_ID",
+                value = "\"ca-app-pub-3940256099942544/6300978111\""
+            )
+            buildConfigField(
+                type = "String",
+                name = "ADMOB_BACKUP_REWARDED_INTERSTITIAL_AD_UNIT_ID",
+                value = "\"ca-app-pub-3940256099942544/5354046379\""
+            )
         }
     }
 
@@ -117,6 +160,7 @@ dependencies {
     implementation(Libs.Accompanist.PAGER)
     implementation(Libs.Accompanist.SYSTEM_UI_CONTROLLER)
 
+    implementation(Libs.GooglePlayServices.ADS)
     implementation(Libs.GooglePlayServices.AUTH)
 
     implementation(Libs.GoogleDrive.HTTP_CLIENT)

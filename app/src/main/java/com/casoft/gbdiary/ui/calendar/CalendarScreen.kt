@@ -11,12 +11,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.casoft.gbdiary.BuildConfig
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDate
@@ -108,20 +113,40 @@ private fun CalendarScreen(
                 }
             }
         }
-        if (state.currentYearMonth != today.yearMonth) {
-            TodayButton(
-                onClick = { state.currentYearMonth = today.yearMonth },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 34.dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        ) {
+            Box(Modifier.fillMaxWidth()) {
+                if (state.currentYearMonth != today.yearMonth) {
+                    TodayButton(
+                        onClick = { state.currentYearMonth = today.yearMonth },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 20.dp)
+                    )
+                }
+                WriteButton(
+                    onClick = { onWriteClick(today) },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 24.dp, bottom = 8.dp)
+                )
+            }
+            AndroidView(
+                factory = { context ->
+                    AdView(context).apply {
+                        setAdSize(AdSize.BANNER)
+                        adUnitId = BuildConfig.ADMOB_MAIN_BANNER_AD_UNIT_ID
+
+                        val adRequest = AdRequest.Builder().build()
+                        loadAd(adRequest)
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
-        WriteButton(
-            onClick = { onWriteClick(today) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 24.dp, bottom = 34.dp)
-        )
         if (showMonthPickerDialog) {
             MonthPickerDialog(
                 initialYear = state.currentYearMonth.year,

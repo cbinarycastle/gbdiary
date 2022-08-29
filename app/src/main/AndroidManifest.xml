@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GBDiary">
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3254740572701956~8058591175" />
+
         <activity
             android:name="com.casoft.gbdiary.ui.MainActivity"
             android:exported="true"
@@ -36,6 +40,9 @@
                 android:value="androidx.startup" />
             <meta-data
                 android:name="com.casoft.gbdiary.util.initializers.NotificationChannelInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.casoft.gbdiary.util.initializers.AdmobInitializer"
                 android:value="androidx.startup" />
         </provider>
 
