@@ -17,5 +17,6 @@ class EnableNotificationUseCase @Inject constructor(
         val time = LocalTime.of(22, 0)
         diaryAlarmManager.setAlarm(time)
         settingsDataSource.setNotificationTime(time)
+        diaryAlarmManager.enableAlarmBootReceiver()
     }
 }

@@ -2,8 +2,10 @@ package com.casoft.gbdiary.notification
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,9 +35,29 @@ class DiaryAlarmManager @Inject constructor(
         )
     }
 
+    fun enableAlarmBootReceiver() {
+        val receiver = ComponentName(context, AlarmBootReceiver::class.java)
+
+        context.packageManager.setComponentEnabledSetting(
+            receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+
     fun cancelAlarm() {
         val pendingIntent = makePendingIntent()
         alarmManager?.cancel(pendingIntent)
+    }
+
+    fun disableAlarmBootReceiver() {
+        val receiver = ComponentName(context, AlarmBootReceiver::class.java)
+
+        context.packageManager.setComponentEnabledSetting(
+            receiver,
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
+        )
     }
 
     private fun makePendingIntent(): PendingIntent {

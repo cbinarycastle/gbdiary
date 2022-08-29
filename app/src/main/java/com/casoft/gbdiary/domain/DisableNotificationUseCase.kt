@@ -15,5 +15,6 @@ class DisableNotificationUseCase @Inject constructor(
     override suspend fun execute(params: Unit) {
         diaryAlarmManager.cancelAlarm()
         settingsDataSource.setNotificationTime(null)
+        diaryAlarmManager.disableAlarmBootReceiver()
     }
 }
