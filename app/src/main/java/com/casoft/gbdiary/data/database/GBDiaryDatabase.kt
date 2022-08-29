@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.data
+package com.casoft.gbdiary.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -13,6 +13,7 @@ internal const val DATABASE_NAME = "gbdiary"
     IntListConverter::class,
     StringListConverter::class,
     StickerListConverter::class,
+    DiaryItemStatusConverter::class
 ])
 abstract class GBDiaryDatabase : RoomDatabase() {
 

@@ -2,8 +2,8 @@ package com.casoft.gbdiary.di
 
 import android.content.Context
 import androidx.room.Room
-import com.casoft.gbdiary.data.DATABASE_NAME
-import com.casoft.gbdiary.data.GBDiaryDatabase
+import com.casoft.gbdiary.data.database.DATABASE_NAME
+import com.casoft.gbdiary.data.database.GBDiaryDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

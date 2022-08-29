@@ -2,8 +2,10 @@ package com.casoft.gbdiary.domain
 
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupData
+import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.diary.DiaryDataSource
+import com.casoft.gbdiary.data.diary.DiaryItemStatus
 import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
 import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
@@ -45,21 +47,41 @@ class BackupDataUseCase @Inject constructor(
             diaryItemsToBackup.map { diaryItemEntity ->
                 async {
                     val diaryItem = diaryItemEntity.toDiaryItem()
-                    val uploadedImageIds = uploadImages(
-                        account = params,
-                        date = diaryItem.date,
-                        images = diaryItem.images
-                    ).map { it.id }
 
-                    val backupDataItem = diaryItem.toBackupDataItem(imageIds = uploadedImageIds)
-                    val existingBackupDataItemIndex = existingBackupDataItems.indexOfFirst {
-                        it.day == backupDataItem.day
-                    }
+                    when (diaryItemEntity.status) {
+                        DiaryItemStatus.ENABLED -> {
+                            val uploadedImageIds = uploadImages(
+                                account = params,
+                                date = diaryItem.date,
+                                images = diaryItem.images
+                            ).map { it.id }
 
-                    if (existingBackupDataItemIndex >= 0) {
-                        existingBackupDataItems[existingBackupDataItemIndex] = backupDataItem
-                    } else {
-                        existingBackupDataItems.add(backupDataItem)
+                            val backupDataItem =
+                                diaryItem.toBackupDataItem(imageIds = uploadedImageIds)
+                            val existingBackupDataItemIndex = existingBackupDataItems.indexOfFirst {
+                                it.day == backupDataItem.day
+                            }
+
+                            if (existingBackupDataItemIndex >= 0) {
+                                existingBackupDataItems[existingBackupDataItemIndex] =
+                                    backupDataItem
+                            } else {
+                                existingBackupDataItems.add(backupDataItem)
+                            }
+                        }
+                        DiaryItemStatus.DELETED -> {
+                            val matchedIndex =
+                                existingBackupDataItems.indexOfFirst { backupDataItem ->
+                                    val backupDataItemDate = LocalDate.parse(
+                                        backupDataItem.day,
+                                        BackupDataDateFormatter
+                                    )
+                                    backupDataItemDate == diaryItem.date
+                                }
+                            if (matchedIndex >= 0) {
+                                existingBackupDataItems.removeAt(matchedIndex)
+                            }
+                        }
                     }
 
                     val currentProgress = progress.increment()

@@ -9,14 +9,14 @@ import java.time.YearMonth
 class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataSource {
 
     override fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>> {
-        return diaryItemDao.getStreamByYearAndMonth(
+        return diaryItemDao.getEnabledStreamByYearAndMonth(
             year = yearMonth.year,
             month = yearMonth.monthValue
         )
     }
 
     override fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity> {
-        return diaryItemDao.getStreamByDate(
+        return diaryItemDao.getEnabledStreamByDate(
             year = date.year,
             month = date.monthValue,
             dayOfMonth = date.dayOfMonth
@@ -36,7 +36,12 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataS
     }
 
     override suspend fun deleteDiaryitem(item: DiaryItem) {
-        diaryItemDao.delete(item.toDiaryItemEntity())
+        val itemEntity = item.toDiaryItemEntity()
+            .copy(
+                status = DiaryItemStatus.DELETED,
+                isSync = false
+            )
+        diaryItemDao.update(itemEntity)
     }
 
     override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {

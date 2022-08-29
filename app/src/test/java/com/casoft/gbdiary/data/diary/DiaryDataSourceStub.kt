@@ -33,6 +33,10 @@ class DiaryDataSourceStub : DiaryDataSource {
         _diaryItems.add(item.toDiaryItemEntity())
     }
 
+    override suspend fun updateSyncAll(isSync: Boolean) {
+
+    }
+
     override suspend fun deleteDiaryitem(item: DiaryItem) {
         _diaryItems.removeAll { it.date.toLocalDate() == item.date }
     }

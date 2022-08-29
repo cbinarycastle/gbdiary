@@ -30,4 +30,4 @@ data class Date(
     val dayOfMonth: Int,
 )
 
-fun Date.toLocalDate() = LocalDate.of(year, month, dayOfMonth)
+fun Date.toLocalDate(): LocalDate = LocalDate.of(year, month, dayOfMonth)
