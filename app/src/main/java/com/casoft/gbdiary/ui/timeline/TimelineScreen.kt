@@ -16,9 +16,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ad.TIMELINE_BANNER_AD_UNIT_ID
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
+import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
@@ -80,7 +82,8 @@ private fun TimelineScreen(
             )
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(16.dp),
+                modifier = Modifier.weight(1f)
             ) {
                 items(diaryItems) { item ->
                     DiaryCard(
@@ -90,7 +93,9 @@ private fun TimelineScreen(
                     )
                 }
             }
+            AdBanner(TIMELINE_BANNER_AD_UNIT_ID)
         }
+
         if (diaryItems.isEmpty()) {
             Text(
                 text = "작성된 일기가 없어요",
@@ -99,6 +104,7 @@ private fun TimelineScreen(
                     .alpha(0.3f)
             )
         }
+
         if (showMonthPickerDialog) {
             MonthPickerDialog(
                 initialYear = yearMonth.year,
