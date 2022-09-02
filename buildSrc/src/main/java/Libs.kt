@@ -70,7 +70,6 @@ object Libs {
     }
 
     object GooglePlayServices {
-        const val ADS = "com.google.android.gms:play-services-ads:21.0.0"
         const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
     }
 
