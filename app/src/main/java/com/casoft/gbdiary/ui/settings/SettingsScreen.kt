@@ -15,6 +15,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ad.SETTING_BANNER_AD_UNIT_ID
+import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.GBDiarySwitch
 import com.casoft.gbdiary.ui.components.TimePickerDialog
@@ -64,7 +66,11 @@ private fun SettingsScreen(
         ) {
             AppBar(onBack = onBack)
             Spacer(Modifier.height(16.dp))
-            Column(Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
                 PurchaseButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -86,7 +92,9 @@ private fun SettingsScreen(
                 Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
                 ReviewItem()
             }
+            AdBanner(SETTING_BANNER_AD_UNIT_ID)
         }
+
         if (showTimePickerDialog && notificationTime != null) {
             TimePickerDialog(
                 initialTime = notificationTime,
