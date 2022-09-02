@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.util
+package com.casoft.gbdiary.ad
 
 const val MAIN_BANNER_AD_UNIT_ID = "031023e79ae5e784"
 const val TIMELINE_BANNER_AD_UNIT_ID = "b3a0a966e15b4607"

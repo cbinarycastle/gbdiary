@@ -12,6 +12,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ad.MAIN_BANNER_AD_UNIT_ID
+import com.casoft.gbdiary.ui.components.AD_HEIGHT
+import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -113,15 +116,23 @@ private fun CalendarScreen(
                 onClick = { state.currentYearMonth = today.yearMonth },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 34.dp)
+                    .padding(bottom = AD_HEIGHT.dp + 20.dp)
             )
         }
         WriteButton(
             onClick = { onWriteClick(today) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 24.dp, bottom = 34.dp)
+                .padding(
+                    end = 24.dp,
+                    bottom = AD_HEIGHT.dp + 8.dp
+                )
         )
+        AdBanner(
+            adUnitId = MAIN_BANNER_AD_UNIT_ID,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+
         if (showMonthPickerDialog) {
             MonthPickerDialog(
                 initialYear = state.currentYearMonth.year,
