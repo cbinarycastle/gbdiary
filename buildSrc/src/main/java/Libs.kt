@@ -53,6 +53,10 @@ object Libs {
         }
     }
 
+    object AppLovin {
+        const val APPLOVIN = "com.applovin:applovin-sdk:11.4.5"
+    }
+
     object Coil {
         const val COMPOSE = "io.coil-kt:coil-compose:2.1.0"
     }
@@ -71,6 +75,7 @@ object Libs {
 
     object GooglePlayServices {
         const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
+        const val ADS_IDENTIFIER = "com.google.android.gms:play-services-ads-identifier:18.0.1"
     }
 
     object GoogleDrive {

@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GBDiary">
 
+        <meta-data
+            android:name="applovin.sdk.key"
+            android:value="yTMaqcgQ9fus6qUyk-HSrdUPu9nc_oStiEDQbLsU12kOW3l5p4MdXrUnk2U0xpipKDHuqdwRxoyaZR_DZBabQE" />
+
         <activity
             android:name="com.casoft.gbdiary.ui.MainActivity"
             android:exported="true"
@@ -36,6 +40,9 @@
                 android:value="androidx.startup" />
             <meta-data
                 android:name="com.casoft.gbdiary.util.initializers.NotificationChannelInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="com.casoft.gbdiary.util.initializers.MaxInitializer"
                 android:value="androidx.startup" />
         </provider>
 

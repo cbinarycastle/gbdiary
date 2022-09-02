@@ -134,6 +134,9 @@ dependencies {
     implementation(Libs.Hilt.ANDROID)
     kapt(Libs.Hilt.COMPILER)
 
+    implementation(Libs.AppLovin.APPLOVIN)
+    implementation(Libs.GooglePlayServices.ADS_IDENTIFIER)
+
     androidTestImplementation(Libs.AndroidX.Test.ESPRESSO)
     androidTestImplementation(Libs.AndroidX.Test.JUNIT_EXT)
     testImplementation(Libs.Kotlin.TEST_JUNIT)
