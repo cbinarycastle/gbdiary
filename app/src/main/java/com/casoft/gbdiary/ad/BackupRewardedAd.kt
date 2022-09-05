@@ -10,7 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
@@ -22,12 +21,10 @@ class BackupRewardedAd @Inject constructor(
     private val listener = object : MaxRewardedAdListener {
 
         override fun onAdLoaded(maxAd: MaxAd) {
-            Timber.d("binarycastle onAdLoaded")
             retryAttempt = 0
         }
 
         override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
-            Timber.d("binarycastle onAdLoadFailed")
             retryAttempt++
 
             val delay = retryAttempt.toFloat().coerceAtMost(6f).pow(2).toLong()
@@ -38,7 +35,6 @@ class BackupRewardedAd @Inject constructor(
         }
 
         override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
-            Timber.d("binarycastle onAdDisplayFailed")
             maxRewardedAd.loadAd()
         }
 
@@ -47,7 +43,6 @@ class BackupRewardedAd @Inject constructor(
         override fun onAdClicked(maxAd: MaxAd) {}
 
         override fun onAdHidden(maxAd: MaxAd) {
-            Timber.d("binarycastle onAdHidden")
             maxRewardedAd.loadAd()
         }
 
@@ -56,7 +51,6 @@ class BackupRewardedAd @Inject constructor(
         override fun onRewardedVideoCompleted(maxAd: MaxAd) {}
 
         override fun onUserRewarded(maxAd: MaxAd, maxReward: MaxReward) {
-            Timber.d("binarycastle onUserRewarded")
             onUserRewarded?.invoke()
         }
     }
