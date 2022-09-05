@@ -3,6 +3,7 @@ package com.casoft.gbdiary.domain
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupData
 import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
+import com.casoft.gbdiary.data.backup.BackupDataNotFoundException
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.diary.DiaryDataSource
 import com.casoft.gbdiary.data.diary.DiaryItemStatus
@@ -39,9 +40,13 @@ class BackupDataUseCase @Inject constructor(
             maxProgress = 0.95f
         )
 
-        val existingBackupDataItems = backupDataSource.getData(account = params)
-            .data
-            .toMutableList()
+        val existingBackupDataItems = try {
+            backupDataSource.getData(account = params)
+                .data
+                .toMutableList()
+        } catch (e: BackupDataNotFoundException) {
+            mutableListOf()
+        }
 
         coroutineScope {
             diaryItemsToBackup.map { diaryItemEntity ->
