@@ -17,11 +17,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.ad.BackupRewardedAd
 import com.casoft.gbdiary.ui.components.GBDiaryAlertDialog
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.ProgressDialog
 import com.casoft.gbdiary.ui.model.Progress
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.util.findActivity
 import com.casoft.gbdiary.util.toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.launch
@@ -34,10 +36,17 @@ fun BackupScreen(
     val context = LocalContext.current
     val signInClient = viewModel.googleSignInClient
 
+    val coroutineScope = rememberCoroutineScope()
+    val rewardedAd = remember {
+        BackupRewardedAd(
+            activity = context.findActivity(),
+            coroutineScope = coroutineScope
+        )
+    }
+
     val email by viewModel.email.collectAsState()
     val backupProgress by viewModel.backupProgress.collectAsState()
     val syncProgress by viewModel.syncProgress.collectAsState()
-    var showSignInDialog by remember { mutableStateOf(false) }
 
     val googleSignInLauncher = rememberLauncherForActivityResult(StartActivityForResult()) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
@@ -46,8 +55,15 @@ fun BackupScreen(
 
     LaunchedEffect(viewModel) {
         launch {
-            viewModel.shouldSignIn.collect {
-                showSignInDialog = true
+            viewModel.showRewardedAdEvent.collect { action ->
+                rewardedAd.apply {
+                    showAd {
+                        when (action) {
+                            RewardedAction.BACKUP -> viewModel.backup()
+                            RewardedAction.SYNC -> viewModel.sync()
+                        }
+                    }
+                }
             }
         }
 
@@ -62,10 +78,8 @@ fun BackupScreen(
         signedInEmail = email,
         backupProgress = backupProgress,
         syncProgress = syncProgress,
-        showSignInDialog = showSignInDialog,
-        hideSignInDialog = { showSignInDialog = false },
-        backup = viewModel::backup,
-        sync = viewModel::sync,
+        backup = viewModel::tryBackup,
+        sync = viewModel::trySync,
         signIn = { googleSignInLauncher.launch(signInClient.signInIntent) },
         signOut = viewModel::signOut,
         onBack = onBack
@@ -77,14 +91,13 @@ private fun BackupScreen(
     signedInEmail: String?,
     backupProgress: Progress,
     syncProgress: Progress,
-    showSignInDialog: Boolean,
-    hideSignInDialog: () -> Unit,
     backup: () -> Unit,
     sync: () -> Unit,
     signIn: () -> Unit,
     signOut: () -> Unit,
     onBack: () -> Unit,
 ) {
+    var showSignInDialog by remember { mutableStateOf(false) }
     var showSignOutDialog by remember { mutableStateOf(false) }
     var showBackupDialog by remember { mutableStateOf(false) }
     var showSyncDialog by remember { mutableStateOf(false) }
@@ -107,12 +120,24 @@ private fun BackupScreen(
             SettingsItem(
                 name = "데이터 백업",
                 icon = painterResource(R.drawable.backup),
-                onClick = { showBackupDialog = true }
+                onClick = {
+                    if (signedInEmail == null) {
+                        showSignInDialog = true
+                    } else {
+                        showBackupDialog = true
+                    }
+                }
             )
             SettingsItem(
                 name = "데이터 복원",
                 icon = painterResource(R.drawable.restore),
-                onClick = { showSyncDialog = true }
+                onClick = {
+                    if (signedInEmail == null) {
+                        showSignInDialog = true
+                    } else {
+                        showSyncDialog = true
+                    }
+                }
             )
             Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
             if (signedInEmail == null) {
@@ -185,10 +210,10 @@ private fun BackupScreen(
         if (showSignInDialog) {
             GBDiaryAlertDialog(
                 onConfirm = {
-                    hideSignInDialog()
+                    showSignInDialog = false
                     signIn()
                 },
-                onDismiss = hideSignInDialog,
+                onDismiss = { showSignInDialog = false },
                 content = {
                     Text(
                         text = "Google 로그인이 필요한 서비스입니다.\n로그인 하시겠습니까?",

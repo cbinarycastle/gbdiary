@@ -1,6 +1,5 @@
 package com.casoft.gbdiary.ui.settings
 
-import android.accounts.Account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.data.backup.BackupDataNotFoundException
@@ -43,16 +42,21 @@ class BackupViewModel @Inject constructor(
             initialValue = null
         )
 
-    private val _shouldSignIn = MutableSharedFlow<Unit>()
-    val shouldSignIn = _shouldSignIn.asSharedFlow()
+    private val _showRewardedAdEvent = MutableSharedFlow<RewardedAction>()
+    val showRewardedAdEvent = _showRewardedAdEvent
 
-    private val _message = MutableSharedFlow<String>()
-    val message = _message.asSharedFlow()
+    private val backupSignal = MutableSharedFlow<Unit>()
 
-    private val backupEvent = MutableSharedFlow<Account>()
-
-    val backupProgress = backupEvent
-        .flatMapLatest { account -> backupDataUseCase(account) }
+    val backupProgress = backupSignal
+        .flatMapLatest {
+            val account = user.value?.account
+            if (account == null) {
+                _message.emit("로그인 후 이용 가능합니다.")
+                emptyFlow()
+            } else {
+                backupDataUseCase(account)
+            }
+        }
         .map { result ->
             when (result) {
                 is Result.Success -> {
@@ -76,10 +80,18 @@ class BackupViewModel @Inject constructor(
             initialValue = Progress.NotInProgress
         )
 
-    private val syncEvent = MutableSharedFlow<Account>()
+    private val syncSignal = MutableSharedFlow<Unit>()
 
-    val syncProgress = syncEvent
-        .flatMapLatest { account -> syncDataUseCase(account) }
+    val syncProgress = syncSignal
+        .flatMapLatest {
+            val account = user.value?.account
+            if (account == null) {
+                _message.emit("로그인 후 이용 가능합니다.")
+                emptyFlow()
+            } else {
+                syncDataUseCase(account)
+            }
+        }
         .map { result ->
             when (result) {
                 is Result.Success -> {
@@ -103,25 +115,32 @@ class BackupViewModel @Inject constructor(
             initialValue = Progress.NotInProgress
         )
 
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
+
+    fun tryBackup() {
+        viewModelScope.launch {
+            // TODO: 프리미엄 유저 처리
+            _showRewardedAdEvent.emit(RewardedAction.BACKUP)
+        }
+    }
+
     fun backup() {
         viewModelScope.launch {
-            val account = user.value?.account
-            if (account == null) {
-                _shouldSignIn.emit(Unit)
-            } else {
-                backupEvent.emit(account)
-            }
+            backupSignal.emit(Unit)
+        }
+    }
+
+    fun trySync() {
+        viewModelScope.launch {
+            // TODO: 프리미엄 유저 처리
+            _showRewardedAdEvent.emit(RewardedAction.SYNC)
         }
     }
 
     fun sync() {
         viewModelScope.launch {
-            val account = user.value?.account
-            if (account == null) {
-                _shouldSignIn.emit(Unit)
-            } else {
-                syncEvent.emit(account)
-            }
+            syncSignal.emit(Unit)
         }
     }
 
