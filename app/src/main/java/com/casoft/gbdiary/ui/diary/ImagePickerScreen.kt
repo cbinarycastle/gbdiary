@@ -84,8 +84,7 @@ private fun ImagePickerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .systemBarsPadding()
         ) {
             AppBar(
                 selectionCount = numberOfSelectedImages,

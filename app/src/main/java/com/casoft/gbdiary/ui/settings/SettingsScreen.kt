@@ -61,8 +61,7 @@ private fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .systemBarsPadding()
         ) {
             AppBar(onBack = onBack)
             Spacer(Modifier.height(16.dp))

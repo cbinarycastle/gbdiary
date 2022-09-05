@@ -41,8 +41,7 @@ private fun ThemeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         AppBar(onBack)
         Themes.forEach { theme ->

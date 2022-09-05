@@ -45,8 +45,7 @@ fun ImageViewerScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .statusBarsPadding()
-            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
             AppBar(

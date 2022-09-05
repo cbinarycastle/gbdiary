@@ -221,8 +221,7 @@ private fun DiaryScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .systemBarsPadding()
                 .imePadding()
         ) {
             Column(Modifier.fillMaxSize()) {

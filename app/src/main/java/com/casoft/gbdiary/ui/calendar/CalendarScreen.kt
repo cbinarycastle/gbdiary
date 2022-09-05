@@ -71,8 +71,7 @@ private fun CalendarScreen(
 
     Box(
         modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding()
+            .systemBarsPadding()
     ) {
         Column(Modifier.fillMaxSize()) {
             AppBar(

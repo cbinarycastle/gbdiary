@@ -106,8 +106,7 @@ private fun BackupScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
+                .systemBarsPadding()
         ) {
             Column {
                 AppBar(onBack)
