@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">꼬박다이어리</string>
+    <string name="app_name">꼬박일기</string>
 
     <string name="notification_channel_diary">일기 알림</string>
 </resources>
