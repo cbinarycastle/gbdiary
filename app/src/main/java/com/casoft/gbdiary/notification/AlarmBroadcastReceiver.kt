@@ -19,7 +19,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         val pendingIntent = makePendingIntent(context)
         val notification = NotificationCompat.Builder(context, GBDiaryNotificationChannel.DIARY.id)
             .setSmallIcon(R.drawable.happiness)
-            .setContentText("일기를 작성하세요!")
+            .setContentText("오늘도 꼬박꼬박 하루를 기록해보세요 :)")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .build()
