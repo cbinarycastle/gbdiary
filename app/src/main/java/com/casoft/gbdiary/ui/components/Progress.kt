@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import kotlin.math.roundToInt
 
@@ -27,6 +28,7 @@ fun Progress(progress: Float) {
         modifier = Modifier
             .fillMaxSize()
             .background(GBDiaryTheme.gbDiaryColors.dimmingOverlay)
+            .noRippleClickable { }
     ) {
         Canvas(Modifier.size(72.dp)) {
             drawCircle(
