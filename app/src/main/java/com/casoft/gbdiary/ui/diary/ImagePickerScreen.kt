@@ -150,7 +150,7 @@ private fun AppBar(
                     contentColor = GBDiaryTheme.colors.onBackground
                 )
             ) {
-                Text("선택 $selectionCount")
+                Text("$selectionCount 추가")
             }
         }
     }
