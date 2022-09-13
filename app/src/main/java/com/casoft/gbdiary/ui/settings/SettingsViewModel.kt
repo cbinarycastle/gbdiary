@@ -17,9 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    getNotificationTimeUseCase: GetNotificationTimeUseCase,
     private val enableNotificationUseCase: EnableNotificationUseCase,
     private val disableNotificationUseCase: DisableNotificationUseCase,
+    getNotificationTimeUseCase: GetNotificationTimeUseCase,
     private val setNotificationTimeUseCase: SetNotificationTimeUseCase,
 ) : ViewModel() {
 

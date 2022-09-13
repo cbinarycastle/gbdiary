@@ -10,9 +10,17 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         val settingsViewModel = hiltViewModel<SettingsViewModel>()
         SettingsScreen(
             viewModel = settingsViewModel,
+            onPurchaseClick = actions::navigateToPurchase,
             onThemeClick = actions::navigateToTheme,
             onBackupClick = actions::navigateToBackup,
             onBack = actions::navigateUp
+        )
+    }
+    composable(SettingsDestination.PURCHASE_ROUTE) {
+        val purchaseViewModel = hiltViewModel<PurchaseViewModel>()
+        PurchaseScreen(
+            viewModel = purchaseViewModel,
+            onClose = actions::navigateUp
         )
     }
     composable(SettingsDestination.THEME_ROUTE) {
@@ -33,6 +41,10 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
 
 class SettingsActions(private val navController: NavHostController) {
 
+    fun navigateToPurchase() {
+        navController.navigate(SettingsDestination.PURCHASE_ROUTE)
+    }
+
     fun navigateToTheme() {
         navController.navigate(SettingsDestination.THEME_ROUTE)
     }
@@ -48,6 +60,7 @@ class SettingsActions(private val navController: NavHostController) {
 
 object SettingsDestination {
     const val HOME_ROUTE = "settings/home"
+    const val PURCHASE_ROUTE = "settings/purchase"
     const val THEME_ROUTE = "settings/theme"
     const val BACKUP_ROUTE = "settings/backup"
 }

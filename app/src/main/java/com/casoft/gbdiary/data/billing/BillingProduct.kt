@@ -1,5 +1,5 @@
 package com.casoft.gbdiary.data.billing
 
-enum class InAppItem(val productId: String) {
+enum class BillingProduct(val id: String) {
     PREMIUM("premium")
 }

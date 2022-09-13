@@ -29,9 +29,8 @@ import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.rememberAlertDialogState
 import com.casoft.gbdiary.ui.extension.toContentUri
-import com.casoft.gbdiary.ui.model.Message
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.util.toast
+import com.casoft.gbdiary.util.collectMessage
 
 const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
 
@@ -49,12 +48,7 @@ fun ImagePickerScreen(
     val numberOfSelectedImages by viewModel.numberOfSelectedImages.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.message.collect {
-            when (it) {
-                is Message.ToastMessage -> context.toast(it.text)
-                is Message.AlertDialogMessage -> alertDialogState.message = it
-            }
-        }
+        viewModel.message.collectMessage(context, alertDialogState)
     }
 
     LaunchedEffect(maxSelectionCount) {

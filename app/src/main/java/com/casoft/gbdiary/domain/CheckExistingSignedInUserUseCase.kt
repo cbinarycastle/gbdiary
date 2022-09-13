@@ -1,6 +1,6 @@
 package com.casoft.gbdiary.domain
 
-import com.casoft.gbdiary.data.auth.UserDataSource
+import com.casoft.gbdiary.data.user.UserDataSource
 import com.casoft.gbdiary.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject

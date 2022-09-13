@@ -1,8 +1,8 @@
 package com.casoft.gbdiary.di
 
 import android.content.Context
-import com.casoft.gbdiary.data.auth.GoogleUserDataSource
-import com.casoft.gbdiary.data.auth.UserDataSource
+import com.casoft.gbdiary.data.user.GoogleUserDataSource
+import com.casoft.gbdiary.data.user.UserDataSource
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

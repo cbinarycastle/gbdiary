@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
@@ -39,6 +40,7 @@ fun SettingsScreen(
         notificationTime = notificationTime,
         onNotificationEnabledChange = viewModel::setNotificationEnabled,
         onNotificationTimeChange = viewModel::setNotificationTime,
+        onPurchaseClick = onPurchaseClick,
         onThemeClick = onThemeClick,
         onBackupClick = onBackupClick,
         onBack = onBack
@@ -51,6 +53,7 @@ private fun SettingsScreen(
     notificationTime: LocalTime?,
     onNotificationEnabledChange: (Boolean) -> Unit,
     onNotificationTimeChange: (LocalTime) -> Unit,
+    onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
@@ -71,6 +74,7 @@ private fun SettingsScreen(
                     .weight(1f)
             ) {
                 PurchaseButton(
+                    onClick = onPurchaseClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp)
@@ -120,7 +124,10 @@ private fun AppBar(onBack: () -> Unit) {
 }
 
 @Composable
-private fun PurchaseButton(modifier: Modifier = Modifier) {
+private fun PurchaseButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
@@ -133,7 +140,7 @@ private fun PurchaseButton(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .clickable { /*TODO*/ }
+                .clickable { onClick() }
                 .padding(vertical = 4.dp)
         ) {
             Text(
@@ -234,6 +241,7 @@ fun SettingsScreenPreview() {
             notificationTime = LocalTime.of(22, 0),
             onNotificationEnabledChange = {},
             onNotificationTimeChange = {},
+            onPurchaseClick = {},
             onThemeClick = {},
             onBackupClick = {},
             onBack = {}

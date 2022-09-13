@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.data.auth
+package com.casoft.gbdiary.data.user
 
 import android.content.Context
 import com.casoft.gbdiary.model.User

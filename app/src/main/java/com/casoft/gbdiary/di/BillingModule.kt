@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
@@ -21,10 +20,8 @@ class BillingModule {
     fun provideBillingDataSource(
         @ApplicationContext applicationContext: Context,
         @ApplicationScope applicationScope: CoroutineScope,
-        @IoDispatcher ioDispatcher: CoroutineDispatcher,
     ): BillingDataSource = GoogleBillingDataSource(
         context = applicationContext,
-        externalScope = applicationScope,
-        ioDispatcher = ioDispatcher
+        externalScope = applicationScope
     )
 }
