@@ -55,7 +55,11 @@ class DiaryViewModel @Inject constructor(
         .onEach { diaryItem -> _existsDiary.value = diaryItem != null }
         .filterNotNull()
         .onEach { diaryItem ->
-            _stickers.value = diaryItem.stickers
+            stickerList.run {
+                clear()
+                addAll(diaryItem.stickers)
+            }
+            publishStickerList()
             _content.value = diaryItem.content
             _images.value = diaryItem.images.map { filePath -> File(filePath) }
         }
@@ -71,7 +75,9 @@ class DiaryViewModel @Inject constructor(
     private val _initialStickerBottomSheetShown = MutableStateFlow(false)
     val initialStickerBottomSheetShown = _initialStickerBottomSheetShown.asStateFlow()
 
-    private val _stickers = MutableStateFlow<List<Sticker>>(emptyList())
+    private val stickerList = mutableListOf<Sticker>()
+
+    private val _stickers = MutableStateFlow<List<Sticker>>(listOf())
     val stickers = _stickers.asStateFlow()
 
     private val _content = MutableStateFlow("")
@@ -115,14 +121,24 @@ class DiaryViewModel @Inject constructor(
     }
 
     fun addSticker(sticker: Sticker) {
-        val selectedStickers = _stickers.value
-        if (selectedStickers.size < MAX_STICKERS) {
-            _stickers.value = selectedStickers + sticker
+        if (stickerList.size < MAX_STICKERS) {
+            stickerList.add(sticker)
         }
+        publishStickerList()
+    }
+
+    fun changeSticker(index: Int, sticker: Sticker) {
+        stickerList[index] = sticker
+        publishStickerList()
     }
 
     fun removeSticker(index: Int) {
-        _stickers.value = _stickers.value.filterIndexed { i, _ -> i != index }
+        stickerList.removeAt(index)
+        publishStickerList()
+    }
+
+    private fun publishStickerList() {
+        _stickers.value = stickerList.toList()
     }
 
     fun inputText(text: String) {

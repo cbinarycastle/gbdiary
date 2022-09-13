@@ -122,11 +122,9 @@ fun DiaryScreen(
         images = images,
         isValidToSave = isValidToSave,
         textAlign = textAlign,
+        addSticker = viewModel::addSticker,
+        changeSticker = viewModel::changeSticker,
         onShowStickerBottomSheetInitially = viewModel::onShowStickerBottomSheetInitially,
-        onStickerSelected = {
-            viewModel.addSticker(it)
-            coroutineScope.launch { bottomSheetState.hide() }
-        },
         onRemoveSticker = viewModel::removeSticker,
         onContentChange = viewModel::inputText,
         onRemoveImage = viewModel::removeImage,
@@ -160,8 +158,9 @@ private fun DiaryScreen(
     images: List<File>,
     isValidToSave: Boolean,
     textAlign: TextAlign,
+    addSticker: (Sticker) -> Unit,
+    changeSticker: (Int, Sticker) -> Unit,
     onShowStickerBottomSheetInitially: () -> Unit,
-    onStickerSelected: (Sticker) -> Unit,
     onRemoveSticker: (Int) -> Unit,
     onContentChange: (String) -> Unit,
     onRemoveImage: (Int) -> Unit,
@@ -179,6 +178,7 @@ private fun DiaryScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var visibleBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER) }
+    var selectedStickerIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
@@ -200,13 +200,29 @@ private fun DiaryScreen(
         }
     }
 
+    LaunchedEffect(bottomSheetState.isVisible) {
+        if (bottomSheetState.isVisible.not()) {
+            selectedStickerIndex = null
+        }
+    }
+
     ModalBottomSheetLayout(
         sheetContent = {
             when (visibleBottomSheet) {
                 DiaryBottomSheet.STICKER -> StickerBottomSheet(
                     date = date,
                     isPremiumUser = isPremiumUser,
-                    onStickerSelected = onStickerSelected
+                    onStickerSelected = { sticker ->
+                        val index = selectedStickerIndex
+                        if (index == null) {
+                            addSticker(sticker)
+                        } else {
+                            changeSticker(index, sticker)
+                        }
+                        coroutineScope.launch {
+                            bottomSheetState.hide()
+                        }
+                    }
                 )
                 DiaryBottomSheet.MORE -> MoreBottomSheet(
                     onDelete = {
@@ -231,9 +247,7 @@ private fun DiaryScreen(
         ) {
             Column(Modifier.fillMaxSize()) {
                 AppBar(
-                    onBack = {
-                        onBack()
-                    },
+                    onBack = onBack,
                     onMoreClick = {
                         coroutineScope.launch {
                             visibleBottomSheet = DiaryBottomSheet.MORE
@@ -266,6 +280,13 @@ private fun DiaryScreen(
                     Spacer(Modifier.height(8.dp))
                     SelectedStickers(
                         stickers = stickers,
+                        onStickerClick = { index ->
+                            selectedStickerIndex = index
+                            visibleBottomSheet = DiaryBottomSheet.STICKER
+                            coroutineScope.launch {
+                                bottomSheetState.show()
+                            }
+                        },
                         onStickerLongPress = { index -> visibleRemoveStickerButtonIndex = index }
                     )
                     Spacer(Modifier.height(4.dp))
@@ -413,6 +434,7 @@ private fun AddStickerButton(
 @Composable
 private fun SelectedStickers(
     stickers: List<Sticker>,
+    onStickerClick: (Int) -> Unit,
     onStickerLongPress: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -425,7 +447,10 @@ private fun SelectedStickers(
                 SelectedSticker(
                     sticker = sticker,
                     modifier = Modifier.pointerInput(Unit) {
-                        detectTapGestures(onLongPress = { onStickerLongPress(index) })
+                        detectTapGestures(
+                            onTap = { onStickerClick(index) },
+                            onLongPress = { onStickerLongPress(index) }
+                        )
                     }
                 )
             }
@@ -869,8 +894,9 @@ fun DiaryScreenPreview() {
             images = listOf(),
             isValidToSave = false,
             textAlign = TextAlign.Left,
+            addSticker = {},
+            changeSticker = { _, _ -> },
             onShowStickerBottomSheetInitially = {},
-            onStickerSelected = {},
             onRemoveSticker = {},
             onContentChange = {},
             onRemoveImage = {},
