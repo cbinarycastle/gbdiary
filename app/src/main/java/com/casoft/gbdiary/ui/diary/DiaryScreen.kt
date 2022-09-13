@@ -87,7 +87,6 @@ fun DiaryScreen(
     val stickers by viewModel.stickers.collectAsState()
     val content by viewModel.content.collectAsState()
     val images by viewModel.images.collectAsState()
-    val isValidToSave by viewModel.isValidToSave.collectAsState()
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
     BackHandler {
@@ -120,7 +119,6 @@ fun DiaryScreen(
         stickers = stickers,
         content = content,
         images = images,
-        isValidToSave = isValidToSave,
         textAlign = textAlign,
         addSticker = viewModel::addSticker,
         changeSticker = viewModel::changeSticker,
@@ -156,7 +154,6 @@ private fun DiaryScreen(
     stickers: List<Sticker>,
     content: String,
     images: List<File>,
-    isValidToSave: Boolean,
     textAlign: TextAlign,
     addSticker: (Sticker) -> Unit,
     changeSticker: (Int, Sticker) -> Unit,
@@ -336,7 +333,6 @@ private fun DiaryScreen(
                         onDoneClick()
                     },
                     textAlign = textAlign,
-                    doneButtonVisible = isValidToSave
                 )
             }
 
@@ -593,7 +589,6 @@ private fun SuggestionBar(
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
-    doneButtonVisible: Boolean = false,
 ) {
     val borderColor = GBDiaryTheme.colors.onBackground
 
@@ -635,7 +630,7 @@ private fun SuggestionBar(
                 }
             }
         }
-        if (doneButtonVisible && WindowInsets.isImeVisible) {
+        if (WindowInsets.isImeVisible) {
             SuggestionBarIcon(onClick = onDoneClick) {
                 Icon(
                     painter = painterResource(R.drawable.done),
@@ -892,7 +887,6 @@ fun DiaryScreenPreview() {
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
             content = "내용",
             images = listOf(),
-            isValidToSave = false,
             textAlign = TextAlign.Left,
             addSticker = {},
             changeSticker = { _, _ -> },
