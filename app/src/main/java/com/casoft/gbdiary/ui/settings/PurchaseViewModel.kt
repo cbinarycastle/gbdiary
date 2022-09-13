@@ -49,7 +49,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.BILLING_UNAVAILABLE -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[BILLING_UNAVAILABLE] 결제 서비스를 이용할 수 없습니다.\n고객센터에 문의해주세요.",
+                        text = "[BILLING_UNAVAILABLE]\n결제 서비스를 이용할 수 없습니다.\n고객센터에 문의해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -57,7 +57,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.DEVELOPER_ERROR -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[DEVELOPER_ERROR] 결제 진행 중 오류가 발생했습니다.\n고객센터에 문의해주세요.",
+                        text = "[DEVELOPER_ERROR]\n결제 진행 중 오류가 발생했습니다.\n고객센터에 문의해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -65,7 +65,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.ERROR -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[ERROR] 결제 진행 중 오류가 발생했습니다.",
+                        text = "[ERROR]\n결제 진행 중 오류가 발생했습니다.",
                         confirmText = "확인"
                     )
                 )
@@ -73,7 +73,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.FEATURE_NOT_SUPPORTED -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[FEATURE_NOT_SUPPORTED] 이 기기의 Google Play 스토어 앱에서 해당 상품 결제를 지원하지 않습니다.\n" +
+                        text = "[FEATURE_NOT_SUPPORTED]\n이 기기의 Google Play 스토어 앱에서 해당 상품 결제를 지원하지 않습니다.\n" +
                             "Google Play 스토어 앱 업데이트 후 다시 시도해주세요.",
                         confirmText = "확인"
                     )
@@ -82,7 +82,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.ITEM_ALREADY_OWNED -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[ITEM_ALREADY_OWNED] 이미 구입한 상품입니다.",
+                        text = "[ITEM_ALREADY_OWNED]\n이미 구입한 상품입니다.",
                         confirmText = "확인"
                     )
                 )
@@ -90,7 +90,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.ITEM_NOT_OWNED -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[ITEM_NOT_OWNED] 결제할 수 없는 상품입니다.\n고객센터에 문의해주세요.",
+                        text = "[ITEM_NOT_OWNED]\n결제할 수 없는 상품입니다.\n고객센터에 문의해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -98,7 +98,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.ITEM_UNAVAILABLE -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[ITEM_UNAVAILABLE] 결제할 수 없는 상품입니다.\n고객센터에 문의해주세요.",
+                        text = "[ITEM_UNAVAILABLE]\n결제할 수 없는 상품입니다.\n고객센터에 문의해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -106,7 +106,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.SERVICE_DISCONNECTED -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[SERVICE_DISCONNECTED] Google Play 스토어 서비스에 연결되지 않았습니다.\n잠시 후 다시 시도해주세요.",
+                        text = "[SERVICE_DISCONNECTED]\nGoogle Play 스토어 서비스에 연결되지 않았습니다.\n잠시 후 다시 시도해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -114,7 +114,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.SERVICE_TIMEOUT -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[SERVICE_TIMEOUT] 결제 진행 중 오류가 발생했습니다.\n다시 시도해주세요.",
+                        text = "[SERVICE_TIMEOUT]\n결제 진행 중 오류가 발생했습니다.\n다시 시도해주세요.",
                         confirmText = "확인"
                     )
                 )
@@ -122,7 +122,7 @@ class PurchaseViewModel @Inject constructor(
             BillingState.SERVICE_UNAVAILABLE -> {
                 _message.emit(
                     Message.AlertDialogMessage(
-                        text = "[SERVICE_UNAVAILABLE] 네트워크 연결 확인 후 다시 시도해주세요.",
+                        text = "[SERVICE_UNAVAILABLE]\n네트워크 연결 확인 후 다시 시도해주세요.",
                         confirmText = "확인"
                     )
                 )

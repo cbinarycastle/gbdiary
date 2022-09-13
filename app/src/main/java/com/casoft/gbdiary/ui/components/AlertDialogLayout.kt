@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun AlertDialogLayout(
@@ -20,7 +21,12 @@ fun AlertDialogLayout(
             GBDiaryAlertDialog(
                 onConfirm = onConfirm,
                 onDismiss = onDismiss,
-                content = { Text(message.text) },
+                content = {
+                    Text(
+                        text = message.text,
+                        textAlign = TextAlign.Center
+                    )
+                },
                 confirmText = { Text(message.confirmText) },
                 dismissText = message.dismissText?.let { dismissText ->
                     { Text(dismissText) }
