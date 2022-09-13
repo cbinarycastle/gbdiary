@@ -73,10 +73,7 @@ private fun CalendarScreen(
 ) {
     var showMonthPickerDialog by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .systemBarsPadding()
-    ) {
+    Box(Modifier.systemBarsPadding()) {
         Column(Modifier.fillMaxSize()) {
             AppBar(
                 onTimelineClick = onTimelineClick,
@@ -168,14 +165,17 @@ private fun AppBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row {
+            Box {
                 IconButton(onClick = onTimelineClick) {
                     Icon(
                         painter = painterResource(R.drawable.timeline),
                         contentDescription = "타임라인"
                     )
                 }
-                IconButton(onClick = onCalendarClick) {
+                IconButton(
+                    onClick = onCalendarClick,
+                    modifier = Modifier.padding(start = 36.dp)
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.calendar),
                         contentDescription = "월 이동"
