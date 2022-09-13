@@ -20,6 +20,7 @@ const val MAX_STICKERS = 4
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DiaryViewModel @Inject constructor(
+    isPremiumUserUseCase: IsPremiumUserUseCase,
     private val getDiaryItemUseCase: GetDiaryItemUseCase,
     private val saveDiaryItemUseCase: SaveDiaryItemUseCase,
     private val deleteDiaryItemUseCase: DeleteDiaryItemUseCase,
@@ -30,6 +31,14 @@ class DiaryViewModel @Inject constructor(
 
     private val _date = MutableStateFlow<LocalDate>(LocalDate.now())
     val date = _date.asStateFlow()
+
+    val isPremiumUser = isPremiumUserUseCase(Unit)
+        .map { it.data ?: false }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
 
     private val existingDiary = _date.filterNotNull()
         .flatMapLatest { getDiaryItemUseCase(it) }

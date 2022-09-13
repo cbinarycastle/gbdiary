@@ -44,6 +44,7 @@ import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
+import com.casoft.gbdiary.ui.theme.Dark1
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
 import com.casoft.gbdiary.util.toast
@@ -80,6 +81,7 @@ fun DiaryScreen(
     val context = LocalContext.current
 
     val date by viewModel.date.collectAsState()
+    val isPremiumUser by viewModel.isPremiumUser.collectAsState()
     val existsDiary by viewModel.existsDiary.collectAsState()
     val initialStickerBottomSheetShown by viewModel.initialStickerBottomSheetShown.collectAsState()
     val stickers by viewModel.stickers.collectAsState()
@@ -112,6 +114,7 @@ fun DiaryScreen(
 
     DiaryScreen(
         date = date,
+        isPremiumUser = isPremiumUser,
         existsDiary = existsDiary,
         initialStickerBottomSheetShown = initialStickerBottomSheetShown,
         stickers = stickers,
@@ -149,6 +152,7 @@ fun DiaryScreen(
 @Composable
 private fun DiaryScreen(
     date: LocalDate,
+    isPremiumUser: Boolean,
     existsDiary: Boolean?,
     initialStickerBottomSheetShown: Boolean,
     stickers: List<Sticker>,
@@ -201,6 +205,7 @@ private fun DiaryScreen(
             when (visibleBottomSheet) {
                 DiaryBottomSheet.STICKER -> StickerBottomSheet(
                     date = date,
+                    isPremiumUser = isPremiumUser,
                     onStickerSelected = onStickerSelected
                 )
                 DiaryBottomSheet.MORE -> MoreBottomSheet(
@@ -686,9 +691,13 @@ private fun TouchBlock(onClick: () -> Unit) {
 @Composable
 private fun StickerBottomSheet(
     date: LocalDate,
+    isPremiumUser: Boolean,
     onStickerSelected: (Sticker) -> Unit,
 ) {
     var selectedStickerType by remember { mutableStateOf(StickerType.MOOD) }
+    val stickerEnabled = remember(selectedStickerType, isPremiumUser) {
+        selectedStickerType == StickerType.MOOD || isPremiumUser
+    }
 
     BoxWithConstraints {
         Column(
@@ -728,7 +737,8 @@ private fun StickerBottomSheet(
             Spacer(Modifier.height(24.dp))
             SelectableStickers(
                 stickerType = selectedStickerType,
-                onClick = onStickerSelected
+                onClick = onStickerSelected,
+                enabled = stickerEnabled
             )
         }
     }
@@ -773,25 +783,46 @@ private fun StickerTypeTab(
 private fun SelectableStickers(
     stickerType: StickerType,
     onClick: (Sticker) -> Unit,
+    enabled: Boolean = true,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
-        Sticker.values()
-            .filter { it.type == stickerType }
-            .toList()
-            .chunked(NUMBER_OF_STICKERS_BY_ROW)
-            .forEach { stickers ->
-                Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                    stickers.forEach { sticker ->
-                        Image(
-                            painter = painterResource(sticker.imageResId),
-                            contentDescription = sticker.name,
-                            modifier = Modifier
-                                .size(72.dp)
-                                .noRippleClickable { onClick(sticker) }
-                        )
+    Box {
+        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Sticker.values()
+                .filter { it.type == stickerType }
+                .toList()
+                .chunked(NUMBER_OF_STICKERS_BY_ROW)
+                .forEach { stickers ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
+                        stickers.forEach { sticker ->
+                            Image(
+                                painter = painterResource(sticker.imageResId),
+                                contentDescription = sticker.name,
+                                modifier = Modifier
+                                    .size(72.dp)
+                                    .then(
+                                        if (enabled) {
+                                            Modifier.noRippleClickable { onClick(sticker) }
+                                        } else {
+                                            Modifier.alpha(0.3f)
+                                        }
+                                    )
+                            )
+                        }
                     }
                 }
+        }
+        if (enabled.not()) {
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = Dark1,
+                modifier = Modifier.align(Alignment.Center)
+            ) {
+                Text(
+                    text = "프리미엄 이용권 구매 후 사용할 수 있어요",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
             }
+        }
     }
 }
 
@@ -830,6 +861,7 @@ fun DiaryScreenPreview() {
     GBDiaryTheme {
         DiaryScreen(
             date = LocalDate.now(ZoneOffset.UTC),
+            isPremiumUser = false,
             existsDiary = true,
             initialStickerBottomSheetShown = false,
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
