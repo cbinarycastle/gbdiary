@@ -25,4 +25,9 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         viewModel.checkExistingSignedInUser()
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.queryPurchases()
+    }
 }

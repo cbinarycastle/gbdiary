@@ -65,12 +65,21 @@ class GoogleBillingDataSource(
 
     private suspend fun processPurchases(purchases: List<Purchase>) {
         purchases.forEach { purchase ->
-            if (!purchase.isAcknowledged) {
+            val productState = purchase.billingProductState
+            updateProductStates(purchase, productState)
+
+            if (productState == BillingProductState.PURCHASED) {
                 val result = acknowledgePurchase(purchase)
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    setProductsToAcknowledged(purchase)
+                    updateProductStates(purchase, BillingProductState.PURCHASED_AND_ACKNOWLEDGED)
                 }
             }
+        }
+    }
+
+    private fun updateProductStates(purchase: Purchase, state: BillingProductState) {
+        purchase.products.forEach { productId ->
+            productStateMap[productId]?.value = state
         }
     }
 
@@ -82,13 +91,6 @@ class GoogleBillingDataSource(
         return billingClient.acknowledgePurchase(params)
     }
 
-    private fun setProductsToAcknowledged(purchase: Purchase) {
-        purchase.products.forEach { productId ->
-            val productStateFlow = productStateMap[productId]
-            productStateFlow?.value = BillingProductState.PURCHASED_AND_ACKNOWLEDGED
-        }
-    }
-
     private fun startConnection() {
         billingClient.startConnection(this)
     }
@@ -97,6 +99,7 @@ class GoogleBillingDataSource(
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             externalScope.launch {
                 queryProductDetails()
+                queryPurchases()
             }
         } else {
             Timber.e("Billing client connection failed. responseCode: ${billingResult.responseCode}")
@@ -133,7 +136,11 @@ class GoogleBillingDataSource(
         }
     }
 
-    private suspend fun queryPurchases() {
+    override suspend fun queryPurchases() {
+        if (billingClient.isReady.not()) {
+            return
+        }
+
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.INAPP)
             .build()

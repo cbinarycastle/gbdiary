@@ -11,5 +11,7 @@ interface BillingDataSource {
 
     fun canPurchase(product: BillingProduct): Flow<Boolean>
 
+    suspend fun queryPurchases()
+
     fun launchBillingFlow(product: BillingProduct, activity: Activity)
 }
