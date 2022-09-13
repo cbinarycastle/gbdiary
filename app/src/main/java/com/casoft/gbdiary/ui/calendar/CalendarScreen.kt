@@ -41,6 +41,8 @@ fun CalendarScreen(
     state: CalendarState = rememberCalendarState(),
     today: LocalDate = LocalDate.now(),
 ) {
+    val isPremiumUser by viewModel.isPremiumUser.collectAsState()
+
     LaunchedEffect(state.currentYearMonth) {
         viewModel.currentYearMonth = state.currentYearMonth
     }
@@ -48,6 +50,7 @@ fun CalendarScreen(
     CalendarScreen(
         state = state,
         today = today,
+        isPremiumUser = isPremiumUser,
         getDayStateList = { yearMonth -> viewModel.getDayStateList(yearMonth) },
         onDayClick = onDayClick,
         onTimelineClick = onTimelineClick,
@@ -61,6 +64,7 @@ fun CalendarScreen(
 private fun CalendarScreen(
     state: CalendarState,
     today: LocalDate,
+    isPremiumUser: Boolean,
     getDayStateList: (YearMonth) -> Flow<DayStateList>,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
@@ -127,10 +131,12 @@ private fun CalendarScreen(
                     bottom = AD_HEIGHT.dp + 8.dp
                 )
         )
-        AdBanner(
-            adUnitId = MAIN_BANNER_AD_UNIT_ID,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        if (isPremiumUser.not()) {
+            AdBanner(
+                adUnitId = MAIN_BANNER_AD_UNIT_ID,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
 
         if (showMonthPickerDialog) {
             MonthPickerDialog(
@@ -244,6 +250,7 @@ private fun CalendarScreenPreview() {
         CalendarScreen(
             state = rememberCalendarState(initialYearMonth = YearMonth.of(2022, 1)),
             today = LocalDate.of(2022, 1, 1),
+            isPremiumUser = false,
             getDayStateList = { flowOf(DayStateList.empty()) },
             onTimelineClick = {},
             onDayClick = {},

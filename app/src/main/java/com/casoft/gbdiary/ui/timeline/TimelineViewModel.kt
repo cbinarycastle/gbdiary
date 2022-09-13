@@ -3,7 +3,9 @@ package com.casoft.gbdiary.ui.timeline
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.GetDiaryItemsUseCase
+import com.casoft.gbdiary.domain.IsPremiumUserUseCase
 import com.casoft.gbdiary.model.Result
+import com.casoft.gbdiary.model.data
 import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,11 +16,20 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class TimelineViewModel @Inject constructor(
+    isPremiumUserUseCase: IsPremiumUserUseCase,
     getDiaryItemsUseCase: GetDiaryItemsUseCase,
 ) : ViewModel() {
 
     private val _yearMonth = MutableStateFlow(YearMonth.now())
     val yearMonth = _yearMonth.asStateFlow()
+
+    val isPremiumUser = isPremiumUserUseCase(Unit)
+        .map { it.data ?: false }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
 
     val diaryItems = yearMonth
         .flatMapLatest { getDiaryItemsUseCase(it) }

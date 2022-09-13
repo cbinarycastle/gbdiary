@@ -39,10 +39,12 @@ fun TimelineScreen(
 ) {
     val yearMonth by viewModel.yearMonth.collectAsState()
     val diaryItems by viewModel.diaryItems.collectAsState()
+    val isPremiumUser by viewModel.isPremiumUser.collectAsState()
 
     TimelineScreen(
         yearMonth = yearMonth,
         diaryItems = diaryItems,
+        isPremiumUser = isPremiumUser,
         moveToYearMonth = viewModel::moveToYearMonth,
         onBeforeMonth = viewModel::moveToBeforeMonth,
         onNextMonth = viewModel::moveToNextMonth,
@@ -55,6 +57,7 @@ fun TimelineScreen(
 private fun TimelineScreen(
     yearMonth: YearMonth,
     diaryItems: List<DiaryItem>,
+    isPremiumUser: Boolean,
     moveToYearMonth: (YearMonth) -> Unit,
     onBeforeMonth: () -> Unit,
     onNextMonth: () -> Unit,
@@ -93,7 +96,9 @@ private fun TimelineScreen(
                     )
                 }
             }
-            AdBanner(TIMELINE_BANNER_AD_UNIT_ID)
+            if (isPremiumUser.not()) {
+                AdBanner(TIMELINE_BANNER_AD_UNIT_ID)
+            }
         }
 
         if (diaryItems.isEmpty()) {

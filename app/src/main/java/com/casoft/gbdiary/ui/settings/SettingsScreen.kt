@@ -32,10 +32,12 @@ fun SettingsScreen(
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
 ) {
+    val isPremiumUser by viewModel.isPremiumUser.collectAsState()
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
 
     SettingsScreen(
+        isPremiumUser = isPremiumUser,
         notificationEnabled = notificationEnabled,
         notificationTime = notificationTime,
         onNotificationEnabledChange = viewModel::setNotificationEnabled,
@@ -49,6 +51,7 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsScreen(
+    isPremiumUser: Boolean,
     notificationEnabled: Boolean,
     notificationTime: LocalTime?,
     onNotificationEnabledChange: (Boolean) -> Unit,
@@ -95,7 +98,9 @@ private fun SettingsScreen(
                 Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
                 ReviewItem()
             }
-            AdBanner(SETTING_BANNER_AD_UNIT_ID)
+            if (isPremiumUser.not()) {
+                AdBanner(SETTING_BANNER_AD_UNIT_ID)
+            }
         }
 
         if (showTimePickerDialog && notificationTime != null) {
@@ -237,6 +242,7 @@ private fun ReviewItem(modifier: Modifier = Modifier) {
 fun SettingsScreenPreview() {
     GBDiaryTheme {
         SettingsScreen(
+            isPremiumUser = false,
             notificationEnabled = false,
             notificationTime = LocalTime.of(22, 0),
             onNotificationEnabledChange = {},

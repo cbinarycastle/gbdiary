@@ -20,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BackupViewModel @Inject constructor(
     observeUserUseCase: ObserveUserUseCase,
+    isPremiumUserUseCase: IsPremiumUserUseCase,
     private val backupDataUseCase: BackupDataUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
@@ -40,6 +41,14 @@ class BackupViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = null
+        )
+
+    private val isPremiumUser = isPremiumUserUseCase(Unit)
+        .map { it.data ?: false }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
         )
 
     private val _showRewardedAdEvent = MutableSharedFlow<RewardedAction>()
@@ -120,8 +129,11 @@ class BackupViewModel @Inject constructor(
 
     fun tryBackup() {
         viewModelScope.launch {
-            // TODO: 프리미엄 유저 처리
-            _showRewardedAdEvent.emit(RewardedAction.BACKUP)
+            if (isPremiumUser.value) {
+                backup()
+            } else {
+                _showRewardedAdEvent.emit(RewardedAction.BACKUP)
+            }
         }
     }
 
@@ -133,8 +145,11 @@ class BackupViewModel @Inject constructor(
 
     fun trySync() {
         viewModelScope.launch {
-            // TODO: 프리미엄 유저 처리
-            _showRewardedAdEvent.emit(RewardedAction.SYNC)
+            if (isPremiumUser.value) {
+                sync()
+            } else {
+                _showRewardedAdEvent.emit(RewardedAction.SYNC)
+            }
         }
     }
 

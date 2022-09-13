@@ -2,10 +2,7 @@ package com.casoft.gbdiary.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.casoft.gbdiary.domain.DisableNotificationUseCase
-import com.casoft.gbdiary.domain.EnableNotificationUseCase
-import com.casoft.gbdiary.domain.GetNotificationTimeUseCase
-import com.casoft.gbdiary.domain.SetNotificationTimeUseCase
+import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.data
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,11 +14,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    isPremiumUserUseCase: IsPremiumUserUseCase,
     private val enableNotificationUseCase: EnableNotificationUseCase,
     private val disableNotificationUseCase: DisableNotificationUseCase,
     getNotificationTimeUseCase: GetNotificationTimeUseCase,
     private val setNotificationTimeUseCase: SetNotificationTimeUseCase,
 ) : ViewModel() {
+
+    val isPremiumUser = isPremiumUserUseCase(Unit)
+        .map { it.data ?: false }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
 
     val notificationTime = getNotificationTimeUseCase(Unit)
         .map { result -> result.data }
