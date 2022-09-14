@@ -22,6 +22,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -174,6 +176,7 @@ private fun DiaryScreen(
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val textFieldFocusRequester = remember { FocusRequester() }
     var visibleBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER) }
     var selectedStickerIndex by remember { mutableStateOf<Int?>(null) }
     var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
@@ -218,6 +221,8 @@ private fun DiaryScreen(
                         }
                         coroutineScope.launch {
                             bottomSheetState.hide()
+                            textFieldFocusRequester.requestFocus()
+                            keyboardController?.show()
                         }
                     }
                 )
@@ -293,10 +298,11 @@ private fun DiaryScreen(
                         if (content.isEmpty()) {
                             TextInputPlaceholder(textAlign = textAlign)
                         }
-                        TextInput(
+                        ContentTextField(
                             text = content,
                             textAlign = textAlign,
-                            onValueChange = onContentChange
+                            onValueChange = onContentChange,
+                            modifier = Modifier.focusRequester(textFieldFocusRequester)
                         )
                     }
                     if (images.isNotEmpty()) {
@@ -488,7 +494,7 @@ private fun TextInputPlaceholder(textAlign: TextAlign) {
 }
 
 @Composable
-private fun TextInput(
+private fun ContentTextField(
     text: String,
     textAlign: TextAlign,
     onValueChange: (String) -> Unit,
