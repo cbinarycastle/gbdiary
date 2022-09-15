@@ -24,6 +24,7 @@
 
 
 ### Begin: Google Drive ###
+
 -keepattributes Signature, RuntimeVisibleAnnotations, AnnotationDefault
 
 -keepclassmembers class * {
@@ -41,10 +42,12 @@
 # Needed by google-play-services when linking against an older platform version
 
 -dontwarn com.google.android.gms.**
+
 ### End: Google Drive ###
 
 
-##---------------Begin: proguard configuration for Gson  ----------
+### Begin: Gson ###
+
 # Gson uses generic type information stored in a class file when working with fields. Proguard
 # removes such information by default, so configure it to keep all of it.
 -keepattributes Signature
@@ -75,4 +78,12 @@
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
-##---------------End: proguard configuration for Gson  ----------
+### End: Gson ###
+
+
+### Begin: Crashlytics ###
+
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+-keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+
+### End: Crashlytics ###
