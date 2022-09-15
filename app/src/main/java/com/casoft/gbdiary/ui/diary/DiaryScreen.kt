@@ -294,7 +294,17 @@ private fun DiaryScreen(
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
                     Spacer(Modifier.height(24.dp))
-                    Box(Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (images.isEmpty()) {
+                                    Modifier.weight(1f)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                    ) {
                         if (content.isEmpty()) {
                             TextInputPlaceholder(textAlign = textAlign)
                         }
@@ -302,7 +312,9 @@ private fun DiaryScreen(
                             text = content,
                             textAlign = textAlign,
                             onValueChange = onContentChange,
-                            modifier = Modifier.focusRequester(textFieldFocusRequester)
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .focusRequester(textFieldFocusRequester)
                         )
                     }
                     if (images.isNotEmpty()) {
@@ -508,9 +520,7 @@ private fun ContentTextField(
             textAlign = textAlign
         ),
         cursorBrush = SolidColor(LocalContentColor.current),
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 120.dp),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 
