@@ -40,6 +40,20 @@ class DiaryViewModel @Inject constructor(
             initialValue = false
         )
 
+    private val _existsDiary = MutableStateFlow<Boolean?>(null)
+    val existsDiary = _existsDiary.asStateFlow()
+
+    private val stickerList = mutableListOf<Sticker>()
+
+    private val _stickers = MutableStateFlow<List<Sticker>>(listOf())
+    val stickers = _stickers.asStateFlow()
+
+    private val _content = MutableStateFlow("")
+    val content = _content.asStateFlow()
+
+    private val _images = MutableStateFlow<List<File>>(listOf())
+    val images = _images.asStateFlow()
+
     private val existingDiary = _date.filterNotNull()
         .flatMapLatest { getDiaryItemUseCase(it) }
         .map { result ->
@@ -69,24 +83,10 @@ class DiaryViewModel @Inject constructor(
             initialValue = null
         )
 
-    private val _existsDiary = MutableStateFlow<Boolean?>(null)
-    val existsDiary = _existsDiary.asStateFlow()
-
     private val _initialStickerBottomSheetShown = MutableStateFlow(false)
     val initialStickerBottomSheetShown = _initialStickerBottomSheetShown.asStateFlow()
 
-    private val stickerList = mutableListOf<Sticker>()
-
-    private val _stickers = MutableStateFlow<List<Sticker>>(listOf())
-    val stickers = _stickers.asStateFlow()
-
-    private val _content = MutableStateFlow("")
-    val content = _content.asStateFlow()
-
-    private val _images = MutableStateFlow<List<File>>(listOf())
-    val images = _images.asStateFlow()
-
-    val isValidToSave = combine(
+    private val isValidToSave = combine(
         existingDiary,
         stickers,
         content,
