@@ -639,10 +639,9 @@ private fun RemoveStickerButtons(
                 modifier = Modifier.width(SelectedStickerSize),
                 contentAlignment = Alignment.Center
             ) {
-                RemoveButton(
-                    visible = index == visibleIndex,
-                    onClick = { onClick(index) }
-                )
+                if (index == visibleIndex) {
+                    RemoveButton(onClick = { onClick(index) })
+                }
             }
         }
     }
@@ -651,23 +650,17 @@ private fun RemoveStickerButtons(
 @Composable
 private fun RemoveButton(
     onClick: () -> Unit,
-    visible: Boolean = true,
+    modifier: Modifier = Modifier,
 ) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(),
-        exit = fadeOut()
+    Button(
+        onClick = onClick,
+        modifier = modifier.size(width = 54.dp, height = 56.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
-        Button(
-            onClick = onClick,
-            modifier = Modifier.size(width = 54.dp, height = 56.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.delete),
-                contentDescription = "제거"
-            )
-        }
+        Icon(
+            painter = painterResource(R.drawable.delete),
+            contentDescription = "제거"
+        )
     }
 }
 
