@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
@@ -201,8 +200,7 @@ private fun MonthHeader(yearMonth: YearMonth) {
             TextStyle.FULL,
             Locale.getDefault()
         ),
-        style = GBDiaryTheme.typography.h6,
-        fontWeight = FontWeight.Bold
+        style = GBDiaryTheme.typography.h6
     )
 }
 
