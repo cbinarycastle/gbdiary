@@ -121,8 +121,9 @@ class DiaryState(
         shouldShowConfirmDeleteDialog = false
     }
 
-    fun requestFocusOnTextField() {
+    fun showKeyboard() {
         textFieldFocusRequester.requestFocus()
+        keyboardController?.show()
     }
 }
 

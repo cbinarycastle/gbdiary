@@ -194,7 +194,7 @@ private fun DiaryScreen(
 
                         state.run {
                             hideBottomSheet()
-                            requestFocusOnTextField()
+                            showKeyboard()
                         }
                     }
                 )
