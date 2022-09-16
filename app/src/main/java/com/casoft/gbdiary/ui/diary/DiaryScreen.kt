@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -174,7 +174,7 @@ private fun DiaryScreen(
     scrollState: ScrollState,
 ) {
     val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     val textFieldFocusRequester = remember { FocusRequester() }
     var visibleBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER) }
@@ -222,7 +222,6 @@ private fun DiaryScreen(
                         coroutineScope.launch {
                             bottomSheetState.hide()
                             textFieldFocusRequester.requestFocus()
-                            keyboardController?.show()
                         }
                     }
                 )
@@ -347,7 +346,7 @@ private fun DiaryScreen(
                     },
                     onAlignClick = onAlignClick,
                     onDoneClick = {
-                        keyboardController?.hide()
+                        focusManager.clearFocus()
                         onDoneClick()
                     },
                     textAlign = textAlign,
