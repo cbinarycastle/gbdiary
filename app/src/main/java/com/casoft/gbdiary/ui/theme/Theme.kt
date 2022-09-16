@@ -79,7 +79,8 @@ fun GBDiaryTheme(
     ) {
         CompositionLocalProvider(
             LocalGBDiaryColors provides gbDiaryColors,
-            LocalContentColor provides contentColorFor(colors.background)
+            LocalContentColor provides contentColorFor(colors.background),
+            LocalElevationOverlay provides null
         ) {
             Surface(color = colors.background) {
                 content()
