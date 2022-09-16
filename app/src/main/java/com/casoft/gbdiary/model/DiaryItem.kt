@@ -19,7 +19,7 @@ fun DiaryItem.toBackupDataItem(imageIds: List<String>) = BackupDataItem(
     day = date.format(BackupDataDateFormatter),
     contents = content,
     images = imageIds,
-    sticker = stickers.map { it.name }
+    sticker = stickers.map { it.backupValue }
 )
 
 fun DiaryItem.toDiaryItemEntity() = DiaryItemEntity(
