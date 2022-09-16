@@ -32,6 +32,8 @@ fun SettingsScreen(
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
 ) {
+    val state = rememberSettingsState()
+
     val isPremiumUser by viewModel.isPremiumUser.collectAsState()
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
@@ -45,6 +47,7 @@ fun SettingsScreen(
         onPurchaseClick = onPurchaseClick,
         onThemeClick = onThemeClick,
         onBackupClick = onBackupClick,
+        onReviewClick = state::navigateToGooglePlay,
         onBack = onBack
     )
 }
@@ -59,6 +62,7 @@ private fun SettingsScreen(
     onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
     onBackupClick: () -> Unit,
+    onReviewClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showTimePickerDialog by remember { mutableStateOf(false) }
@@ -96,7 +100,7 @@ private fun SettingsScreen(
                 ThemeItem(onClick = onThemeClick)
                 BackupItem(onClick = onBackupClick)
                 Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
-                ReviewItem()
+                ReviewItem(onClick = onReviewClick)
             }
             if (isPremiumUser.not()) {
                 AdBanner(SETTING_BANNER_AD_UNIT_ID)
@@ -228,10 +232,14 @@ private fun BackupItem(
 }
 
 @Composable
-private fun ReviewItem(modifier: Modifier = Modifier) {
+private fun ReviewItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     SettingsItem(
         name = Settings.REVIEW.text,
         icon = painterResource(R.drawable.app_review),
+        onClick = onClick,
         modifier = modifier
     )
 }
@@ -250,6 +258,7 @@ fun SettingsScreenPreview() {
             onPurchaseClick = {},
             onThemeClick = {},
             onBackupClick = {},
+            onReviewClick = {},
             onBack = {}
         )
     }
