@@ -13,7 +13,7 @@ abstract class FlowUseCase<P, R>(private val dispatcher: CoroutineDispatcher) {
         return execute(params)
             .catch {
                 Timber.e(it)
-                emit(Result.Error(Exception(it)))
+                emit(Result.Error(it as Exception))
             }
             .flowOn(dispatcher)
     }
