@@ -7,7 +7,6 @@ import com.casoft.gbdiary.data.backup.BackupDataNotFoundException
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.diary.DiaryDataSource
 import com.casoft.gbdiary.data.diary.DiaryItemStatus
-import com.casoft.gbdiary.data.diary.IMAGE_FILE_EXTENSION
 import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.Result
@@ -114,7 +113,7 @@ class BackupDataUseCase @Inject constructor(
         images: List<String>,
     ): List<File> {
         return images.mapIndexed { index, filePath ->
-            val backupFileName = "${date}_${index + 1}.$IMAGE_FILE_EXTENSION"
+            val backupFileName = "${date}_${index + 1}"
             backupDataSource.deleteImage(account = account, fileName = backupFileName)
             backupDataSource.uploadImage(
                 account = account,

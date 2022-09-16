@@ -23,9 +23,7 @@ private const val APP_DATA_FOLDER = "appDataFolder"
 private const val MIME_TYPE_JSON = "application/json"
 private const val MIME_TYPE_JPEG = "images/jpeg"
 
-private const val JSON_FILE_NAME_PREFIX = "diaryData"
-private const val JSON_FILE_NAME_SUFFIX = ".json"
-private const val JSON_FILE_NAME = JSON_FILE_NAME_PREFIX + JSON_FILE_NAME_SUFFIX
+private const val JSON_FILE_NAME = "diaryData"
 
 class GoogleDriveBackupDataSource(
     private val context: Context,
@@ -135,8 +133,8 @@ class GoogleDriveBackupDataSource(
     private fun createBackupDataFile(backupData: BackupData): java.io.File {
         val backupDataJson = gson.toJson(backupData)
         return java.io.File.createTempFile(
-            JSON_FILE_NAME_PREFIX,
-            JSON_FILE_NAME_SUFFIX,
+            JSON_FILE_NAME,
+            null,
             context.cacheDir
         ).apply { writeText(backupDataJson) }
     }

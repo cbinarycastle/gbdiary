@@ -5,8 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.YearMonth
 
-const val IMAGE_FILE_EXTENSION = "jpg"
-
 interface DiaryDataSource {
 
     fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>>
