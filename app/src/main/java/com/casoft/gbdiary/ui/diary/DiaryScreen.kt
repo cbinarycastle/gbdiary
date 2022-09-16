@@ -22,7 +22,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
@@ -50,8 +49,6 @@ import com.casoft.gbdiary.ui.theme.Dark1
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
 import com.casoft.gbdiary.util.toast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -65,7 +62,7 @@ private val AddStickerButtonSize = 32.dp
 private val SelectedStickerSize = 64.dp
 private val SuggestionBarHeight = 44.dp
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun DiaryScreen(
     viewModel: DiaryViewModel,
@@ -73,13 +70,8 @@ fun DiaryScreen(
     onImageClick: (Int) -> Unit,
     onAlbumClick: (Int) -> Unit,
     onBack: () -> Unit,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
-    ),
-    scrollState: ScrollState = rememberScrollState(),
 ) {
+    val state = rememberDiaryState()
     val context = LocalContext.current
 
     val date by viewModel.date.collectAsState()
@@ -92,10 +84,8 @@ fun DiaryScreen(
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
     BackHandler {
-        if (bottomSheetState.isVisible) {
-            coroutineScope.launch {
-                bottomSheetState.hide()
-            }
+        if (state.isBottomSheetVisible) {
+            state.hideBottomSheet()
         } else {
             viewModel.saveDiary(shouldShowMessage = false)
             onBack()
@@ -114,6 +104,7 @@ fun DiaryScreen(
     }
 
     DiaryScreen(
+        state = state,
         date = date,
         isPremiumUser = isPremiumUser,
         existsDiary = existsDiary,
@@ -140,15 +131,13 @@ fun DiaryScreen(
             viewModel.saveDiary(shouldShowMessage = false)
             onBack()
         },
-        coroutineScope = coroutineScope,
-        bottomSheetState = bottomSheetState,
-        scrollState = scrollState,
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun DiaryScreen(
+    state: DiaryState,
     date: LocalDate,
     isPremiumUser: Boolean,
     existsDiary: Boolean?,
@@ -169,73 +158,57 @@ private fun DiaryScreen(
     onDoneClick: () -> Unit,
     onDeleteDiary: () -> Unit,
     onBack: () -> Unit,
-    coroutineScope: CoroutineScope,
-    bottomSheetState: ModalBottomSheetState,
-    scrollState: ScrollState,
+    scrollState: ScrollState = rememberScrollState(),
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-
-    val textFieldFocusRequester = remember { FocusRequester() }
-    var visibleBottomSheet by remember { mutableStateOf(DiaryBottomSheet.STICKER) }
-    var selectedStickerIndex by remember { mutableStateOf<Int?>(null) }
-    var visibleRemoveStickerButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var visibleRemoveImageButtonIndex by remember { mutableStateOf<Int?>(null) }
-    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
-    var showConfirmDeleteDialog by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
             onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
         } else {
-            showPermissionDeniedDialog = true
+            state.showPermissionDeniedDialog()
         }
     }
 
     LaunchedEffect(existsDiary) {
         if (existsDiary != null && existsDiary.not() && initialStickerBottomSheetShown.not()) {
-            visibleBottomSheet = DiaryBottomSheet.STICKER
-            bottomSheetState.show()
+            state.showBottomSheet(DiaryBottomSheet.STICKER)
             onShowStickerBottomSheetInitially()
-        }
-    }
-
-    LaunchedEffect(bottomSheetState.isVisible) {
-        if (bottomSheetState.isVisible.not()) {
-            selectedStickerIndex = null
         }
     }
 
     ModalBottomSheetLayout(
         sheetContent = {
-            when (visibleBottomSheet) {
+            when (state.currentBottomSheet) {
                 DiaryBottomSheet.STICKER -> StickerBottomSheet(
                     date = date,
                     isPremiumUser = isPremiumUser,
                     onStickerSelected = { sticker ->
-                        val index = selectedStickerIndex
+                        val index = state.selectedStickerIndex
                         if (index == null) {
                             addSticker(sticker)
                         } else {
                             changeSticker(index, sticker)
                         }
-                        coroutineScope.launch {
-                            bottomSheetState.hide()
-                            textFieldFocusRequester.requestFocus()
+
+                        state.run {
+                            hideBottomSheet()
+                            requestFocusOnTextField()
                         }
                     }
                 )
                 DiaryBottomSheet.MORE -> MoreBottomSheet(
                     onDelete = {
-                        coroutineScope.launch {
-                            bottomSheetState.hide()
-                            showConfirmDeleteDialog = true
+                        state.run {
+                            hideBottomSheet()
+                            showConfirmDeleteDialog()
                         }
                     }
                 )
             }
         },
-        sheetState = bottomSheetState,
+        sheetState = state.bottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetElevation = 0.dp,
         scrimColor = GBDiaryTheme.gbDiaryColors.dimmingOverlay
@@ -249,12 +222,7 @@ private fun DiaryScreen(
             Column(Modifier.fillMaxSize()) {
                 AppBar(
                     onBack = onBack,
-                    onMoreClick = {
-                        coroutineScope.launch {
-                            visibleBottomSheet = DiaryBottomSheet.MORE
-                            bottomSheetState.show()
-                        }
-                    },
+                    onMoreClick = { state.showBottomSheet(DiaryBottomSheet.MORE) },
                     moreButtonVisible = existsDiary ?: false
                 )
                 Column(
@@ -268,12 +236,7 @@ private fun DiaryScreen(
                     Spacer(Modifier.height(8.dp))
                     if (stickers.size < MAX_STICKERS) {
                         AddStickerButton(
-                            onClick = {
-                                coroutineScope.launch {
-                                    visibleBottomSheet = DiaryBottomSheet.STICKER
-                                    bottomSheetState.show()
-                                }
-                            }
+                            onClick = { state.showBottomSheet(DiaryBottomSheet.STICKER) }
                         )
                     } else {
                         Spacer(Modifier.height(AddStickerButtonSize))
@@ -281,14 +244,8 @@ private fun DiaryScreen(
                     Spacer(Modifier.height(8.dp))
                     SelectedStickers(
                         stickers = stickers,
-                        onStickerClick = { index ->
-                            selectedStickerIndex = index
-                            visibleBottomSheet = DiaryBottomSheet.STICKER
-                            coroutineScope.launch {
-                                bottomSheetState.show()
-                            }
-                        },
-                        onStickerLongPress = { index -> visibleRemoveStickerButtonIndex = index }
+                        onStickerClick = state::selectSticker,
+                        onStickerLongPress = state::startRemovingSticker
                     )
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
@@ -313,20 +270,20 @@ private fun DiaryScreen(
                             onValueChange = onContentChange,
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .focusRequester(textFieldFocusRequester)
+                                .focusRequester(state.textFieldFocusRequester)
                         )
                     }
                     if (images.isNotEmpty()) {
                         Spacer(Modifier.height(24.dp))
                         SelectedImages(
                             images = images,
-                            visibleRemoveButtonIndex = visibleRemoveImageButtonIndex,
+                            visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
                             onImageClick = { index -> onImageClick(index) },
-                            onImageLongPress = { index -> visibleRemoveImageButtonIndex = index },
-                            onCancelRemove = { visibleRemoveImageButtonIndex = null },
+                            onImageLongPress = state::startRemovingImage,
+                            onCancelRemove = state::cancelRemovingImage,
                             onRemove = { index ->
+                                state.cancelRemovingImage()
                                 onRemoveImage(index)
-                                visibleRemoveImageButtonIndex = null
                             }
                         )
                     }
@@ -353,15 +310,15 @@ private fun DiaryScreen(
                 )
             }
 
-            if (visibleRemoveStickerButtonIndex != null) {
-                TouchBlock { visibleRemoveStickerButtonIndex = null }
+            if (state.isRemovingSticker) {
+                TouchBlock { state.cancelRemovingSticker() }
             }
 
             RemoveStickerButtons(
                 count = stickers.size,
-                visibleIndex = visibleRemoveStickerButtonIndex,
+                visibleIndex = state.visibleRemoveStickerButtonIndex,
                 onClick = { index ->
-                    visibleRemoveStickerButtonIndex = null
+                    state.cancelRemovingSticker()
                     onRemoveSticker(index)
                 },
                 modifier = Modifier
@@ -369,23 +326,23 @@ private fun DiaryScreen(
                     .align(Alignment.TopCenter)
             )
 
-            if (showPermissionDeniedDialog) {
+            if (state.shouldShowPermissionDeniedDialog) {
                 PermissionDeniedDialog(
                     onConfirm = {
-                        showPermissionDeniedDialog = false
+                        state.hidePermissionDeniedDialog()
                         context.navigateToAppSettings()
                     },
-                    onDismiss = { showPermissionDeniedDialog = false }
+                    onDismiss = state::hidePermissionDeniedDialog
                 )
             }
 
-            if (showConfirmDeleteDialog) {
+            if (state.shouldShowConfirmDeleteDialog) {
                 ConfirmDeleteDialog(
                     onConfirm = {
-                        showConfirmDeleteDialog = false
+                        state.hideConfirmDeleteDialog()
                         onDeleteDiary()
                     },
-                    onDismiss = { showConfirmDeleteDialog = false }
+                    onDismiss = state::hideConfirmDeleteDialog
                 )
             }
         }
@@ -888,13 +845,14 @@ private fun MoreBottomSheet(onDelete: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Preview(name = "Diary screen")
 @Preview(name = "Diary screen (dark)", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun DiaryScreenPreview() {
     GBDiaryTheme {
         DiaryScreen(
+            state = rememberDiaryState(),
             date = LocalDate.now(ZoneOffset.UTC),
             isPremiumUser = false,
             existsDiary = true,
@@ -915,8 +873,6 @@ fun DiaryScreenPreview() {
             onDoneClick = {},
             onDeleteDiary = {},
             onBack = {},
-            coroutineScope = rememberCoroutineScope(),
-            bottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden),
             scrollState = rememberScrollState()
         )
     }
@@ -927,8 +883,4 @@ private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
         com.casoft.gbdiary.model.TextAlign.LEFT -> TextAlign.Left
         com.casoft.gbdiary.model.TextAlign.CENTER -> TextAlign.Center
     }
-}
-
-private enum class DiaryBottomSheet {
-    STICKER, MORE
 }
