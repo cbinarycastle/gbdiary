@@ -111,23 +111,25 @@ private fun CalendarScreen(
                 }
             }
         }
-        if (state.currentYearMonth != today.yearMonth) {
-            TodayButton(
-                onClick = { state.currentYearMonth = today.yearMonth },
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = AD_HEIGHT.dp + 8.dp)
+        ) {
+            if (state.currentYearMonth != today.yearMonth) {
+                TodayButton(
+                    onClick = { state.currentYearMonth = today.yearMonth },
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            WriteButton(
+                onClick = { onWriteClick(today) },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = AD_HEIGHT.dp + 20.dp)
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 24.dp)
             )
         }
-        WriteButton(
-            onClick = { onWriteClick(today) },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(
-                    end = 24.dp,
-                    bottom = AD_HEIGHT.dp + 8.dp
-                )
-        )
         if (isPremiumUser.not()) {
             AdBanner(
                 adUnitId = MAIN_BANNER_AD_UNIT_ID,
