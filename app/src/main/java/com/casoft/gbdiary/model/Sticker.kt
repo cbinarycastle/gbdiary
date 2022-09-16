@@ -3,7 +3,7 @@ package com.casoft.gbdiary.model
 import com.casoft.gbdiary.R
 
 private const val MOOD_PREFIX = "mood_"
-private const val DAILY_PREFIX = "mood_"
+private const val DAILY_PREFIX = "daily_"
 
 enum class Sticker(
     val value: Int,
