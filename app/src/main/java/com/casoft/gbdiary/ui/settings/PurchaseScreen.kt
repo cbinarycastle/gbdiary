@@ -77,7 +77,8 @@ private fun PurchaseScreen(
                     Spacer(Modifier.height(4.dp))
                     if (isPremiumUser) {
                         Text(
-                            text = "Premium 구매완료"
+                            text = "Premium 구매완료",
+                            fontSize = 20.sp
                         )
                     } else {
                         Text(
