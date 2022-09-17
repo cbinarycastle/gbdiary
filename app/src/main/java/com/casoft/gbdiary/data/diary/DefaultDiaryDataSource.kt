@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 import java.time.YearMonth
 
-class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao): DiaryDataSource {
+class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao) : DiaryDataSource {
 
     override fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>> {
         return diaryItemDao.getEnabledStreamByYearAndMonth(

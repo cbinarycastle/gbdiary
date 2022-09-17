@@ -73,15 +73,19 @@ object Libs {
         const val CRASHLYTICS = "com.google.firebase:firebase-crashlytics-ktx"
     }
 
-    object GooglePlayServices {
-        const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
-        const val ADS_IDENTIFIER = "com.google.android.gms:play-services-ads-identifier:18.0.1"
-    }
-
     object GoogleDrive {
         const val API_CLIENT = "com.google.api-client:google-api-client-android:2.0.0"
         const val DRIVE = "com.google.apis:google-api-services-drive:v3-rev197-1.25.0"
         const val HTTP_CLIENT = "com.google.http-client:google-http-client-gson:1.42.2"
+    }
+
+    object GooglePlayCore {
+        const val REVIEW = "com.google.android.play:review-ktx:2.0.0"
+    }
+
+    object GooglePlayServices {
+        const val AUTH = "com.google.android.gms:play-services-auth:20.2.0"
+        const val ADS_IDENTIFIER = "com.google.android.gms:play-services-ads-identifier:18.0.1"
     }
 
     object Hilt {

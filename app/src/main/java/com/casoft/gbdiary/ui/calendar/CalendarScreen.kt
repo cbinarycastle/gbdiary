@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,8 +18,10 @@ import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.util.findActivity
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.android.play.core.ktx.launchReview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import java.time.LocalDate
@@ -40,7 +43,23 @@ fun CalendarScreen(
     state: CalendarState = rememberCalendarState(),
     today: LocalDate = LocalDate.now(),
 ) {
+    val context = LocalContext.current
+
     val isPremiumUser by viewModel.isPremiumUser.collectAsState()
+
+    LaunchedEffect(viewModel) {
+        viewModel.reviewInfo.collect { reviewInfo ->
+            if (reviewInfo != null) {
+                viewModel.run {
+                    reviewManager.launchReview(
+                        activity = context.findActivity(),
+                        reviewInfo = reviewInfo
+                    )
+                    onLaunchReviewFlow()
+                }
+            }
+        }
+    }
 
     LaunchedEffect(state.currentYearMonth) {
         viewModel.currentYearMonth = state.currentYearMonth

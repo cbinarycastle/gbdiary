@@ -3,7 +3,7 @@ package com.casoft.gbdiary.data.settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.casoft.gbdiary.di.PreferencesKeys
 import com.casoft.gbdiary.model.TextAlign
 import com.casoft.gbdiary.model.Theme
 import kotlinx.coroutines.flow.Flow
@@ -60,15 +60,5 @@ class DataStoreSettingsDataSource(
         preferencesDataStore.edit {
             it[PreferencesKeys.TEXT_ALIGN] = textAlign.name
         }
-    }
-
-    object PreferencesKeys {
-        val NOTIFICATION_TIME = stringPreferencesKey("notification_time")
-        val THEME = stringPreferencesKey("theme")
-        val TEXT_ALIGN = stringPreferencesKey("text_align")
-    }
-
-    companion object {
-        const val PREFS_NAME = "gbdiary_preferences"
     }
 }

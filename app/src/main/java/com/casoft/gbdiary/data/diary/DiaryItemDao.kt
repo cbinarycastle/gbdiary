@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface DiaryItemDao {
 
+    @Query("SELECT COUNT(*) FROM DiaryItem")
+    fun countStream(): Flow<Int>
+
     @Query("SELECT * FROM DiaryItem WHERE year = :year AND month = :month AND status = 1")
     fun getEnabledStreamByYearAndMonth(year: Int, month: Int): Flow<List<DiaryItemEntity>>
 

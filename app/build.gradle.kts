@@ -122,8 +122,6 @@ dependencies {
     implementation(Libs.Accompanist.PAGER)
     implementation(Libs.Accompanist.SYSTEM_UI_CONTROLLER)
 
-    implementation(Libs.GooglePlayServices.AUTH)
-
     implementation(Libs.GoogleDrive.HTTP_CLIENT)
     implementation(Libs.GoogleDrive.API_CLIENT) {
         exclude(group = "org.apache.httpcomponents")
@@ -131,6 +129,10 @@ dependencies {
     implementation(Libs.GoogleDrive.DRIVE) {
         exclude(group = "org.apache.httpcomponents")
     }
+
+    implementation(Libs.GooglePlayCore.REVIEW)
+
+    implementation(Libs.GooglePlayServices.AUTH)
 
     implementation(platform(Libs.Firebase.BOM))
     implementation(Libs.Firebase.ANALYTICS)

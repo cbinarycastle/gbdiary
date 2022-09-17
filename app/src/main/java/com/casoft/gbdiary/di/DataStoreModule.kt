@@ -1,8 +1,9 @@
 package com.casoft.gbdiary.di
 
 import android.content.Context
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.casoft.gbdiary.data.settings.DataStoreSettingsDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,4 +20,13 @@ class DataStoreModule {
     fun providePreferencesDataStore(@ApplicationContext context: Context) = context.datastore
 }
 
-private val Context.datastore by preferencesDataStore(name = DataStoreSettingsDataSource.PREFS_NAME)
+object PreferencesKeys {
+    val NOTIFICATION_TIME = stringPreferencesKey("notification_time")
+    val THEME = stringPreferencesKey("theme")
+    val TEXT_ALIGN = stringPreferencesKey("text_align")
+    val LATEST_LAUNCH_REVIEW_FLOW_DATE = longPreferencesKey("latest_launch_review_flow_date")
+}
+
+private const val PREFS_NAME = "gbdiary_preferences"
+
+private val Context.datastore by preferencesDataStore(name = PREFS_NAME)
