@@ -45,6 +45,7 @@ fun BackupScreen(
     }
 
     val email by viewModel.email.collectAsState()
+    val latestBackupDate by viewModel.latestBackupDate.collectAsState()
     val backupProgress by viewModel.backupProgress.collectAsState()
     val syncProgress by viewModel.syncProgress.collectAsState()
 
@@ -76,6 +77,7 @@ fun BackupScreen(
 
     BackupScreen(
         signedInEmail = email,
+        latestBackupDate = latestBackupDate,
         backupProgress = backupProgress,
         syncProgress = syncProgress,
         backup = viewModel::tryBackup,
@@ -89,6 +91,7 @@ fun BackupScreen(
 @Composable
 private fun BackupScreen(
     signedInEmail: String?,
+    latestBackupDate: String?,
     backupProgress: Progress,
     syncProgress: Progress,
     backup: () -> Unit,
@@ -117,6 +120,16 @@ private fun BackupScreen(
                         .alpha(0.4f)
                 )
                 Spacer(Modifier.height(40.dp))
+                if (latestBackupDate != null) {
+                    Text(
+                        text = "마지막 백업 : $latestBackupDate",
+                        style = GBDiaryTheme.typography.caption,
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp)
+                            .alpha(0.4f)
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
                 SettingsItem(
                     name = "데이터 백업",
                     icon = painterResource(R.drawable.backup),

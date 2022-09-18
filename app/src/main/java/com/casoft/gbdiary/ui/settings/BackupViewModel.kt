@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -24,8 +25,11 @@ class BackupViewModel @Inject constructor(
     private val backupDataUseCase: BackupDataUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
+    observeLatestBackupDate: ObserveLatestBackupDate,
     val googleSignInClient: GoogleSignInClient,
 ) : ViewModel() {
+
+    private val latestBackupDateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
     private val user = observeUserUseCase(Unit)
         .map { it.data }
@@ -49,6 +53,16 @@ class BackupViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = false
+        )
+
+    val latestBackupDate = observeLatestBackupDate(Unit)
+        .map { result ->
+            result.data?.format(latestBackupDateFormatter)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
         )
 
     private val _showRewardedAdEvent = MutableSharedFlow<RewardedAction>()

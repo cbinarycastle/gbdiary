@@ -4,7 +4,11 @@ import android.accounts.Account
 import com.casoft.gbdiary.model.Sticker
 import com.google.api.services.drive.model.File
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.InputStream
+import java.time.LocalDate
 
 class BackupDataSourceStub : BackupDataSource {
 
@@ -12,6 +16,9 @@ class BackupDataSourceStub : BackupDataSource {
         private set
 
     private val images = mutableMapOf<String, String>()
+
+    private val _latestBackupDate = MutableStateFlow<LocalDate?>(null)
+    override val latestBackupDate: Flow<LocalDate?> = _latestBackupDate.asStateFlow()
 
     override suspend fun getData(account: Account): BackupData {
         return backupData ?: throw BackupDataNotFoundException()
@@ -39,6 +46,10 @@ class BackupDataSourceStub : BackupDataSource {
 
     override suspend fun deleteImage(account: Account, fileName: String) {
         images.remove(fileName)
+    }
+
+    override suspend fun setLatestBackupDate(date: LocalDate) {
+        _latestBackupDate.value = date
     }
 
     fun setupTestData() {

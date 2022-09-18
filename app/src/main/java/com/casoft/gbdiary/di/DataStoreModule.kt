@@ -25,6 +25,7 @@ object PreferencesKeys {
     val THEME = stringPreferencesKey("theme")
     val TEXT_ALIGN = stringPreferencesKey("text_align")
     val LATEST_LAUNCH_REVIEW_FLOW_DATE = longPreferencesKey("latest_launch_review_flow_date")
+    val LATEST_BACKUP_DATE = longPreferencesKey("latest_backup_date")
 }
 
 private const val PREFS_NAME = "gbdiary_preferences"

@@ -2,6 +2,10 @@ package com.casoft.gbdiary.data.backup
 
 import android.accounts.Account
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import com.casoft.gbdiary.di.PreferencesKeys
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -11,10 +15,15 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.time.LocalDate
 
 private const val APPLICATION_NAME = "GBDiary"
 
@@ -27,9 +36,23 @@ private const val JSON_FILE_NAME = "diaryData"
 
 class GoogleDriveBackupDataSource(
     private val context: Context,
+    externalScope: CoroutineScope,
     private val ioDispatcher: CoroutineDispatcher,
+    private val preferencesDataStore: DataStore<Preferences>,
     private val gson: Gson = Gson(),
 ) : BackupDataSource {
+
+    override val latestBackupDate = preferencesDataStore.data
+        .map { prefs ->
+            prefs[PreferencesKeys.LATEST_BACKUP_DATE]?.let { epochDay ->
+                LocalDate.ofEpochDay(epochDay)
+            }
+        }
+        .stateIn(
+            scope = externalScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
 
     override suspend fun getData(account: Account): BackupData = withContext(ioDispatcher) {
         val drive = createDrive(account)
@@ -114,6 +137,12 @@ class GoogleDriveBackupDataSource(
 
         existingImageFiles.files.forEach {
             drive.files().delete(it.id).execute()
+        }
+    }
+
+    override suspend fun setLatestBackupDate(date: LocalDate) {
+        preferencesDataStore.edit { prefs ->
+            prefs[PreferencesKeys.LATEST_BACKUP_DATE] = date.toEpochDay()
         }
     }
 

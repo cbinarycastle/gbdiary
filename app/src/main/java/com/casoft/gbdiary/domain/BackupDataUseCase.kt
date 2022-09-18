@@ -60,22 +60,20 @@ class BackupDataUseCase @Inject constructor(
                                 images = diaryItem.images
                             ).map { it.id }
 
-                            val backupDataItem =
-                                diaryItem.toBackupDataItem(imageIds = uploadedImageIds)
-                            val existingBackupDataItemIndex = existingBackupDataItems.indexOfFirst {
-                                it.day == backupDataItem.day
+                            val item = diaryItem.toBackupDataItem(uploadedImageIds)
+                            val existingItemIndex = existingBackupDataItems.indexOfFirst {
+                                it.day == item.day
                             }
 
-                            if (existingBackupDataItemIndex >= 0) {
-                                existingBackupDataItems[existingBackupDataItemIndex] =
-                                    backupDataItem
+                            if (existingItemIndex >= 0) {
+                                existingBackupDataItems[existingItemIndex] = item
                             } else {
-                                existingBackupDataItems.add(backupDataItem)
+                                existingBackupDataItems.add(item)
                             }
                         }
                         DiaryItemStatus.DELETED -> {
-                            val matchedIndex =
-                                existingBackupDataItems.indexOfFirst { backupDataItem ->
+                            val matchedIndex = existingBackupDataItems
+                                .indexOfFirst { backupDataItem ->
                                     val backupDataItemDate = LocalDate.parse(
                                         backupDataItem.day,
                                         BackupDataDateFormatter
@@ -98,6 +96,7 @@ class BackupDataUseCase @Inject constructor(
                 account = params,
                 backupData = BackupData(existingBackupDataItems)
             )
+            backupDataSource.setLatestBackupDate(LocalDate.now())
 
             diaryDataSource.updateSyncAll(true)
 

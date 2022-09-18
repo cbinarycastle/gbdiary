@@ -2,9 +2,13 @@ package com.casoft.gbdiary.data.backup
 
 import android.accounts.Account
 import com.google.api.services.drive.model.File
+import kotlinx.coroutines.flow.Flow
 import java.io.InputStream
+import java.time.LocalDate
 
 interface BackupDataSource {
+
+    val latestBackupDate: Flow<LocalDate?>
 
     suspend fun getData(account: Account): BackupData
 
@@ -17,4 +21,6 @@ interface BackupDataSource {
     suspend fun deleteData(account: Account)
 
     suspend fun deleteImage(account: Account, fileName: String)
+
+    suspend fun setLatestBackupDate(date: LocalDate)
 }
