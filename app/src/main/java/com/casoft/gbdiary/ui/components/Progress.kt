@@ -13,13 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
+import com.casoft.gbdiary.ui.theme.DarkTextIcon
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import kotlin.math.roundToInt
 
 @Composable
 fun Progress(progress: Float) {
-    val indicatorColor = GBDiaryTheme.colors.onBackground
-    val indicatorBackgroundColor = indicatorColor.copy(alpha = 0.3f)
+    val color = DarkTextIcon
+    val indicatorBackgroundColor = color.copy(alpha = 0.3f)
 
     BackHandler { }
 
@@ -36,7 +37,7 @@ fun Progress(progress: Float) {
                 style = Stroke(4.dp.toPx())
             )
             drawArc(
-                color = indicatorColor,
+                color = color,
                 startAngle = 270f,
                 sweepAngle = progress * 360,
                 useCenter = false,
@@ -45,7 +46,8 @@ fun Progress(progress: Float) {
         }
         Text(
             text = "${(progress * 100).roundToInt()}%",
-            style = GBDiaryTheme.typography.subtitle1
+            color = color,
+            style = GBDiaryTheme.typography.subtitle1,
         )
     }
 }
