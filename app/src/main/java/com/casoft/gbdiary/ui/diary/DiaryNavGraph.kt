@@ -1,6 +1,5 @@
 package com.casoft.gbdiary.ui.diary
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
@@ -24,7 +23,6 @@ object DiaryDestinations {
     const val IMAGE_VIEWER_IMAGES_KEY = "images"
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
     composable(
         route = "${DiaryDestinations.HOME_ROUTE}/{${DiaryDestinations.HOME_YEAR_KEY}}/{${DiaryDestinations.HOME_MONTH_KEY}}/{${DiaryDestinations.HOME_DAY_OF_MONTH_KEY}}",

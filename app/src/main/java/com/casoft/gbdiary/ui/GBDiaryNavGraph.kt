@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -68,7 +69,10 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             val month = arguments.getInt(TIMELINE_MONTH_KEY)
             val timelineViewModel = hiltViewModel<TimelineViewModel>()
 
-            timelineViewModel.moveToYearMonth(YearMonth.of(year, month))
+            LaunchedEffect(year, month) {
+                timelineViewModel.moveToYearMonth(YearMonth.of(year, month))
+            }
+
             TimelineScreen(
                 viewModel = timelineViewModel,
                 onDiaryClick = actions::navigateToDiary,
