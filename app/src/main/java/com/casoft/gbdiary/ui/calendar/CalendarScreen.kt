@@ -22,8 +22,8 @@ import com.casoft.gbdiary.util.findActivity
 import com.casoft.gbdiary.util.yearMonth
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.play.core.ktx.launchReview
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -83,7 +83,7 @@ private fun CalendarScreen(
     state: CalendarState,
     today: LocalDate,
     isPremiumUser: Boolean,
-    getDayStateList: (YearMonth) -> Flow<DayStateList>,
+    getDayStateList: (YearMonth) -> StateFlow<DayStateList>,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -116,8 +116,7 @@ private fun CalendarScreen(
                             .align(Alignment.CenterHorizontally),
                         state = state,
                     ) { month ->
-                        val dayStateList by getDayStateList(month.yearMonth)
-                            .collectAsState(DayStateList.empty())
+                        val dayStateList by getDayStateList(month.yearMonth).collectAsState()
                         Month(
                             month = month,
                             dayStateList = dayStateList,
@@ -270,7 +269,7 @@ private fun CalendarScreenPreview() {
             state = rememberCalendarState(initialYearMonth = YearMonth.of(2022, 1)),
             today = LocalDate.of(2022, 1, 1),
             isPremiumUser = false,
-            getDayStateList = { flowOf(DayStateList.empty()) },
+            getDayStateList = { MutableStateFlow(DayStateList.empty()) },
             onTimelineClick = {},
             onDayClick = {},
             onSettingsClick = {},

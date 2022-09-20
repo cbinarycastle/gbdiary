@@ -10,8 +10,8 @@ import com.casoft.gbdiary.model.data
 import com.casoft.gbdiary.model.successOr
 import com.google.android.play.core.review.ReviewManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -46,13 +46,22 @@ class CalendarViewModel @Inject constructor(
             initialValue = null
         )
 
-    fun getDayStateList(yearMonth: YearMonth): Flow<DayStateList> {
-        return getDiaryItemsUseCase(yearMonth)
-            .map { result ->
-                val dayStates = result.successOr(listOf())
-                    .associate { item -> item.date to DayState(item.stickers.firstOrNull()) }
-                DayStateList(dayStates)
-            }
+    private val dayStateListFlowMap = mutableMapOf<YearMonth, StateFlow<DayStateList>>()
+
+    fun getDayStateList(yearMonth: YearMonth): StateFlow<DayStateList> {
+        return dayStateListFlowMap[yearMonth]
+            ?: getDiaryItemsUseCase(yearMonth)
+                .map { result ->
+                    val dayStates = result.successOr(listOf())
+                        .associate { item -> item.date to DayState(item.stickers.firstOrNull()) }
+                    DayStateList(dayStates)
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(),
+                    initialValue = DayStateList.empty()
+                )
+                .also { dayStateListFlowMap[yearMonth] = it }
     }
 
     fun onLaunchReviewFlow() {
