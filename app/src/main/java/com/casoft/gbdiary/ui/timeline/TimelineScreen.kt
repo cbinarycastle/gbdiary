@@ -37,6 +37,7 @@ fun TimelineScreen(
     viewModel: TimelineViewModel,
     onDiaryClick: (LocalDate) -> Unit,
     onBack: () -> Unit,
+    today: YearMonth = YearMonth.now(),
 ) {
     val yearMonth by viewModel.yearMonth.collectAsState()
     val diaryItems by viewModel.diaryItems.collectAsState()
@@ -44,6 +45,7 @@ fun TimelineScreen(
 
     TimelineScreen(
         yearMonth = yearMonth,
+        today = today,
         diaryItems = diaryItems,
         isPremiumUser = isPremiumUser,
         moveToYearMonth = viewModel::moveToYearMonth,
@@ -57,6 +59,7 @@ fun TimelineScreen(
 @Composable
 private fun TimelineScreen(
     yearMonth: YearMonth,
+    today: YearMonth,
     diaryItems: List<DiaryItem>,
     isPremiumUser: Boolean,
     moveToYearMonth: (YearMonth) -> Unit,
@@ -114,8 +117,8 @@ private fun TimelineScreen(
         if (showMonthPickerDialog) {
             MonthPickerDialog(
                 initialYear = yearMonth.year,
-                today = YearMonth.now(),
-                isEnabled = { it <= yearMonth },
+                today = today,
+                isEnabled = { it <= today },
                 onSelect = {
                     showMonthPickerDialog = false
                     moveToYearMonth(it)
