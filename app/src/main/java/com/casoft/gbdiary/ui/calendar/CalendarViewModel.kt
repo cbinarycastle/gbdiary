@@ -2,6 +2,7 @@ package com.casoft.gbdiary.ui.calendar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.casoft.gbdiary.domain.ConsumeReviewInfoUseCase
 import com.casoft.gbdiary.domain.GetDiaryItemsUseCase
 import com.casoft.gbdiary.domain.IsPremiumUserUseCase
 import com.casoft.gbdiary.domain.ObserveReviewInfoUseCase
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
 
@@ -21,6 +24,7 @@ class CalendarViewModel @Inject constructor(
     isPremiumUserUseCase: IsPremiumUserUseCase,
     private val getDiaryItemsUseCase: GetDiaryItemsUseCase,
     observeReviewInfoUseCase: ObserveReviewInfoUseCase,
+    private val consumeReviewInfoUseCase: ConsumeReviewInfoUseCase,
     val reviewManager: ReviewManager,
 ) : ViewModel() {
 
@@ -52,6 +56,8 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun onLaunchReviewFlow() {
-
+        viewModelScope.launch {
+            consumeReviewInfoUseCase(LocalDate.now())
+        }
     }
 }
