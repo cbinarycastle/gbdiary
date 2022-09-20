@@ -35,7 +35,9 @@ class TimelineViewModel @Inject constructor(
         .flatMapLatest { getDiaryItemsUseCase(it) }
         .map { result ->
             when (result) {
-                is Result.Success -> result.data
+                is Result.Success -> {
+                    result.data.sortedByDescending { it.date }
+                }
                 is Result.Error -> {
                     _message.emit(Message.ToastMessage("타임라인을 불러오지 못했습니다."))
                     listOf()
