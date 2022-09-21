@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -40,19 +38,29 @@ fun GBDiarySwitch(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     val swipeableState = rememberSwipeableState(initialValue = checked)
+    var internalChecked by remember { mutableStateOf(checked) }
+
     val minBound = 0f
     val maxBound = with(LocalDensity.current) { ThumbPathLength.toPx() }
     val isLight = GBDiaryTheme.colors.isLight
 
-    LaunchedEffect(checked) {
-        if (swipeableState.currentValue != checked) {
-            swipeableState.animateTo(checked)
+    LaunchedEffect(internalChecked) {
+        if (swipeableState.currentValue != internalChecked) {
+            swipeableState.animateTo(internalChecked)
         }
+    }
+
+    LaunchedEffect(checked) {
+        if (swipeableState.isAnimationRunning.not()) {
+            swipeableState.snapTo(checked)
+        }
+        internalChecked = checked
     }
 
     LaunchedEffect(swipeableState.currentValue) {
         swipeableState.currentValue.let {
             if (it != checked) {
+                internalChecked = it
                 onCheckedChange(it)
             }
         }
@@ -62,7 +70,10 @@ fun GBDiarySwitch(
         modifier = modifier
             .toggleable(
                 value = checked,
-                onValueChange = onCheckedChange,
+                onValueChange = {
+                    internalChecked = it
+                    onCheckedChange(it)
+                },
                 enabled = enabled,
                 role = Role.Switch,
                 interactionSource = interactionSource,
