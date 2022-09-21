@@ -3,7 +3,9 @@ package com.casoft.gbdiary.ui.timeline
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -67,8 +69,13 @@ private fun TimelineScreen(
     onNextMonth: () -> Unit,
     onDiaryClick: (LocalDate) -> Unit,
     onBack: () -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     var showMonthPickerDialog by remember { mutableStateOf(false) }
+
+    val shouldShowAppBarDivider by remember {
+        derivedStateOf { lazyListState.firstVisibleItemScrollOffset > 0 }
+    }
 
     Box(
         modifier = Modifier
@@ -82,12 +89,14 @@ private fun TimelineScreen(
         ) {
             AppBar(
                 yearMonth = yearMonth,
+                showDivider = shouldShowAppBarDivider,
                 onYearMonthClick = { showMonthPickerDialog = true },
                 onBefore = onBeforeMonth,
                 onNext = onNextMonth,
                 onBack = onBack
             )
             LazyColumn(
+                state = lazyListState,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp),
                 modifier = Modifier.weight(1f)
@@ -132,12 +141,13 @@ private fun TimelineScreen(
 @Composable
 private fun AppBar(
     yearMonth: YearMonth,
+    showDivider: Boolean,
     onYearMonthClick: () -> Unit,
     onBefore: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    GBDiaryAppBar {
+    GBDiaryAppBar(showDivider = showDivider) {
         Box(Modifier.fillMaxWidth()) {
             IconButton(onClick = onBack) {
                 Icon(

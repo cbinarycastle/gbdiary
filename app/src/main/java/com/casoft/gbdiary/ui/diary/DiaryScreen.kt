@@ -163,6 +163,8 @@ private fun DiaryScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
+    val shouldShowAppBarDivider by remember { derivedStateOf { scrollState.value > 0 } }
+
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
             onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
@@ -221,6 +223,7 @@ private fun DiaryScreen(
         ) {
             Column(Modifier.fillMaxSize()) {
                 AppBar(
+                    showDivider = shouldShowAppBarDivider,
                     onBack = onBack,
                     onMoreClick = { state.showBottomSheet(DiaryBottomSheet.MORE) },
                     moreButtonVisible = existsDiary ?: false
@@ -351,11 +354,12 @@ private fun DiaryScreen(
 
 @Composable
 private fun AppBar(
+    showDivider: Boolean,
     onBack: () -> Unit,
     onMoreClick: () -> Unit,
     moreButtonVisible: Boolean = false,
 ) {
-    GBDiaryAppBar {
+    GBDiaryAppBar(showDivider = showDivider) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
