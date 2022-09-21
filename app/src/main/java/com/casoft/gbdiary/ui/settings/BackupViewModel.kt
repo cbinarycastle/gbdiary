@@ -10,6 +10,7 @@ import com.casoft.gbdiary.ui.model.Progress
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.tasks.Task
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -65,8 +66,11 @@ class BackupViewModel @Inject constructor(
             initialValue = null
         )
 
-    private val _showRewardedAdEvent = MutableSharedFlow<RewardedAction>()
+    private val _showRewardedAdEvent = MutableSharedFlow<BackupAction>()
     val showRewardedAdEvent = _showRewardedAdEvent
+
+    private val _authError = MutableSharedFlow<BackupAuthError>()
+    val authError = _authError.asSharedFlow()
 
     private val backupSignal = MutableSharedFlow<Unit>()
 
@@ -91,7 +95,16 @@ class BackupViewModel @Inject constructor(
                     Progress.NotInProgress
                 }
                 is Result.Error -> {
-                    _message.emit("백업 도중 오류가 발생했습니다")
+                    if (result.exception is UserRecoverableAuthIOException) {
+                        _authError.emit(
+                            BackupAuthError(
+                                exception = result.exception,
+                                action = BackupAction.BACKUP
+                            )
+                        )
+                    } else {
+                        _message.emit("백업 도중 오류가 발생했습니다")
+                    }
                     Progress.NotInProgress
                 }
                 is Result.Loading -> Progress.InProgress(result.progress ?: 0f)
@@ -122,10 +135,21 @@ class BackupViewModel @Inject constructor(
                     Progress.NotInProgress
                 }
                 is Result.Error -> {
-                    if (result.exception is BackupDataNotFoundException) {
-                        _message.emit("백업 데이터가 존재하지 않습니다.")
-                    } else {
-                        _message.emit("복원 도중 오류가 발생했습니다")
+                    when (result.exception) {
+                        is BackupDataNotFoundException -> {
+                            _message.emit("백업 데이터가 존재하지 않습니다.")
+                        }
+                        is UserRecoverableAuthIOException -> {
+                            _authError.emit(
+                                BackupAuthError(
+                                    exception = result.exception,
+                                    action = BackupAction.SYNC
+                                )
+                            )
+                        }
+                        else -> {
+                            _message.emit("복원 도중 오류가 발생했습니다")
+                        }
                     }
                     Progress.NotInProgress
                 }
@@ -146,7 +170,7 @@ class BackupViewModel @Inject constructor(
             if (isPremiumUser.value) {
                 backup()
             } else {
-                _showRewardedAdEvent.emit(RewardedAction.BACKUP)
+                _showRewardedAdEvent.emit(BackupAction.BACKUP)
             }
         }
     }
@@ -162,7 +186,7 @@ class BackupViewModel @Inject constructor(
             if (isPremiumUser.value) {
                 sync()
             } else {
-                _showRewardedAdEvent.emit(RewardedAction.SYNC)
+                _showRewardedAdEvent.emit(BackupAction.SYNC)
             }
         }
     }

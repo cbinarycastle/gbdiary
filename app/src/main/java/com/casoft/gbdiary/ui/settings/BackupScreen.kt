@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.settings
 
+import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,8 @@ import com.casoft.gbdiary.util.toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.launch
 
+private const val EXTRA_BACKUP_ACTION = "backupAction"
+
 @Composable
 fun BackupScreen(
     viewModel: BackupViewModel,
@@ -54,14 +57,35 @@ fun BackupScreen(
         viewModel.onSignedIn(task)
     }
 
+    val backupAuthErrorLauncher = rememberLauncherForActivityResult(StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            viewModel.backup()
+        }
+    }
+
+    val syncAuthErrorLauncher = rememberLauncherForActivityResult(StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            viewModel.sync()
+        }
+    }
+
     LaunchedEffect(viewModel) {
+        launch {
+            viewModel.authError.collect { error ->
+                when (error.action) {
+                    BackupAction.BACKUP -> backupAuthErrorLauncher.launch(error.exception.intent)
+                    BackupAction.SYNC -> syncAuthErrorLauncher.launch(error.exception.intent)
+                }
+            }
+        }
+
         launch {
             viewModel.showRewardedAdEvent.collect { action ->
                 rewardedAd.apply {
                     showAd {
                         when (action) {
-                            RewardedAction.BACKUP -> viewModel.backup()
-                            RewardedAction.SYNC -> viewModel.sync()
+                            BackupAction.BACKUP -> viewModel.backup()
+                            BackupAction.SYNC -> viewModel.sync()
                         }
                     }
                 }
