@@ -245,17 +245,21 @@ private fun DiaryScreen(
                         Spacer(Modifier.height(AddStickerButtonSize))
                     }
                     Spacer(Modifier.height(8.dp))
-                    SelectedStickers(
+                    Stickers(
                         stickers = stickers,
                         onStickerClick = state::selectSticker,
                         onStickerLongPress = state::startRemovingSticker
                     )
                     Spacer(Modifier.height(4.dp))
-                    DateText(date = date)
+                    Text(
+                        text = date.format(dateFormatter),
+                        style = GBDiaryTheme.typography.caption,
+                        modifier = Modifier.alpha(0.4f)
+                    )
                     Spacer(Modifier.height(24.dp))
                     Box(Modifier.fillMaxWidth()) {
                         if (content.isEmpty()) {
-                            TextInputPlaceholder(textAlign = textAlign)
+                            ContentPlaceholder(textAlign = textAlign)
                         }
                         ContentTextField(
                             text = content,
@@ -273,7 +277,7 @@ private fun DiaryScreen(
                         )
                     } else {
                         Spacer(Modifier.height(24.dp))
-                        SelectedImages(
+                        Images(
                             images = images,
                             visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
                             onImageClick = { index -> onImageClick(index) },
@@ -401,7 +405,7 @@ private fun AddStickerButton(
 }
 
 @Composable
-private fun SelectedStickers(
+private fun Stickers(
     stickers: List<Sticker>,
     onStickerClick: (Int) -> Unit,
     onStickerLongPress: (Int) -> Unit,
@@ -413,7 +417,7 @@ private fun SelectedStickers(
     ) {
         stickers.forEachIndexed { index, sticker ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                SelectedSticker(
+                Sticker(
                     sticker = sticker,
                     modifier = Modifier.pointerInput(Unit) {
                         detectTapGestures(
@@ -428,7 +432,7 @@ private fun SelectedStickers(
 }
 
 @Composable
-private fun SelectedSticker(
+private fun Sticker(
     sticker: Sticker,
     modifier: Modifier = Modifier,
 ) {
@@ -440,16 +444,7 @@ private fun SelectedSticker(
 }
 
 @Composable
-private fun DateText(date: LocalDate, modifier: Modifier = Modifier) {
-    Text(
-        text = date.format(dateFormatter),
-        modifier = modifier.alpha(0.4f),
-        style = GBDiaryTheme.typography.caption
-    )
-}
-
-@Composable
-private fun TextInputPlaceholder(textAlign: TextAlign) {
+private fun ContentPlaceholder(textAlign: TextAlign) {
     Text(
         text = "오늘 하루를 기록해보세요",
         modifier = Modifier
@@ -480,7 +475,7 @@ private fun ContentTextField(
 }
 
 @Composable
-private fun SelectedImages(
+private fun Images(
     images: List<File>,
     visibleRemoveButtonIndex: Int?,
     onImageClick: (Int) -> Unit,
@@ -494,7 +489,7 @@ private fun SelectedImages(
         modifier = modifier
     ) {
         images.forEachIndexed { index, image ->
-            SelectedImage(
+            Image(
                 image = image,
                 removeButtonVisible = index == visibleRemoveButtonIndex,
                 onClick = { onImageClick(index) },
@@ -507,7 +502,7 @@ private fun SelectedImages(
 }
 
 @Composable
-private fun SelectedImage(
+private fun Image(
     image: File,
     removeButtonVisible: Boolean,
     onClick: () -> Unit,
@@ -699,7 +694,11 @@ private fun StickerBottomSheet(
                     .background(GBDiaryTheme.gbDiaryColors.border)
             )
             Spacer(Modifier.height(24.dp))
-            DateText(date)
+            Text(
+                text = date.format(dateFormatter),
+                style = GBDiaryTheme.typography.caption,
+                modifier = Modifier.alpha(0.4f)
+            )
             Spacer(Modifier.height(6.dp))
             Text(
                 text = "오늘은 어떤 하루였나요?",
