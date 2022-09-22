@@ -22,8 +22,6 @@ class DiaryAlarmManager @Inject constructor(
     private val alarmManager: AlarmManager? = context.getSystemService()
 
     fun setAlarm(time: LocalTime) {
-        cancelAlarm()
-
         val pendingIntent = makePendingIntent()
         val triggerAtMillis = LocalDate.now()
             .atTime(time)
