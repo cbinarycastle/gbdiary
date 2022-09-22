@@ -54,6 +54,14 @@ class GoogleDriveBackupDataSource(
             initialValue = null
         )
 
+    override suspend fun getAllFiles(account: Account): List<File> {
+        val drive = createDrive(account)
+        return drive.files().list()
+            .setSpaces(APP_DATA_FOLDER)
+            .execute()
+            .files
+    }
+
     override suspend fun getData(account: Account): BackupData = withContext(ioDispatcher) {
         val drive = createDrive(account)
 
@@ -113,18 +121,6 @@ class GoogleDriveBackupDataSource(
             .also { file -> Timber.d("Uploaded image file ID: ${file.id}") }
     }
 
-    override suspend fun deleteData(account: Account) = withContext(ioDispatcher) {
-        val drive = createDrive(account)
-        val existingDataFiles = drive.files().list()
-            .setQ("name='$JSON_FILE_NAME'")
-            .setSpaces(APP_DATA_FOLDER)
-            .execute()
-
-        existingDataFiles.files.forEach {
-            drive.files().delete(it.id).execute()
-        }
-    }
-
     override suspend fun deleteImage(
         account: Account,
         fileName: String,
@@ -138,6 +134,11 @@ class GoogleDriveBackupDataSource(
         existingImageFiles.files.forEach {
             drive.files().delete(it.id).execute()
         }
+    }
+
+    override suspend fun deleteFile(account: Account, fileId: String) {
+        val drive = createDrive(account)
+        drive.files().delete(fileId)
     }
 
     override suspend fun setLatestBackupDate(date: LocalDate) {

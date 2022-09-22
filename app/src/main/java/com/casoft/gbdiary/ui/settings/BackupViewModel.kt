@@ -87,8 +87,8 @@ class BackupViewModel @Inject constructor(
         .map { result ->
             when (result) {
                 is Result.Success -> {
-                    if (result.data == BackupResult.ALREADY_COMPLETED) {
-                        _message.emit("이미 모든 변경사항이 백업되었습니다")
+                    if (result.data == BackupResult.NO_DATA) {
+                        _message.emit("백업할 데이터가 없습니다")
                     } else {
                         _message.emit("백업이 완료되었습니다")
                     }

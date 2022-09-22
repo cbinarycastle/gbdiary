@@ -20,6 +20,8 @@ class BackupDataSourceStub : BackupDataSource {
     private val _latestBackupDate = MutableStateFlow<LocalDate?>(null)
     override val latestBackupDate: Flow<LocalDate?> = _latestBackupDate.asStateFlow()
 
+    override suspend fun getAllFiles(account: Account): List<File> = listOf()
+
     override suspend fun getData(account: Account): BackupData {
         return backupData ?: throw BackupDataNotFoundException()
     }
@@ -40,12 +42,11 @@ class BackupDataSourceStub : BackupDataSource {
         return File()
     }
 
-    override suspend fun deleteData(account: Account) {
-        backupData = null
-    }
-
     override suspend fun deleteImage(account: Account, fileName: String) {
         images.remove(fileName)
+    }
+
+    override suspend fun deleteFile(account: Account, fileId: String) {
     }
 
     override suspend fun setLatestBackupDate(date: LocalDate) {

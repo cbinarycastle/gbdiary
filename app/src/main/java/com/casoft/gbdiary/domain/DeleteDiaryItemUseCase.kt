@@ -12,6 +12,6 @@ class DeleteDiaryItemUseCase @Inject constructor(
 ) : UseCase<DiaryItem, Unit>(ioDispatcher) {
 
     override suspend fun execute(params: DiaryItem) {
-        diaryDataSource.deleteDiaryitem(params)
+        diaryDataSource.delete(params)
     }
 }

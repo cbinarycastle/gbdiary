@@ -2,17 +2,16 @@ package com.casoft.gbdiary.domain
 
 import android.accounts.Account
 import com.casoft.gbdiary.data.backup.BackupData
-import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
-import com.casoft.gbdiary.data.backup.BackupDataNotFoundException
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.diary.DiaryDataSource
-import com.casoft.gbdiary.data.diary.DiaryItemStatus
+import com.casoft.gbdiary.data.diary.DiaryItemEntity
 import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.Result
 import com.casoft.gbdiary.model.toBackupDataItem
 import com.google.api.services.drive.model.File
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import java.time.LocalDate
@@ -25,85 +24,81 @@ class BackupDataUseCase @Inject constructor(
 ) : FlowUseCase<Account, BackupResult>(ioDispatcher) {
 
     override fun execute(params: Account): Flow<Result<BackupResult>> = channelFlow {
-        val diaryItemsToBackup = diaryDataSource.getNotSyncedDiaryItems()
-        if (diaryItemsToBackup.isEmpty()) {
-            send(Result.Success(BackupResult.ALREADY_COMPLETED))
+        val diaryItems = diaryDataSource.getAllDiaryItems()
+        if (diaryItems.isEmpty()) {
+            send(Result.Success(BackupResult.NO_DATA))
             return@channelFlow
         }
 
         send(Result.Loading.Start)
-        delay(200)
+        delay(100)
+
+        val remoteFiles = backupDataSource.getAllFiles(account = params)
 
         val progress = JobProgress(
-            numberOfJobs = diaryItemsToBackup.size,
-            maxProgress = 0.95f
+            numberOfJobs = diaryItems.size + remoteFiles.size,
+            maxProgress = 0.99f
         )
 
-        val existingBackupDataItems = try {
-            backupDataSource.getData(account = params)
-                .data
-                .toMutableList()
-        } catch (e: BackupDataNotFoundException) {
-            mutableListOf()
-        }
+        deleteAllFiles(
+            account = params,
+            files = remoteFiles,
+            progress = progress
+        )
 
-        coroutineScope {
-            diaryItemsToBackup.map { diaryItemEntity ->
-                async {
-                    val diaryItem = diaryItemEntity.toDiaryItem()
+        uploadBackupData(
+            account = params,
+            diaryItems = diaryItems,
+            progress = progress
+        )
 
-                    when (diaryItemEntity.status) {
-                        DiaryItemStatus.ENABLED -> {
-                            val uploadedImageIds = uploadImages(
-                                account = params,
-                                date = diaryItem.date,
-                                images = diaryItem.images
-                            ).map { it.id }
+        backupDataSource.setLatestBackupDate(LocalDate.now())
 
-                            val item = diaryItem.toBackupDataItem(uploadedImageIds)
-                            val existingItemIndex = existingBackupDataItems.indexOfFirst {
-                                it.day == item.day
-                            }
+        send(Result.Loading.End)
+        delay(100)
+        send(Result.Success(BackupResult.COMPLETED))
+    }
 
-                            if (existingItemIndex >= 0) {
-                                existingBackupDataItems[existingItemIndex] = item
-                            } else {
-                                existingBackupDataItems.add(item)
-                            }
-                        }
-                        DiaryItemStatus.DELETED -> {
-                            val matchedIndex = existingBackupDataItems
-                                .indexOfFirst { backupDataItem ->
-                                    val backupDataItemDate = LocalDate.parse(
-                                        backupDataItem.day,
-                                        BackupDataDateFormatter
-                                    )
-                                    backupDataItemDate == diaryItem.date
-                                }
-                            if (matchedIndex >= 0) {
-                                existingBackupDataItems.removeAt(matchedIndex)
-                            }
-                        }
-                    }
+    private suspend fun ProducerScope<Result<BackupResult>>.deleteAllFiles(
+        account: Account,
+        files: List<File>,
+        progress: JobProgress,
+    ) = coroutineScope {
+        files.map {
+            async {
+                backupDataSource.deleteFile(account = account, fileId = it.id)
+                val currentProgress = progress.increment()
+                send(Result.Loading(currentProgress))
+            }
+        }.awaitAll()
+    }
 
-                    val currentProgress = progress.increment()
-                    send(Result.Loading(currentProgress))
-                }
-            }.awaitAll()
+    private suspend fun ProducerScope<Result<BackupResult>>.uploadBackupData(
+        account: Account,
+        diaryItems: List<DiaryItemEntity>,
+        progress: JobProgress,
+    ) = coroutineScope {
+        val backupDataItems = diaryItems.map { diaryItemEntity ->
+            async {
+                val diaryItem = diaryItemEntity.toDiaryItem()
 
-            backupDataSource.deleteData(account = params)
-            backupDataSource.uploadData(
-                account = params,
-                backupData = BackupData(existingBackupDataItems)
-            )
-            backupDataSource.setLatestBackupDate(LocalDate.now())
+                val uploadedImageIds = uploadImages(
+                    account = account,
+                    date = diaryItem.date,
+                    images = diaryItem.images
+                ).map { it.id }
 
-            diaryDataSource.updateSyncAll(true)
+                val currentProgress = progress.increment()
+                send(Result.Loading(currentProgress))
 
-            send(Result.Loading.End)
-            delay(200)
-            send(Result.Success(BackupResult.COMPLETED))
-        }
+                diaryItem.toBackupDataItem(uploadedImageIds)
+            }
+        }.awaitAll()
+
+        backupDataSource.uploadData(
+            account = account,
+            backupData = BackupData(backupDataItems)
+        )
     }
 
     private suspend fun uploadImages(
@@ -124,5 +119,5 @@ class BackupDataUseCase @Inject constructor(
 }
 
 enum class BackupResult {
-    ALREADY_COMPLETED, COMPLETED
+    NO_DATA, COMPLETED
 }

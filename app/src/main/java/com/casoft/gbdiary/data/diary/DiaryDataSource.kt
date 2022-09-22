@@ -11,13 +11,11 @@ interface DiaryDataSource {
 
     fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity?>
 
-    fun getNotSyncedDiaryItems(): List<DiaryItemEntity>
+    fun getAllDiaryItems(): List<DiaryItemEntity>
 
     suspend fun save(item: DiaryItem)
 
-    suspend fun updateSyncAll(isSync: Boolean)
-
-    suspend fun deleteDiaryitem(item: DiaryItem)
+    suspend fun delete(item: DiaryItem)
 
     fun deleteAllAndInsertAll(items: List<DiaryItemEntity>)
 }

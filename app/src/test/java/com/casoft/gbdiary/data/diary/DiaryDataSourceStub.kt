@@ -24,20 +24,14 @@ class DiaryDataSourceStub : DiaryDataSource {
         diaryItems.first { it.date.toLocalDate() == date }
     }
 
-    override fun getNotSyncedDiaryItems(): List<DiaryItemEntity> {
-        return diaryItems.filter { it.isSync.not() }
-    }
+    override fun getAllDiaryItems(): List<DiaryItemEntity> = diaryItems
 
     override suspend fun save(item: DiaryItem) {
-        deleteDiaryitem(item)
+        delete(item)
         _diaryItems.add(item.toDiaryItemEntity())
     }
 
-    override suspend fun updateSyncAll(isSync: Boolean) {
-
-    }
-
-    override suspend fun deleteDiaryitem(item: DiaryItem) {
+    override suspend fun delete(item: DiaryItem) {
         _diaryItems.removeAll { it.date.toLocalDate() == item.date }
     }
 

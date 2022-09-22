@@ -13,8 +13,6 @@ data class DiaryItemEntity(
     val stickers: List<Sticker>,
     val contents: String,
     val images: List<String> = listOf(),
-    val status: DiaryItemStatus = DiaryItemStatus.ENABLED,
-    val isSync: Boolean = false,
 )
 
 fun DiaryItemEntity.toDiaryItem() = DiaryItem(

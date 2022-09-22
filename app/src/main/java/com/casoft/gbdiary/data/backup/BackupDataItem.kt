@@ -25,6 +25,5 @@ fun BackupDataItem.toDiaryItemEntity(images: List<String>) = DiaryItemEntity(
     },
     stickers = sticker.map { Sticker.fromBackupValue(it) },
     contents = contents,
-    images = images,
-    isSync = true
+    images = images
 )
