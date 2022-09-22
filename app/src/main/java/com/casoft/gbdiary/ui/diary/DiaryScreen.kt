@@ -253,17 +253,7 @@ private fun DiaryScreen(
                     Spacer(Modifier.height(4.dp))
                     DateText(date = date)
                     Spacer(Modifier.height(24.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .then(
-                                if (images.isEmpty()) {
-                                    Modifier.weight(1f)
-                                } else {
-                                    Modifier
-                                }
-                            )
-                    ) {
+                    Box(Modifier.fillMaxWidth()) {
                         if (content.isEmpty()) {
                             TextInputPlaceholder(textAlign = textAlign)
                         }
@@ -271,12 +261,17 @@ private fun DiaryScreen(
                             text = content,
                             textAlign = textAlign,
                             onValueChange = onContentChange,
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .focusRequester(state.textFieldFocusRequester)
+                            modifier = Modifier.focusRequester(state.textFieldFocusRequester)
                         )
                     }
-                    if (images.isNotEmpty()) {
+                    if (images.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .noRippleClickable { state.showKeyboard() }
+                        )
+                    } else {
                         Spacer(Modifier.height(24.dp))
                         SelectedImages(
                             images = images,
