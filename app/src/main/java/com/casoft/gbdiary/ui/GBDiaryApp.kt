@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui
 
+import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
@@ -16,7 +17,9 @@ fun DiaryApp() {
     val themeViewModel = hiltViewModel<ThemeViewModel>()
     val systemUiController = rememberSystemUiController()
 
-    var shouldShowSplashScreen by remember { mutableStateOf(true) }
+    var shouldShowSplashScreen by remember {
+        mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
+    }
 
     LaunchedEffect(true) {
         delay(1000)
