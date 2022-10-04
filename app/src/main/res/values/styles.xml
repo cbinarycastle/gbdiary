@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.GBDiary" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/dear_jsofnote</item>
+        <item name="android:fontFamily">@font/dear_jsofnote</item>
+    </style>
+</resources>

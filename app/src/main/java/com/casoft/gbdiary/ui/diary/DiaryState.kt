@@ -122,7 +122,7 @@ class DiaryState(
     }
 
     fun showKeyboard() {
-        textFieldFocusRequester.requestFocus()
+//        textFieldFocusRequester.requestFocus()
         keyboardController?.show()
     }
 }

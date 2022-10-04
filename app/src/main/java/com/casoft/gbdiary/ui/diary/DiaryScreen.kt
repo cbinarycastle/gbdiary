@@ -22,16 +22,15 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
@@ -56,7 +55,7 @@ import java.time.format.DateTimeFormatter
 
 private const val NUMBER_OF_STICKERS_BY_ROW = 3
 
-private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
+private val DateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
 private val AddStickerButtonSize = 32.dp
 private val SelectedStickerSize = 64.dp
@@ -81,7 +80,7 @@ fun DiaryScreen(
     val stickers by viewModel.stickers.collectAsState()
     val content by viewModel.content.collectAsState()
     val images by viewModel.images.collectAsState()
-    val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
+    val textAlign by viewModel.textAlign.collectAsState()
 
     BackHandler {
         if (state.isBottomSheetVisible) {
@@ -221,96 +220,125 @@ private fun DiaryScreen(
                 .systemBarsPadding()
                 .imePadding()
         ) {
-            Column(Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = SuggestionBarHeight)
+            ) {
                 AppBar(
                     showDivider = shouldShowAppBarDivider,
                     onBack = onBack,
                     onMoreClick = { state.showBottomSheet(DiaryBottomSheet.MORE) },
                     moreButtonVisible = existsDiary ?: false
                 )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 24.dp)
-                        .verticalScroll(scrollState)
-                ) {
-                    Spacer(Modifier.height(8.dp))
-                    if (stickers.size < MAX_STICKERS) {
-                        AddStickerButton(
-                            onClick = { state.showBottomSheet(DiaryBottomSheet.STICKER) }
+                AndroidView(
+                    factory = { context ->
+                        DiaryContent(
+                            context = context,
+                            onAddStickerButtonClick = {
+                                state.showBottomSheet(DiaryBottomSheet.STICKER)
+                            },
+                            onStickerClick = { index -> state.selectSticker(index) },
+                            onStickerLongClick = { index -> state.startRemovingSticker(index) },
+                            onTextChanged = onContentChange,
+                            onImageClick = onImageClick
                         )
-                    } else {
-                        Spacer(Modifier.height(AddStickerButtonSize))
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Stickers(
-                        stickers = stickers,
-                        onStickerClick = state::selectSticker,
-                        onStickerLongPress = state::startRemovingSticker
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = date.format(dateFormatter),
-                        style = GBDiaryTheme.typography.caption,
-                        modifier = Modifier.alpha(0.4f)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Box(Modifier.fillMaxWidth()) {
-                        if (content.isEmpty()) {
-                            ContentPlaceholder(textAlign = textAlign)
-                        }
-                        ContentTextField(
-                            text = content,
-                            textAlign = textAlign,
-                            onValueChange = onContentChange,
-                            modifier = Modifier.focusRequester(state.textFieldFocusRequester)
-                        )
-                    }
-                    if (images.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .noRippleClickable { state.showKeyboard() }
-                        )
-                    } else {
-                        Spacer(Modifier.height(24.dp))
-                        Images(
-                            images = images,
-                            visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
-                            onImageClick = { index -> onImageClick(index) },
-                            onImageLongPress = state::startRemovingImage,
-                            onCancelRemove = state::cancelRemovingImage,
-                            onRemove = { index ->
-                                state.cancelRemovingImage()
-                                onRemoveImage(index)
-                            }
-                        )
-                    }
-                    Spacer(Modifier.height(16.dp))
-                }
-                SuggestionBar(
-                    onAlbumClick = {
-                        val permissionGranted = ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
-                        if (permissionGranted) {
-                            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    },
+                    update = { view ->
+                        view.run {
+                            setStickers(stickers)
+                            setDate(date)
+                            setText(content)
+                            setTextAlign(textAlign)
+                            setImages(images)
                         }
                     },
-                    onAlignClick = onAlignClick,
-                    onDoneClick = {
-                        focusManager.clearFocus()
-                        onDoneClick()
-                    },
-                    textAlign = textAlign,
+                    modifier = Modifier.fillMaxWidth()
                 )
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .weight(1f)
+//                        .padding(horizontal = 24.dp)
+//                        .verticalScroll(scrollState)
+//                ) {
+//                    Spacer(Modifier.height(8.dp))
+//                    if (stickers.size < MAX_STICKERS) {
+//                        AddStickerButton(
+//                            onClick = { state.showBottomSheet(DiaryBottomSheet.STICKER) }
+//                        )
+//                    } else {
+//                        Spacer(Modifier.height(AddStickerButtonSize))
+//                    }
+//                    Spacer(Modifier.height(8.dp))
+//                    Stickers(
+//                        stickers = stickers,
+//                        onStickerClick = state::selectSticker,
+//                        onStickerLongPress = state::startRemovingSticker
+//                    )
+//                    Spacer(Modifier.height(4.dp))
+//                    Text(
+//                        text = date.format(dateFormatter),
+//                        style = GBDiaryTheme.typography.caption,
+//                        modifier = Modifier.alpha(0.4f)
+//                    )
+//                    Spacer(Modifier.height(24.dp))
+//                    Box(Modifier.fillMaxWidth()) {
+//                        if (content.isEmpty()) {
+//                            ContentPlaceholder(textAlign = textAlign)
+//                        }
+//                        ContentTextField(
+//                            text = content,
+//                            textAlign = textAlign,
+//                            onValueChange = onContentChange,
+//                            modifier = Modifier.focusRequester(state.textFieldFocusRequester)
+//                        )
+//                    }
+//                    if (images.isEmpty()) {
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .weight(1f)
+//                                .noRippleClickable { state.showKeyboard() }
+//                        )
+//                    } else {
+//                        Spacer(Modifier.height(24.dp))
+//                        Images(
+//                            images = images,
+//                            visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
+//                            onImageClick = { index -> onImageClick(index) },
+//                            onImageLongPress = state::startRemovingImage,
+//                            onCancelRemove = state::cancelRemovingImage,
+//                            onRemove = { index ->
+//                                state.cancelRemovingImage()
+//                                onRemoveImage(index)
+//                            }
+//                        )
+//                    }
+//                    Spacer(Modifier.height(16.dp))
+//                }
             }
+            SuggestionBar(
+                onAlbumClick = {
+                    val permissionGranted = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                    if (permissionGranted) {
+                        onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                },
+                onAlignClick = onAlignClick,
+                onDoneClick = {
+                    focusManager.clearFocus()
+                    onDoneClick()
+                },
+                textAlign = textAlign,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
 
             if (state.isRemovingSticker) {
                 TouchBlock { state.cancelRemovingSticker() }
@@ -451,14 +479,14 @@ private fun ContentPlaceholder(textAlign: TextAlign) {
             .fillMaxWidth()
             .alpha(0.3f),
         style = GBDiaryTheme.typography.body1,
-        textAlign = textAlign
+        textAlign = textAlign.toUiModel()
     )
 }
 
 @Composable
 private fun ContentTextField(
     text: String,
-    textAlign: TextAlign,
+    textAlign: androidx.compose.ui.text.style.TextAlign,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -554,7 +582,7 @@ private fun SuggestionBar(
     onAlignClick: () -> Unit,
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.Start,
+    textAlign: TextAlign = TextAlign.LEFT,
 ) {
     val borderColor = GBDiaryTheme.colors.onBackground
 
@@ -581,13 +609,13 @@ private fun SuggestionBar(
             Spacer(Modifier.width(8.dp))
             SuggestionBarIcon(onClick = onAlignClick) {
                 when (textAlign) {
-                    TextAlign.Left -> {
+                    TextAlign.LEFT -> {
                         Icon(
                             painter = painterResource(R.drawable.align_left),
                             contentDescription = "왼쪽 정렬"
                         )
                     }
-                    TextAlign.Center -> {
+                    TextAlign.CENTER -> {
                         Icon(
                             painter = painterResource(R.drawable.align_center),
                             contentDescription = "가운데 정렬"
@@ -695,7 +723,7 @@ private fun StickerBottomSheet(
             )
             Spacer(Modifier.height(24.dp))
             Text(
-                text = date.format(dateFormatter),
+                text = date.format(DateFormatter),
                 style = GBDiaryTheme.typography.caption,
                 modifier = Modifier.alpha(0.4f)
             )
@@ -851,7 +879,7 @@ fun DiaryScreenPreview() {
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
             content = "내용",
             images = listOf(),
-            textAlign = TextAlign.Left,
+            textAlign = TextAlign.LEFT,
             addSticker = {},
             changeSticker = { _, _ -> },
             onShowStickerBottomSheetInitially = {},
@@ -869,9 +897,9 @@ fun DiaryScreenPreview() {
     }
 }
 
-private fun com.casoft.gbdiary.model.TextAlign.toUiModel(): TextAlign {
+private fun TextAlign.toUiModel(): androidx.compose.ui.text.style.TextAlign {
     return when (this) {
-        com.casoft.gbdiary.model.TextAlign.LEFT -> TextAlign.Left
-        com.casoft.gbdiary.model.TextAlign.CENTER -> TextAlign.Center
+        TextAlign.LEFT -> androidx.compose.ui.text.style.TextAlign.Left
+        TextAlign.CENTER -> androidx.compose.ui.text.style.TextAlign.Center
     }
 }
