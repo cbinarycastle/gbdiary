@@ -87,7 +87,7 @@ private fun PurchaseScreen(
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "₩2,500",
+                            text = "₩3,000",
                             fontSize = 28.sp
                         )
                     }
