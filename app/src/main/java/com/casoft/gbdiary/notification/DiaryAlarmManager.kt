@@ -9,8 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.getSystemService
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,9 +19,9 @@ class DiaryAlarmManager @Inject constructor(
 ) {
     private val alarmManager: AlarmManager? = context.getSystemService()
 
-    fun setAlarm(dateTime: LocalDateTime) {
+    fun setAlarm(dateTime: ZonedDateTime) {
         val pendingIntent = makePendingIntent()
-        val triggerAtMillis = dateTime.toInstant(ZoneOffset.UTC).toEpochMilli()
+        val triggerAtMillis = dateTime.toInstant().toEpochMilli()
 
         alarmManager?.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -65,6 +64,7 @@ class DiaryAlarmManager @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT
         }
 
-        return PendingIntent.getBroadcast(context, 0, intent, flags)
+        val requestCode = System.currentTimeMillis().toInt()
+        return PendingIntent.getBroadcast(context, requestCode, intent, flags)
     }
 }

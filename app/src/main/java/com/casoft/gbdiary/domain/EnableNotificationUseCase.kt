@@ -6,6 +6,7 @@ import com.casoft.gbdiary.notification.DiaryAlarmManager
 import kotlinx.coroutines.CoroutineDispatcher
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import javax.inject.Inject
 
 class EnableNotificationUseCase @Inject constructor(
@@ -18,7 +19,7 @@ class EnableNotificationUseCase @Inject constructor(
         val time = LocalTime.of(22, 0)
         val dateTime = LocalDate.now().atTime(time)
 
-        diaryAlarmManager.setAlarm(dateTime)
+        diaryAlarmManager.setAlarm(dateTime.atZone(ZoneId.systemDefault()))
         settingsDataSource.setNotificationTime(time)
         diaryAlarmManager.enableAlarmBootReceiver()
     }

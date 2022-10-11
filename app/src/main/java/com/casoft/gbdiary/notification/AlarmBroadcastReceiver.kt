@@ -8,31 +8,12 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.data.settings.SettingsDataSource
-import com.casoft.gbdiary.di.ApplicationScope
 import com.casoft.gbdiary.ui.MainActivity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class AlarmBroadcastReceiver : BroadcastReceiver() {
-
-    @Inject
-    lateinit var settingsDataSource: SettingsDataSource
-
-    @Inject
-    lateinit var diaryAlarmManager: DiaryAlarmManager
-
-    @ApplicationScope
-    @Inject
-    lateinit var externalScope: CoroutineScope
 
     override fun onReceive(context: Context, intent: Intent?) {
         val pendingIntent = makePendingIntent(context)
@@ -45,14 +26,6 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
         with(NotificationManagerCompat.from(context)) {
             notify(createNotificationId(), notification)
-        }
-
-        externalScope.launch {
-            val notificationTime = settingsDataSource.getNotificationTime().firstOrNull()
-            if (notificationTime != null) {
-                val dateTime = LocalDate.now().plusDays(1).atTime(notificationTime)
-                diaryAlarmManager.setAlarm(dateTime)
-            }
         }
     }
 
