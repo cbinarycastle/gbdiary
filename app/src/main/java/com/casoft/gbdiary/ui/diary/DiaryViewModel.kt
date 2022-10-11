@@ -6,6 +6,7 @@ import com.casoft.gbdiary.di.ApplicationScope
 import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.*
 import com.casoft.gbdiary.ui.extension.toFile
+import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,7 +61,9 @@ class DiaryViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> result.data
                 is Result.Error -> {
-                    _message.emit("작성된 일기를 불러오지 못했습니다.")
+                    _message.emit(
+                        Message.ToastMessage("작성된 일기를 불러오지 못했습니다.")
+                    )
                     null
                 }
                 is Result.Loading -> null
@@ -113,8 +116,11 @@ class DiaryViewModel @Inject constructor(
             initialValue = TextAlign.LEFT
         )
 
-    private val _message = MutableSharedFlow<String>()
+    private val _message = MutableSharedFlow<Message>()
     val message = _message.asSharedFlow()
+
+    private val _navigateToImagePicker = MutableSharedFlow<Int>()
+    val navigateToImagePicker = _navigateToImagePicker.asSharedFlow()
 
     fun setDate(date: LocalDate) {
         _date.value = date
@@ -159,6 +165,36 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun onAlbumClick() {
+        val isPremiumUser = isPremiumUser.value
+        val images = images.value
+
+        val errorMessage = when {
+            isPremiumUser.not() && images.size >= MAX_IMAGES_FOR_STANDARD_USER -> {
+                Message.AlertDialogMessage(
+                    text = "사진은 최대 ${MAX_IMAGES_FOR_STANDARD_USER}장까지 첨부 가능해요!\n" +
+                        "${MAX_IMAGES_FOR_PREMIUM_USER}장까지 추가하려면 이용권 구매가 필요합니다",
+                    confirmText = "확인"
+                )
+            }
+            isPremiumUser && images.size >= MAX_IMAGES_FOR_PREMIUM_USER -> {
+                Message.AlertDialogMessage(
+                    text = "사진은 최대 ${MAX_IMAGES_FOR_PREMIUM_USER}장까지 첨부 가능해요!",
+                    confirmText = "확인"
+                )
+            }
+            else -> null
+        }
+
+        viewModelScope.launch {
+            if (errorMessage == null) {
+                _navigateToImagePicker.emit(images.size)
+            } else {
+                _message.emit(errorMessage)
+            }
+        }
+    }
+
     fun saveDiary(shouldShowMessage: Boolean = true) {
         if (isValidToSave.value.not()) {
             return
@@ -176,8 +212,16 @@ class DiaryViewModel @Inject constructor(
 
             if (shouldShowMessage) {
                 when (result) {
-                    is Result.Success -> _message.emit("저장이 완료되었습니다.")
-                    is Result.Error -> _message.emit("저장 도중 오류가 발생했습니다.")
+                    is Result.Success -> {
+                        _message.emit(
+                            Message.ToastMessage("저장이 완료되었습니다.")
+                        )
+                    }
+                    is Result.Error -> {
+                        _message.emit(
+                            Message.ToastMessage("저장 도중 오류가 발생했습니다.")
+                        )
+                    }
                     is Result.Loading -> {}
                 }
             }

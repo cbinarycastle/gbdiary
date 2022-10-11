@@ -38,13 +38,17 @@ import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
+import com.casoft.gbdiary.ui.components.AlertDialogLayout
+import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.rememberAlertDialogState
 import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.util.toast
+import com.casoft.gbdiary.util.collectMessage
+import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -66,6 +70,7 @@ fun DiaryScreen(
     onBack: () -> Unit,
 ) {
     val state = rememberDiaryState()
+    val alertDialogState = rememberAlertDialogState()
     val context = LocalContext.current
 
     val date by viewModel.date.collectAsState()
@@ -92,13 +97,20 @@ fun DiaryScreen(
     ) { selectedImages -> viewModel.addImages(selectedImages) }
 
     LaunchedEffect(viewModel) {
-        viewModel.message.collect {
-            context.toast(it)
+        launch {
+            viewModel.message.collectMessage(context, alertDialogState)
+        }
+
+        launch {
+            viewModel.navigateToImagePicker.collect { preSelectionCount ->
+                onAlbumClick(preSelectionCount)
+            }
         }
     }
 
     DiaryScreen(
         state = state,
+        alertDialogState = alertDialogState,
         date = date,
         isPremiumUser = isPremiumUser,
         existsDiary = existsDiary,
@@ -114,7 +126,7 @@ fun DiaryScreen(
         onContentChange = viewModel::inputText,
         onRemoveImage = viewModel::removeImage,
         onImageClick = onImageClick,
-        onAlbumClick = onAlbumClick,
+        onAlbumClick = viewModel::onAlbumClick,
         onAlignClick = viewModel::toggleTextAlign,
         onDoneClick = viewModel::saveDiary,
         onDeleteDiary = {
@@ -132,6 +144,7 @@ fun DiaryScreen(
 @Composable
 private fun DiaryScreen(
     state: DiaryState,
+    alertDialogState: AlertDialogState,
     date: LocalDate,
     isPremiumUser: Boolean,
     existsDiary: Boolean?,
@@ -147,7 +160,7 @@ private fun DiaryScreen(
     onContentChange: (String) -> Unit,
     onRemoveImage: (Int) -> Unit,
     onImageClick: (Int) -> Unit,
-    onAlbumClick: (Int) -> Unit,
+    onAlbumClick: () -> Unit,
     onAlignClick: () -> Unit,
     onDoneClick: () -> Unit,
     onDeleteDiary: () -> Unit,
@@ -161,7 +174,7 @@ private fun DiaryScreen(
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
-            onAlbumClick(images.size)
+            onAlbumClick()
         } else {
             state.showPermissionDeniedDialog()
         }
@@ -209,137 +222,139 @@ private fun DiaryScreen(
         sheetElevation = 0.dp,
         scrimColor = GBDiaryTheme.gbDiaryColors.dimmingOverlay
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .imePadding()
-        ) {
-            Column(Modifier.fillMaxSize()) {
-                AppBar(
-                    showDivider = shouldShowAppBarDivider,
-                    onBack = onBack,
-                    onMoreClick = { state.showBottomSheet(DiaryBottomSheet.MORE) },
-                    moreButtonVisible = existsDiary ?: false
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(horizontal = 24.dp)
-                        .verticalScroll(scrollState)
-                ) {
-                    Spacer(Modifier.height(8.dp))
-                    if (stickers.size < MAX_STICKERS) {
-                        AddStickerButton(
-                            onClick = { state.showBottomSheet(DiaryBottomSheet.STICKER) }
-                        )
-                    } else {
-                        Spacer(Modifier.height(AddStickerButtonSize))
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    Stickers(
-                        stickers = stickers,
-                        onStickerClick = state::selectSticker,
-                        onStickerLongPress = state::startRemovingSticker
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = date.format(DateFormatter),
-                        style = GBDiaryTheme.typography.caption,
-                        modifier = Modifier.alpha(0.4f)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    Box(Modifier.fillMaxWidth()) {
-                        if (content.isEmpty()) {
-                            ContentPlaceholder(textAlign = textAlign)
-                        }
-                        ContentTextField(
-                            text = content,
-                            textAlign = textAlign,
-                            onValueChange = onContentChange,
-                            modifier = Modifier.focusRequester(state.textFieldFocusRequester)
-                        )
-                    }
-                    if (images.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .noRippleClickable { state.showKeyboard() }
-                        )
-                    } else {
-                        Spacer(Modifier.height(24.dp))
-                        Images(
-                            images = images,
-                            visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
-                            onImageClick = { index -> onImageClick(index) },
-                            onImageLongPress = state::startRemovingImage,
-                            onCancelRemove = state::cancelRemovingImage,
-                            onRemove = { index ->
-                                state.cancelRemovingImage()
-                                onRemoveImage(index)
-                            }
-                        )
-                    }
-                    Spacer(Modifier.height(16.dp))
-                }
-                SuggestionBar(
-                    onAlbumClick = {
-                        val permissionGranted = ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) == PackageManager.PERMISSION_GRANTED
-                        if (permissionGranted) {
-                            onAlbumClick(images.size)
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        }
-                    },
-                    onAlignClick = onAlignClick,
-                    onDoneClick = {
-                        focusManager.clearFocus()
-                        onDoneClick()
-                    },
-                    textAlign = textAlign,
-                )
-            }
-
-            if (state.isRemovingSticker) {
-                TouchBlock { state.cancelRemovingSticker() }
-            }
-
-            RemoveStickerButtons(
-                count = stickers.size,
-                visibleIndex = state.visibleRemoveStickerButtonIndex,
-                onClick = { index ->
-                    state.cancelRemovingSticker()
-                    onRemoveSticker(index)
-                },
+        AlertDialogLayout(state = alertDialogState) {
+            Box(
                 modifier = Modifier
-                    .padding(top = 176.dp)
-                    .align(Alignment.TopCenter)
-            )
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .imePadding()
+            ) {
+                Column(Modifier.fillMaxSize()) {
+                    AppBar(
+                        showDivider = shouldShowAppBarDivider,
+                        onBack = onBack,
+                        onMoreClick = { state.showBottomSheet(DiaryBottomSheet.MORE) },
+                        moreButtonVisible = existsDiary ?: false
+                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(horizontal = 24.dp)
+                            .verticalScroll(scrollState)
+                    ) {
+                        Spacer(Modifier.height(8.dp))
+                        if (stickers.size < MAX_STICKERS) {
+                            AddStickerButton(
+                                onClick = { state.showBottomSheet(DiaryBottomSheet.STICKER) }
+                            )
+                        } else {
+                            Spacer(Modifier.height(AddStickerButtonSize))
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Stickers(
+                            stickers = stickers,
+                            onStickerClick = state::selectSticker,
+                            onStickerLongPress = state::startRemovingSticker
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = date.format(DateFormatter),
+                            style = GBDiaryTheme.typography.caption,
+                            modifier = Modifier.alpha(0.4f)
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Box(Modifier.fillMaxWidth()) {
+                            if (content.isEmpty()) {
+                                ContentPlaceholder(textAlign = textAlign)
+                            }
+                            ContentTextField(
+                                text = content,
+                                textAlign = textAlign,
+                                onValueChange = onContentChange,
+                                modifier = Modifier.focusRequester(state.textFieldFocusRequester)
+                            )
+                        }
+                        if (images.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .noRippleClickable { state.showKeyboard() }
+                            )
+                        } else {
+                            Spacer(Modifier.height(24.dp))
+                            Images(
+                                images = images,
+                                visibleRemoveButtonIndex = state.visibleRemoveImageButtonIndex,
+                                onImageClick = { index -> onImageClick(index) },
+                                onImageLongPress = state::startRemovingImage,
+                                onCancelRemove = state::cancelRemovingImage,
+                                onRemove = { index ->
+                                    state.cancelRemovingImage()
+                                    onRemoveImage(index)
+                                }
+                            )
+                        }
+                        Spacer(Modifier.height(16.dp))
+                    }
+                    SuggestionBar(
+                        onAlbumClick = {
+                            val permissionGranted = ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            ) == PackageManager.PERMISSION_GRANTED
+                            if (permissionGranted) {
+                                onAlbumClick()
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                            }
+                        },
+                        onAlignClick = onAlignClick,
+                        onDoneClick = {
+                            focusManager.clearFocus()
+                            onDoneClick()
+                        },
+                        textAlign = textAlign,
+                    )
+                }
 
-            if (state.shouldShowPermissionDeniedDialog) {
-                PermissionDeniedDialog(
-                    onConfirm = {
-                        state.hidePermissionDeniedDialog()
-                        context.navigateToAppSettings()
-                    },
-                    onDismiss = state::hidePermissionDeniedDialog
-                )
-            }
+                if (state.isRemovingSticker) {
+                    TouchBlock { state.cancelRemovingSticker() }
+                }
 
-            if (state.shouldShowConfirmDeleteDialog) {
-                ConfirmDeleteDialog(
-                    onConfirm = {
-                        state.hideConfirmDeleteDialog()
-                        onDeleteDiary()
+                RemoveStickerButtons(
+                    count = stickers.size,
+                    visibleIndex = state.visibleRemoveStickerButtonIndex,
+                    onClick = { index ->
+                        state.cancelRemovingSticker()
+                        onRemoveSticker(index)
                     },
-                    onDismiss = state::hideConfirmDeleteDialog
+                    modifier = Modifier
+                        .padding(top = 176.dp)
+                        .align(Alignment.TopCenter)
                 )
+
+                if (state.shouldShowPermissionDeniedDialog) {
+                    PermissionDeniedDialog(
+                        onConfirm = {
+                            state.hidePermissionDeniedDialog()
+                            context.navigateToAppSettings()
+                        },
+                        onDismiss = state::hidePermissionDeniedDialog
+                    )
+                }
+
+                if (state.shouldShowConfirmDeleteDialog) {
+                    ConfirmDeleteDialog(
+                        onConfirm = {
+                            state.hideConfirmDeleteDialog()
+                            onDeleteDiary()
+                        },
+                        onDismiss = state::hideConfirmDeleteDialog
+                    )
+                }
             }
         }
     }
@@ -696,6 +711,7 @@ fun DiaryScreenPreview() {
     GBDiaryTheme {
         DiaryScreen(
             state = rememberDiaryState(),
+            alertDialogState = rememberAlertDialogState(),
             date = LocalDate.now(ZoneOffset.UTC),
             isPremiumUser = false,
             existsDiary = true,

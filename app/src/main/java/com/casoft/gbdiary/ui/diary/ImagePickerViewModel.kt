@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.GetLocalImagesUseCase
 import com.casoft.gbdiary.domain.IsPremiumUserUseCase
+import com.casoft.gbdiary.model.MAX_IMAGES_FOR_PREMIUM_USER
+import com.casoft.gbdiary.model.MAX_IMAGES_FOR_STANDARD_USER
 import com.casoft.gbdiary.model.Result
 import com.casoft.gbdiary.model.data
 import com.casoft.gbdiary.ui.model.Message
@@ -11,9 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-const val MAX_IMAGES_FOR_STANDARD_USER = 3
-const val MAX_IMAGES_FOR_PREMIUM_USER = 5
 
 @HiltViewModel
 class ImagePickerViewModel @Inject constructor(
