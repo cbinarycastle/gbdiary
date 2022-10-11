@@ -29,8 +29,6 @@ import com.casoft.gbdiary.util.toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.coroutines.launch
 
-private const val EXTRA_BACKUP_ACTION = "backupAction"
-
 @Composable
 fun BackupScreen(
     viewModel: BackupViewModel,
