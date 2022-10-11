@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
 import com.casoft.gbdiary.ui.components.AlertDialogState
@@ -78,17 +77,17 @@ private fun PurchaseScreen(
                     if (isPremiumUser) {
                         Text(
                             text = "Premium 구매완료",
-                            fontSize = 20.sp
+                            style = GBDiaryTheme.typography.h6
                         )
                     } else {
                         Text(
                             text = "Premium",
-                            fontSize = 20.sp
+                            style = GBDiaryTheme.typography.h6
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text = "₩3,000",
-                            fontSize = 28.sp
+                            style = GBDiaryTheme.typography.h4
                         )
                     }
                 }

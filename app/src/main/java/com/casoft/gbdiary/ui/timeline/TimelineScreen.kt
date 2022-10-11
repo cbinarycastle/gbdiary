@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui.timeline
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -27,12 +28,16 @@ import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
+import com.casoft.gbdiary.ui.theme.DarkTextIcon
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.ui.theme.LightDimmingOverlay
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-private val dateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
+private const val MAX_VISIBLE_IMAGES = 3
+
+private val DateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
 @Composable
 fun TimelineScreen(
@@ -208,7 +213,7 @@ private fun DiaryCard(
                     Spacer(Modifier.height(4.dp))
                 }
                 Text(
-                    text = item.date.format(dateFormatter),
+                    text = item.date.format(DateFormatter),
                     style = GBDiaryTheme.typography.caption,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
@@ -254,7 +259,7 @@ private fun Images(images: List<String>) {
         when (images.size) {
             1 -> SingleImage(images[0])
             2 -> DoubleImage(images[0], images[1])
-            3 -> TripleImage(images[0], images[1], images[2])
+            else -> TripleOrMoreImage(images[0], images[1], images[2], images.size)
         }
     }
 }
@@ -291,7 +296,7 @@ private fun DoubleImage(image1: String, image2: String) {
 }
 
 @Composable
-private fun TripleImage(image1: String, image2: String, image3: String) {
+private fun TripleOrMoreImage(image1: String, image2: String, image3: String, size: Int) {
     Column(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.fillMaxWidth()
@@ -308,15 +313,39 @@ private fun TripleImage(image1: String, image2: String, image3: String) {
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            listOf(image2, image3).forEachIndexed { index, image ->
+            Image(
+                painter = rememberAsyncImagePainter(image2),
+                contentDescription = "이미지 2",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(1.2f)
+            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .aspectRatio(1.2f)
+            ) {
                 Image(
-                    painter = rememberAsyncImagePainter(image),
-                    contentDescription = "이미지 ${index + 2}",
+                    painter = rememberAsyncImagePainter(image3),
+                    contentDescription = "이미지 3",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .weight(1f)
-                        .aspectRatio(1.2f)
+                    modifier = Modifier.fillMaxSize()
                 )
+                if (size > MAX_VISIBLE_IMAGES) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = LightDimmingOverlay)
+                    ) {
+                        Text(
+                            text = "+${size - MAX_VISIBLE_IMAGES}",
+                            color = DarkTextIcon,
+                            style = GBDiaryTheme.typography.h6
+                        )
+                    }
+                }
             }
         }
     }

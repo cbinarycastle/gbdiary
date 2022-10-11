@@ -218,7 +218,7 @@ private fun MonthHeader(yearMonth: YearMonth) {
             TextStyle.FULL,
             Locale.getDefault()
         ),
-        style = GBDiaryTheme.typography.h6
+        style = GBDiaryTheme.typography.h5
     )
 }
 

@@ -37,7 +37,7 @@ const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
 @Composable
 fun ImagePickerScreen(
     viewModel: ImagePickerViewModel,
-    maxSelectionCount: Int,
+    preSelectionCount: Int,
     onFinishSelect: (List<LocalImage>) -> Unit,
     onClose: () -> Unit,
 ) {
@@ -51,15 +51,15 @@ fun ImagePickerScreen(
         viewModel.message.collectMessage(context, alertDialogState)
     }
 
-    LaunchedEffect(maxSelectionCount) {
-        viewModel.maxSelectionCount = maxSelectionCount
+    LaunchedEffect(preSelectionCount) {
+        viewModel.preSelectionCount = preSelectionCount
     }
 
     ImagePickerScreen(
         alertDialogState = alertDialogState,
         images = images,
         numberOfSelectedImages = numberOfSelectedImages,
-        onImageSelect = { viewModel.selectImage(it) },
+        onImageSelect = { viewModel.toggleImage(it) },
         onFinishSelect = onFinishSelect,
         onClose = onClose
     )

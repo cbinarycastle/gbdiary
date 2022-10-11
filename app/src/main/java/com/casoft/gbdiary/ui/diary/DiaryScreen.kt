@@ -36,7 +36,6 @@ import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.LocalImage
-import com.casoft.gbdiary.model.MAX_NUMBER_OF_IMAGES
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
@@ -162,7 +161,7 @@ private fun DiaryScreen(
 
     val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
         if (granted) {
-            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
+            onAlbumClick(images.size)
         } else {
             state.showPermissionDeniedDialog()
         }
@@ -293,7 +292,7 @@ private fun DiaryScreen(
                             Manifest.permission.READ_EXTERNAL_STORAGE
                         ) == PackageManager.PERMISSION_GRANTED
                         if (permissionGranted) {
-                            onAlbumClick(MAX_NUMBER_OF_IMAGES - images.size)
+                            onAlbumClick(images.size)
                         } else {
                             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                         }

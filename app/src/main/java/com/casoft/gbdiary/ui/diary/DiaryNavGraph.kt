@@ -17,7 +17,7 @@ object DiaryDestinations {
     const val HOME_MONTH_KEY = "month"
     const val HOME_DAY_OF_MONTH_KEY = "dayOfMonth"
     const val IMAGE_PICKER_ROUTE = "diary/image/select"
-    const val IMAGE_PICKER_MAX_SELECTION_COUNT_KEY = "maxSelectionCount"
+    const val IMAGE_PICKER_PRE_SELECTION_COUNT_KEY = "preSelectionCount"
     const val IMAGE_VIEWER_ROUTE = "diary/image/view"
     const val IMAGE_VIEWER_INITIAL_PAGE_KEY = "initialPage"
     const val IMAGE_VIEWER_IMAGES_KEY = "images"
@@ -47,28 +47,28 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
                     initialPage = index
                 )
             },
-            onAlbumClick = { maxSelectionCount ->
-                actions.navigateToImagePicker(maxSelectionCount)
+            onAlbumClick = { preSelectionCount ->
+                actions.navigateToImagePicker(preSelectionCount)
             },
             onBack = { actions.navigateUp() }
         )
     }
     composable(
-        route = "${DiaryDestinations.IMAGE_PICKER_ROUTE}/{${DiaryDestinations.IMAGE_PICKER_MAX_SELECTION_COUNT_KEY}}",
+        route = "${DiaryDestinations.IMAGE_PICKER_ROUTE}/{${DiaryDestinations.IMAGE_PICKER_PRE_SELECTION_COUNT_KEY}}",
         arguments = listOf(
-            navArgument(DiaryDestinations.IMAGE_PICKER_MAX_SELECTION_COUNT_KEY) {
+            navArgument(DiaryDestinations.IMAGE_PICKER_PRE_SELECTION_COUNT_KEY) {
                 type = NavType.IntType
             }
         )
     ) { backStackEntry ->
         val arguments = requireNotNull(backStackEntry.arguments)
-        val maxSelectionCount = arguments.getInt(
-            DiaryDestinations.IMAGE_PICKER_MAX_SELECTION_COUNT_KEY
+        val preSelectionCount = arguments.getInt(
+            DiaryDestinations.IMAGE_PICKER_PRE_SELECTION_COUNT_KEY
         )
         val imagePickerViewModel = hiltViewModel<ImagePickerViewModel>()
         ImagePickerScreen(
             viewModel = imagePickerViewModel,
-            maxSelectionCount = maxSelectionCount,
+            preSelectionCount = preSelectionCount,
             onFinishSelect = { images ->
                 actions.setSelectedImages(images)
                 actions.navigateUp()
@@ -106,9 +106,9 @@ class DiaryActions(private val navController: NavController) {
             ?.get(DiaryDestinations.IMAGE_VIEWER_IMAGES_KEY)
             ?: listOf()
 
-    fun navigateToImagePicker(maxSelectionCount: Int) {
+    fun navigateToImagePicker(preSelectionCount: Int) {
         navController.navigate(
-            "${DiaryDestinations.IMAGE_PICKER_ROUTE}/$maxSelectionCount"
+            "${DiaryDestinations.IMAGE_PICKER_ROUTE}/$preSelectionCount"
         )
     }
 
