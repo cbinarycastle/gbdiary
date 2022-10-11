@@ -2,7 +2,9 @@ package com.casoft.gbdiary.ui.settings
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -144,22 +147,25 @@ private fun DescriptionCard(modifier: Modifier = Modifier) {
         shape = RoundedCornerShape(10.dp),
         modifier = modifier
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp)
-        ) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 24.dp)) {
             Description(
                 imageResId = R.drawable.smile,
                 text = "한 번 결제하면 평생 이용 가능해요"
             )
+            Spacer(Modifier.height(8.dp))
             Description(
                 imageResId = R.drawable.hopeful,
                 text = "광고가 나오지 않아요"
             )
+            Spacer(Modifier.height(8.dp))
             Description(
                 imageResId = R.drawable.joy,
                 text = "프리미엄 기능 사용이 가능해요"
             )
+            Spacer(Modifier.height(2.dp))
+            Caption("일상 스티커 사용 가능")
+            Spacer(Modifier.height(6.dp))
+            Caption("사진 5장까지 추가 가능")
         }
     }
 }
@@ -177,6 +183,27 @@ private fun Description(
         )
         Spacer(Modifier.width(12.dp))
         Text(text)
+    }
+}
+
+@Composable
+private fun Caption(text: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(start = 52.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(4.dp)
+                .clip(CircleShape)
+                .background(color = GBDiaryTheme.colors.onSurface)
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = text,
+            style = GBDiaryTheme.typography.body2,
+            modifier = Modifier.alpha(0.65f)
+        )
     }
 }
 
