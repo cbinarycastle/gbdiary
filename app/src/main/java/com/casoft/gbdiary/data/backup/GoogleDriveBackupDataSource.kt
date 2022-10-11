@@ -16,6 +16,7 @@ import com.google.api.services.drive.model.File
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -23,7 +24,9 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.time.LocalDate
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 private const val APPLICATION_NAME = "GBDiary"
 
@@ -42,10 +45,10 @@ class GoogleDriveBackupDataSource(
     private val gson: Gson = Gson(),
 ) : BackupDataSource {
 
-    override val latestBackupDate = preferencesDataStore.data
+    override val latestBackupDateTime: Flow<ZonedDateTime?> = preferencesDataStore.data
         .map { prefs ->
-            prefs[PreferencesKeys.LATEST_BACKUP_DATE]?.let { epochDay ->
-                LocalDate.ofEpochDay(epochDay)
+            prefs[PreferencesKeys.LATEST_BACKUP_DATE]?.let { epochMilli ->
+                Instant.ofEpochMilli(epochMilli).atZone(ZoneOffset.UTC)
             }
         }
         .stateIn(
@@ -141,9 +144,9 @@ class GoogleDriveBackupDataSource(
         drive.files().delete(fileId)
     }
 
-    override suspend fun setLatestBackupDate(date: LocalDate) {
+    override suspend fun setLatestBackupDateTime(dateTime: ZonedDateTime) {
         preferencesDataStore.edit { prefs ->
-            prefs[PreferencesKeys.LATEST_BACKUP_DATE] = date.toEpochDay()
+            prefs[PreferencesKeys.LATEST_BACKUP_DATE] = dateTime.toInstant().toEpochMilli()
         }
     }
 

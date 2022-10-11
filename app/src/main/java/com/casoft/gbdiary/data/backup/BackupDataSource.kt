@@ -4,11 +4,11 @@ import android.accounts.Account
 import com.google.api.services.drive.model.File
 import kotlinx.coroutines.flow.Flow
 import java.io.InputStream
-import java.time.LocalDate
+import java.time.ZonedDateTime
 
 interface BackupDataSource {
 
-    val latestBackupDate: Flow<LocalDate?>
+    val latestBackupDateTime: Flow<ZonedDateTime?>
 
     suspend fun getAllFiles(account: Account): List<File>
 
@@ -24,5 +24,5 @@ interface BackupDataSource {
 
     suspend fun deleteFile(account: Account, fileId: String)
 
-    suspend fun setLatestBackupDate(date: LocalDate)
+    suspend fun setLatestBackupDateTime(dateTime: ZonedDateTime)
 }

@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+private val LatestBackupDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd a h:mm")
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BackupViewModel @Inject constructor(
@@ -29,8 +31,6 @@ class BackupViewModel @Inject constructor(
     observeLatestBackupDate: ObserveLatestBackupDate,
     val googleSignInClient: GoogleSignInClient,
 ) : ViewModel() {
-
-    private val latestBackupDateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
 
     private val user = observeUserUseCase(Unit)
         .map { it.data }
@@ -57,9 +57,7 @@ class BackupViewModel @Inject constructor(
         )
 
     val latestBackupDate = observeLatestBackupDate(Unit)
-        .map { result ->
-            result.data?.format(latestBackupDateFormatter)
-        }
+        .map { it.data?.format(LatestBackupDateTimeFormatter) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),

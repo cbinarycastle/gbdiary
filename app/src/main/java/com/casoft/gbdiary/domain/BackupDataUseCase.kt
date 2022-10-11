@@ -15,6 +15,7 @@ import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 class BackupDataUseCase @Inject constructor(
@@ -52,7 +53,7 @@ class BackupDataUseCase @Inject constructor(
             progress = progress
         )
 
-        backupDataSource.setLatestBackupDate(LocalDate.now())
+        backupDataSource.setLatestBackupDateTime(ZonedDateTime.now())
 
         send(Result.Loading.End)
         delay(100)

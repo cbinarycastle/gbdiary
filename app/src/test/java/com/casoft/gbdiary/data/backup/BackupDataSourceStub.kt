@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.io.InputStream
-import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class BackupDataSourceStub : BackupDataSource {
 
@@ -17,8 +17,8 @@ class BackupDataSourceStub : BackupDataSource {
 
     private val images = mutableMapOf<String, String>()
 
-    private val _latestBackupDate = MutableStateFlow<LocalDate?>(null)
-    override val latestBackupDate: Flow<LocalDate?> = _latestBackupDate.asStateFlow()
+    private val _latestBackupDate = MutableStateFlow<ZonedDateTime?>(null)
+    override val latestBackupDateTime: Flow<ZonedDateTime?> = _latestBackupDate.asStateFlow()
 
     override suspend fun getAllFiles(account: Account): List<File> = listOf()
 
@@ -49,8 +49,8 @@ class BackupDataSourceStub : BackupDataSource {
     override suspend fun deleteFile(account: Account, fileId: String) {
     }
 
-    override suspend fun setLatestBackupDate(date: LocalDate) {
-        _latestBackupDate.value = date
+    override suspend fun setLatestBackupDateTime(dateTime: ZonedDateTime) {
+        _latestBackupDate.value = dateTime
     }
 
     fun setupTestData() {
