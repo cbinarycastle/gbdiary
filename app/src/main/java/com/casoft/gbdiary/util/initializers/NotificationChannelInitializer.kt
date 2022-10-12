@@ -15,7 +15,7 @@ class NotificationChannelInitializer : Initializer<Unit> {
             val channel = GBDiaryNotificationChannel.values().map { channel ->
                 val id = channel.id
                 val name = context.getString(channel.nameResId)
-                val importance = NotificationManager.IMPORTANCE_DEFAULT
+                val importance = NotificationManager.IMPORTANCE_HIGH
                 NotificationChannel(id, name, importance)
             }
 

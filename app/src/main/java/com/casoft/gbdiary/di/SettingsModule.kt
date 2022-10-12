@@ -12,11 +12,11 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class SettingsModule {
+object SettingsModule {
 
     @Singleton
     @Provides
     fun provideSettingsDataSource(
-        preferencesDataStore: DataStore<Preferences>
+        preferencesDataStore: DataStore<Preferences>,
     ): SettingsDataSource = DataStoreSettingsDataSource(preferencesDataStore)
 }

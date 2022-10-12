@@ -4,9 +4,7 @@ import com.casoft.gbdiary.data.settings.SettingsDataSource
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.notification.DiaryAlarmManager
 import kotlinx.coroutines.CoroutineDispatcher
-import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
 import javax.inject.Inject
 
 class EnableNotificationUseCase @Inject constructor(
@@ -17,9 +15,8 @@ class EnableNotificationUseCase @Inject constructor(
 
     override suspend fun execute(params: Unit) {
         val time = LocalTime.of(22, 0)
-        val dateTime = LocalDate.now().atTime(time)
 
-        diaryAlarmManager.setAlarm(dateTime.atZone(ZoneId.systemDefault()))
+        diaryAlarmManager.setAlarm(time)
         settingsDataSource.setNotificationTime(time)
         diaryAlarmManager.enableAlarmBootReceiver()
     }

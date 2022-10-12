@@ -8,25 +8,37 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.getSystemService
+import com.casoft.gbdiary.time.TimeProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.ZonedDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DiaryAlarmManager @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val timeProvider: TimeProvider,
 ) {
     private val alarmManager: AlarmManager? = context.getSystemService()
 
-    fun setAlarm(dateTime: ZonedDateTime) {
+    fun setAlarm(time: LocalTime) {
         val pendingIntent = makePendingIntent()
-        val triggerAtMillis = dateTime.toInstant().toEpochMilli()
 
-        alarmManager?.setRepeating(
+        val now = timeProvider.nowLocal()
+        val date = if (time <= now.toLocalTime()) {
+            now.toLocalDate().plusDays(1)
+        } else {
+            now.toLocalDate()
+        }
+
+        val triggerAtMillis = date.atTime(time)
+            .atZone(timeProvider.zone())
+            .toInstant()
+            .toEpochMilli()
+
+        alarmManager?.set(
             AlarmManager.RTC_WAKEUP,
             triggerAtMillis,
-            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }

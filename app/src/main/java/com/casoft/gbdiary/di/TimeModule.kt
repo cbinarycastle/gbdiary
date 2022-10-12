@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.di
 
-import com.google.gson.Gson
+import com.casoft.gbdiary.time.DefaultTimeProvider
+import com.casoft.gbdiary.time.TimeProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,9 +10,9 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object GsonModule {
+object TimeModule {
 
     @Singleton
     @Provides
-    fun provideGson() = Gson()
+    fun provideTimeProvider(): TimeProvider = DefaultTimeProvider
 }

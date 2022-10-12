@@ -9,8 +9,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.ZoneId
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,10 +29,7 @@ class AlarmBootReceiver : BroadcastReceiver() {
             externalScope.launch {
                 val notificationTime = settingsDataSource.getNotificationTime().firstOrNull()
                 if (notificationTime != null) {
-                    val dateTime = LocalDate.now()
-                        .atTime(notificationTime)
-                        .atZone(ZoneId.systemDefault())
-                    diaryAlarmManager.setAlarm(dateTime)
+                    diaryAlarmManager.setAlarm(notificationTime)
                 }
             }
         }
