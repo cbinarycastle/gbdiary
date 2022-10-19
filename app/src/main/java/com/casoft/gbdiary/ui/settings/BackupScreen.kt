@@ -177,13 +177,13 @@ private fun BackupScreen(
                 Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
                 if (signedInEmail == null) {
                     SettingsItem(
-                        name = "Google 계정 로그인",
+                        name = "Google Drive 연동",
                         icon = painterResource(R.drawable.logout),
                         onClick = signIn
                     )
                 } else {
                     SettingsItem(
-                        name = "로그아웃",
+                        name = "연동 해제",
                         icon = painterResource(R.drawable.logout),
                         onClick = { showSignOutDialog = true }
                     ) {
@@ -243,11 +243,11 @@ private fun BackupScreen(
                     onDismiss = { showSignInDialog = false },
                     content = {
                         Text(
-                            text = "Google 로그인이 필요한 서비스입니다.\n로그인 하시겠습니까?",
+                            text = "Google Drive 연동이 필요한 서비스입니다.\n연동하시겠습니까?",
                             textAlign = TextAlign.Center
                         )
                     },
-                    confirmText = { Text("로그인") },
+                    confirmText = { Text("연동") },
                     dismissText = { Text("취소") },
                 )
             }
@@ -259,8 +259,8 @@ private fun BackupScreen(
                         signOut()
                     },
                     onDismiss = { showSignOutDialog = false },
-                    content = { Text("로그아웃 하시겠습니까?") },
-                    confirmText = { Text("로그아웃") },
+                    content = { Text("Google Drive 연동을 해제하시겠어요?") },
+                    confirmText = { Text("연동 해제") },
                     dismissText = { Text("취소") },
                 )
             }

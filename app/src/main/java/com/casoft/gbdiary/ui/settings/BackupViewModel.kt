@@ -76,7 +76,7 @@ class BackupViewModel @Inject constructor(
         .flatMapLatest {
             val account = user.value?.account
             if (account == null) {
-                _message.emit("로그인 후 이용 가능합니다.")
+                _message.emit("Google Drive 연동 후 이용 가능합니다.")
                 emptyFlow()
             } else {
                 backupDataUseCase(account)
@@ -120,7 +120,7 @@ class BackupViewModel @Inject constructor(
         .flatMapLatest {
             val account = user.value?.account
             if (account == null) {
-                _message.emit("로그인 후 이용 가능합니다.")
+                _message.emit("Google Drive 연동 후 이용 가능합니다.")
                 emptyFlow()
             } else {
                 syncDataUseCase(account)
@@ -198,11 +198,11 @@ class BackupViewModel @Inject constructor(
     fun onSignedIn(task: Task<GoogleSignInAccount>) {
         viewModelScope.launch {
             if (task.isSuccessful.not()) {
-                _message.emit("로그인에 실패했습니다.")
+                _message.emit("Google Drive 연동에 실패했습니다.")
                 return@launch
             }
 
-            _message.emit("${task.result.email}으로 로그인 되었습니다")
+            _message.emit("${task.result.email}으로 연동 되었습니다")
 
             checkExistingSignedInUserUseCase(Unit)
         }
@@ -212,7 +212,7 @@ class BackupViewModel @Inject constructor(
         viewModelScope.launch {
             googleSignInClient.signOut()
 
-            _message.emit("Google 계정 로그아웃 되었습니다")
+            _message.emit("Google Drive 연동이 해제되었습니다")
 
             checkExistingSignedInUserUseCase(Unit)
         }
