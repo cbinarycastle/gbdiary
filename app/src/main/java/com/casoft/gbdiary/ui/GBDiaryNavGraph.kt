@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.casoft.gbdiary.ui.MainDestinations.DIARY_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.HOME_ROUTE
+import com.casoft.gbdiary.ui.MainDestinations.SEARCH_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.SETTINGS_ROUTE
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_MONTH_KEY
 import com.casoft.gbdiary.ui.MainDestinations.TIMELINE_ROUTE
@@ -23,6 +24,8 @@ import com.casoft.gbdiary.ui.calendar.rememberCalendarState
 import com.casoft.gbdiary.ui.diary.DiaryActions
 import com.casoft.gbdiary.ui.diary.DiaryDestinations
 import com.casoft.gbdiary.ui.diary.diaryNavGraph
+import com.casoft.gbdiary.ui.search.SearchScreen
+import com.casoft.gbdiary.ui.search.SearchViewModel
 import com.casoft.gbdiary.ui.settings.SettingsActions
 import com.casoft.gbdiary.ui.settings.SettingsDestination
 import com.casoft.gbdiary.ui.settings.settingsNavGraph
@@ -41,14 +44,15 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
         startDestination = HOME_ROUTE,
     ) {
         composable(HOME_ROUTE) {
-            val calendarViewModel = hiltViewModel<CalendarViewModel>()
+            val viewModel = hiltViewModel<CalendarViewModel>()
             CalendarScreen(
-                viewModel = calendarViewModel,
+                viewModel = viewModel,
                 onDayClick = actions::navigateToDiary,
-                onTimelineClick = { actions.navigateToTimeline(calendarViewModel.currentYearMonth) },
+                onTimelineClick = { actions.navigateToTimeline(viewModel.currentYearMonth) },
+                onSearchClick = actions::navigateToSearch,
                 onSettingsClick = actions::navigateToSettings,
                 onWriteClick = actions::navigateToDiary,
-                state = rememberCalendarState(calendarViewModel.currentYearMonth)
+                state = rememberCalendarState(viewModel.currentYearMonth)
             )
         }
         navigation(
@@ -67,15 +71,23 @@ fun GBDiaryNavGraph(navController: NavHostController = rememberNavController()) 
             val arguments = requireNotNull(backStackEntry.arguments)
             val year = arguments.getInt(TIMELINE_YEAR_KEY)
             val month = arguments.getInt(TIMELINE_MONTH_KEY)
-            val timelineViewModel = hiltViewModel<TimelineViewModel>()
+            val viewModel = hiltViewModel<TimelineViewModel>()
 
             LaunchedEffect(year, month) {
-                timelineViewModel.moveToYearMonth(YearMonth.of(year, month))
+                viewModel.moveToYearMonth(YearMonth.of(year, month))
             }
 
             TimelineScreen(
-                viewModel = timelineViewModel,
-                onDiaryClick = actions::navigateToDiary,
+                viewModel = viewModel,
+                onDiaryItemClick = { item -> actions.navigateToDiary(item.date) },
+                onBack = actions::navigateUp
+            )
+        }
+        composable(SEARCH_ROUTE) {
+            val viewModel = hiltViewModel<SearchViewModel>()
+            SearchScreen(
+                viewModel = viewModel,
+                onDiaryItemClick = { item -> actions.navigateToDiary(item.date) },
                 onBack = actions::navigateUp
             )
         }
@@ -94,6 +106,7 @@ object MainDestinations {
     const val TIMELINE_ROUTE = "timeline"
     const val TIMELINE_YEAR_KEY = "year"
     const val TIMELINE_MONTH_KEY = "month"
+    const val SEARCH_ROUTE = "search"
     const val SETTINGS_ROUTE = "settings"
 }
 
@@ -107,6 +120,10 @@ class MainActions(private val navController: NavHostController) {
 
     fun navigateToTimeline(initialYearMonth: YearMonth) {
         navController.navigate("$TIMELINE_ROUTE/${initialYearMonth.year}/${initialYearMonth.monthValue}")
+    }
+
+    fun navigateToSearch() {
+        navController.navigate(SEARCH_ROUTE)
     }
 
     fun navigateToSettings() {

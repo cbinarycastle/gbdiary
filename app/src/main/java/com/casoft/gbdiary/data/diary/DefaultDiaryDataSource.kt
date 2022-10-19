@@ -15,12 +15,16 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao) : DiaryData
         )
     }
 
-    override fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity> {
+    override fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity> {
         return diaryItemDao.getStreamByDate(
             year = date.year,
             month = date.monthValue,
             dayOfMonth = date.dayOfMonth
         )
+    }
+
+    override fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> {
+        return diaryItemDao.findStreamByContents("%$contents%")
     }
 
     override fun getAllDiaryItems(): List<DiaryItemEntity> {

@@ -38,6 +38,7 @@ fun CalendarScreen(
     viewModel: CalendarViewModel,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
+    onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
     state: CalendarState = rememberCalendarState(),
@@ -72,6 +73,7 @@ fun CalendarScreen(
         getDayStateList = { yearMonth -> viewModel.getDayStateList(yearMonth) },
         onDayClick = onDayClick,
         onTimelineClick = onTimelineClick,
+        onSearchClick = onSearchClick,
         onSettingsClick = onSettingsClick,
         onWriteClick = onWriteClick
     )
@@ -86,6 +88,7 @@ private fun CalendarScreen(
     getDayStateList: (YearMonth) -> StateFlow<DayStateList>,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
+    onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
 ) {
@@ -95,8 +98,9 @@ private fun CalendarScreen(
         Column(Modifier.fillMaxSize()) {
             AppBar(
                 onTimelineClick = onTimelineClick,
-                onSettingsClick = onSettingsClick,
-                onCalendarClick = { showMonthPickerDialog = true }
+                onCalendarClick = { showMonthPickerDialog = true },
+                onSearchClick = onSearchClick,
+                onSettingsClick = onSettingsClick
             )
             Box(
                 modifier = Modifier
@@ -176,8 +180,9 @@ private fun CalendarScreen(
 @Composable
 private fun AppBar(
     onTimelineClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onCalendarClick: () -> Unit,
+    onSearchClick: () -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     GBDiaryAppBar {
         Row(
@@ -201,11 +206,22 @@ private fun AppBar(
                     )
                 }
             }
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    painter = painterResource(R.drawable.setting),
-                    contentDescription = "설정"
-                )
+            Box(contentAlignment = Alignment.CenterEnd) {
+                IconButton(
+                    onClick = onSearchClick,
+                    modifier = Modifier.padding(end = 36.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.search),
+                        contentDescription = "검색"
+                    )
+                }
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.setting),
+                        contentDescription = "설정"
+                    )
+                }
             }
         }
     }
@@ -270,8 +286,9 @@ private fun CalendarScreenPreview() {
             today = LocalDate.of(2022, 1, 1),
             isPremiumUser = false,
             getDayStateList = { MutableStateFlow(DayStateList.empty()) },
-            onTimelineClick = {},
             onDayClick = {},
+            onTimelineClick = {},
+            onSearchClick = {},
             onSettingsClick = {},
             onWriteClick = {}
         )

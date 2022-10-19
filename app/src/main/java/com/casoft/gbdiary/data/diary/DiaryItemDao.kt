@@ -18,6 +18,9 @@ interface DiaryItemDao {
     @Query("SELECT * FROM DiaryItem WHERE year = :year AND month = :month AND dayOfMonth = :dayOfMonth")
     fun getStreamByDate(year: Int, month: Int, dayOfMonth: Int): Flow<DiaryItemEntity>
 
+    @Query("SELECT * FROM DiaryItem WHERE contents LIKE :contents")
+    fun findStreamByContents(contents: String): Flow<List<DiaryItemEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOrUpdate(item: DiaryItemEntity)
 

@@ -9,7 +9,9 @@ interface DiaryDataSource {
 
     fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>>
 
-    fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity?>
+    fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity?>
+
+    fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>>
 
     fun getAllDiaryItems(): List<DiaryItemEntity>
 

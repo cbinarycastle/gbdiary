@@ -15,13 +15,17 @@ class DiaryDataSourceStub : DiaryDataSource {
         get() = _diaryItems.toList()
 
     override fun getDiaryItemsByYearMonth(
-        yearMonth: YearMonth
+        yearMonth: YearMonth,
     ): Flow<List<DiaryItemEntity>> = flow {
         diaryItems.filter { YearMonth.of(it.date.year, it.date.month) == yearMonth }
     }
 
-    override fun getDiaryItemsByDate(date: LocalDate): Flow<DiaryItemEntity> = flow {
+    override fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity> = flow {
         diaryItems.first { it.date.toLocalDate() == date }
+    }
+
+    override fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> = flow {
+        diaryItems.filter { it.contents == contents }
     }
 
     override fun getAllDiaryItems(): List<DiaryItemEntity> = diaryItems
