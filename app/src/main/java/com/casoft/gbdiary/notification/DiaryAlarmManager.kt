@@ -69,7 +69,7 @@ class DiaryAlarmManager @Inject constructor(
     }
 
     private fun makePendingIntent(): PendingIntent {
-        val intent = Intent(context, AlarmBroadcastReceiver::class.java)
+        val intent = Intent(context, DiaryAlarmBroadcastReceiver::class.java)
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         } else {

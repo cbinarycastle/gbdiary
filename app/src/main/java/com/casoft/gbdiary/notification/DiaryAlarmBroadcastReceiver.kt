@@ -21,7 +21,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AlarmBroadcastReceiver : BroadcastReceiver() {
+class DiaryAlarmBroadcastReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var settingsDataSource: SettingsDataSource
@@ -56,14 +56,14 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun makePendingIntent(context: Context): PendingIntent {
-        val mainActivityIntent = Intent(context, MainActivity::class.java)
+        val intent = Intent(context, MainActivity::class.java)
         val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT
         }
 
-        return PendingIntent.getActivity(context, 0, mainActivityIntent, flags)
+        return PendingIntent.getActivity(context, 0, intent, flags)
     }
 
     private fun createNotificationId(): Int {
