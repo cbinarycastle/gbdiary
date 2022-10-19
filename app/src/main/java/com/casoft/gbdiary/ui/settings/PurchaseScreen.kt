@@ -102,7 +102,7 @@ private fun PurchaseScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "구매한 이용권은 모든 기기에서 연동됩니다",
+                    text = "구매한 이용권은 모든 기기에서 연동됩니다\n단, Android, iOS 간 연동은 되지 않습니다",
                     modifier = Modifier
                         .padding(start = 40.dp)
                         .alpha(0.4f)
