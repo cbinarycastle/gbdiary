@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.DiaryItem
@@ -146,6 +148,7 @@ private fun SearchTextField(
                 textStyle = GBDiaryTheme.typography.subtitle1.copy(
                     color = LocalContentColor.current
                 ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions { onSearch() },
                 singleLine = true,
                 cursorBrush = SolidColor(LocalContentColor.current),
