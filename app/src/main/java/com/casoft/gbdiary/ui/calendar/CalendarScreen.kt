@@ -116,7 +116,8 @@ private fun CalendarScreen(
                     WeekHeader(Modifier.align(Alignment.CenterHorizontally))
                     Calendar(
                         modifier = Modifier
-                            .height(314.dp)
+                            .wrapContentWidth()
+                            .aspectRatio(314f / 327f)
                             .align(Alignment.CenterHorizontally),
                         state = state,
                     ) { month ->
