@@ -23,13 +23,14 @@ class LocalImageDataSource(
         }
 
         val projection = arrayOf(MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA)
+        val sortOrder = "${MediaStore.Images.ImageColumns.DATE_TAKEN} DESC"
 
         context.contentResolver.query(
             collection,
             projection,
             null,
             null,
-            null
+            sortOrder
         )?.use { cursor ->
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
             val dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
