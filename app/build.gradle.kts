@@ -97,6 +97,7 @@ dependencies {
     implementation(Libs.Android.MATERIAL)
 
     implementation(Libs.AndroidX.APPCOMPAT)
+    implementation(Libs.AndroidX.BIOMETRIC)
     implementation(Libs.AndroidX.CORE_KTX)
     implementation(Libs.AndroidX.DATASTORE_PREFERENCES)
     implementation(Libs.AndroidX.STARTUP)

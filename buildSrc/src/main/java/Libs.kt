@@ -14,6 +14,7 @@ object Libs {
 
     object AndroidX {
         const val APPCOMPAT = "androidx.appcompat:appcompat:1.4.2"
+        const val BIOMETRIC = "androidx.biometric:biometric:1.1.0"
         const val CORE_KTX = "androidx.core:core-ktx:1.8.0"
         const val DATASTORE_PREFERENCES = "androidx.datastore:datastore-preferences:1.0.0"
         const val STARTUP = "androidx.startup:startup-runtime:1.1.1"
