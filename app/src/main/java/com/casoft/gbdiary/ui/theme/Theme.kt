@@ -47,10 +47,9 @@ private val DarkGBDiaryColors = GBDiaryColors(
 
 @Composable
 fun GBDiaryTheme(
-    viewModel: ThemeViewModel,
+    theme: Theme,
     content: @Composable () -> Unit,
 ) {
-    val theme by viewModel.theme.collectAsState()
     val systemInDarkTheme = isSystemInDarkTheme()
     val darkTheme = remember(theme, systemInDarkTheme) {
         when (theme) {

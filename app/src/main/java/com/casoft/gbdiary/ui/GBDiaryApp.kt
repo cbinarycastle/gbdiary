@@ -8,15 +8,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.ui.theme.ThemeViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
 @Composable
 fun DiaryApp() {
-    val themeViewModel = hiltViewModel<ThemeViewModel>()
+    val viewModel = hiltViewModel<AppViewModel>()
     val systemUiController = rememberSystemUiController()
 
+    val theme by viewModel.theme.collectAsState()
     var shouldShowSplashScreen by remember {
         mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
     }
@@ -26,7 +26,7 @@ fun DiaryApp() {
         shouldShowSplashScreen = false
     }
 
-    GBDiaryTheme(themeViewModel) {
+    GBDiaryTheme(theme) {
         val useDarkIcons = GBDiaryTheme.colors.isLight
 
         SideEffect {
