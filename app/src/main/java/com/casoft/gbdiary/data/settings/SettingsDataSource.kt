@@ -11,6 +11,14 @@ interface SettingsDataSource {
 
     suspend fun setNotificationTime(time: LocalTime?)
 
+    fun getPassword(): Flow<String?>
+
+    suspend fun setPassword(password: String?)
+
+    fun isBiometricsEnabled(): Flow<Boolean>
+
+    suspend fun setBiometricsEnabled(enabled: Boolean)
+
     fun getTheme(): Flow<Theme>
 
     suspend fun setTheme(theme: Theme)

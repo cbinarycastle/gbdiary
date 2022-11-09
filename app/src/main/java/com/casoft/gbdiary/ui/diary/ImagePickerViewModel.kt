@@ -38,7 +38,7 @@ class ImagePickerViewModel @Inject constructor(
                 .chunked(NUMBER_OF_IMAGES_BY_ROW)
             emit(uiStates)
         } else {
-            _message.emit(Message.ToastMessage("사진을 불러오지 못했습니다."))
+            _message.emit(Message.Toast("사진을 불러오지 못했습니다."))
         }
     }.stateIn(
         scope = viewModelScope,
@@ -59,14 +59,14 @@ class ImagePickerViewModel @Inject constructor(
 
             val errorMessage = when {
                 isPremiumUser.not() && totalSelectionCount >= MAX_IMAGES_FOR_STANDARD_USER -> {
-                    Message.AlertDialogMessage(
+                    Message.AlertDialog(
                         text = "사진은 최대 ${MAX_IMAGES_FOR_STANDARD_USER}장까지 첨부 가능해요!\n" +
                             "${MAX_IMAGES_FOR_PREMIUM_USER}장까지 추가하려면 이용권 구매가 필요합니다",
                         confirmText = "확인"
                     )
                 }
                 isPremiumUser && totalSelectionCount >= MAX_IMAGES_FOR_PREMIUM_USER -> {
-                    Message.AlertDialogMessage(
+                    Message.AlertDialog(
                         text = "사진은 최대 ${MAX_IMAGES_FOR_PREMIUM_USER}장까지 첨부 가능해요!",
                         confirmText = "확인"
                     )

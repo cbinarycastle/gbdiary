@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.data
+import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import javax.inject.Inject
@@ -26,7 +25,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = false
+            initialValue = true
         )
 
     val notificationTime = getNotificationTimeUseCase(Unit)
@@ -44,6 +43,9 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(),
             initialValue = false
         )
+
+    private val _message = MutableSharedFlow<Message>()
+    val message = _message.asSharedFlow()
 
     fun setNotificationEnabled(enabled: Boolean) {
         viewModelScope.launch {

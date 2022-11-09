@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.domain.CheckExistingSignedInUserUseCase
 import com.casoft.gbdiary.domain.GetThemeUseCase
+import com.casoft.gbdiary.domain.ObserveBiometricsSettingUseCase
 import com.casoft.gbdiary.domain.QueryPurchasesUseCase
 import com.casoft.gbdiary.model.Theme
 import com.casoft.gbdiary.model.data
@@ -19,6 +20,7 @@ class AppViewModel @Inject constructor(
     private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
     private val queryPurchasesUseCase: QueryPurchasesUseCase,
     getThemeUseCase: GetThemeUseCase,
+    observeBiometricsSettingUseCase: ObserveBiometricsSettingUseCase,
 ) : ViewModel() {
 
     val theme = getThemeUseCase(Unit)
@@ -27,6 +29,14 @@ class AppViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = Theme.SYSTEM
+        )
+
+    val biometricsEnabled = observeBiometricsSettingUseCase(Unit)
+        .map { it.data ?: false }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
         )
 
     fun checkExistingSignedInUser() {

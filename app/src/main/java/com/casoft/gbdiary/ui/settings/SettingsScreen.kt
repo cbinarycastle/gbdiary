@@ -11,16 +11,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ad.SETTING_BANNER_AD_UNIT_ID
-import com.casoft.gbdiary.ui.components.AdBanner
-import com.casoft.gbdiary.ui.components.GBDiaryAppBar
-import com.casoft.gbdiary.ui.components.GBDiarySwitch
-import com.casoft.gbdiary.ui.components.TimePickerDialog
+import com.casoft.gbdiary.ui.components.*
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.util.collectMessage
+import com.casoft.gbdiary.util.navigateToGooglePlay
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -29,31 +29,43 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onScreenLockClick: () -> Unit,
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
 ) {
-    val state = rememberSettingsState()
+    val alertDialogState = rememberAlertDialogState()
+
+    val context = LocalContext.current
 
     val isPremiumUser by viewModel.isPremiumUser.collectAsState()
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
 
-    SettingsScreen(
-        isPremiumUser = isPremiumUser,
-        notificationEnabled = notificationEnabled,
-        notificationTime = notificationTime,
-        onNotificationEnabledChange = viewModel::setNotificationEnabled,
-        onNotificationTimeChange = viewModel::setNotificationTime,
-        onPurchaseClick = onPurchaseClick,
-        onThemeClick = onThemeClick,
-        onBackupClick = onBackupClick,
-        onReviewClick = state::navigateToGooglePlay,
-        onBack = onBack
-    )
+    LaunchedEffect(viewModel) {
+        viewModel.message.collectMessage(context, alertDialogState)
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        SettingsScreen(
+            alertDialogState = alertDialogState,
+            isPremiumUser = isPremiumUser,
+            notificationEnabled = notificationEnabled,
+            notificationTime = notificationTime,
+            onNotificationEnabledChange = viewModel::setNotificationEnabled,
+            onNotificationTimeChange = viewModel::setNotificationTime,
+            onPurchaseClick = onPurchaseClick,
+            onThemeClick = onThemeClick,
+            onBackupClick = onBackupClick,
+            onScreenLockClick = onScreenLockClick,
+            onReviewClick = context::navigateToGooglePlay,
+            onBack = onBack
+        )
+    }
 }
 
 @Composable
 private fun SettingsScreen(
+    alertDialogState: AlertDialogState,
     isPremiumUser: Boolean,
     notificationEnabled: Boolean,
     notificationTime: LocalTime?,
@@ -61,61 +73,66 @@ private fun SettingsScreen(
     onNotificationTimeChange: (LocalTime) -> Unit,
     onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onScreenLockClick: () -> Unit,
     onBackupClick: () -> Unit,
     onReviewClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showTimePickerDialog by remember { mutableStateOf(false) }
 
-    Box(Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-        ) {
-            AppBar(onBack = onBack)
-            Spacer(Modifier.height(16.dp))
+    AlertDialogLayout(state = alertDialogState) {
+        Box(Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+                    .fillMaxSize()
+                    .systemBarsPadding()
             ) {
-                PurchaseButton(
-                    onClick = onPurchaseClick,
+                AppBar(onBack = onBack)
+                Spacer(Modifier.height(16.dp))
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                )
-                Spacer(Modifier.height(16.dp))
-                NotificationItem(
-                    checked = notificationEnabled,
-                    onCheckedChange = onNotificationEnabledChange
-                )
-                if (notificationTime != null) {
-                    NotificationTimeItem(
-                        time = notificationTime,
-                        onClick = { showTimePickerDialog = true }
+                        .weight(1f)
+                ) {
+                    PurchaseButton(
+                        onClick = onPurchaseClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
                     )
+                    Spacer(Modifier.height(16.dp))
+                    NotificationItem(
+                        checked = notificationEnabled,
+                        onCheckedChange = onNotificationEnabledChange
+                    )
+                    if (notificationTime != null) {
+                        NotificationTimeItem(
+                            time = notificationTime,
+                            onClick = { showTimePickerDialog = true }
+                        )
+                    }
+                    ThemeItem(onClick = onThemeClick)
+                    ItemDivider()
+                    ScreenLockItem(onClick = onScreenLockClick)
+                    BackupItem(onClick = onBackupClick)
+                    ItemDivider()
+                    ReviewItem(onClick = onReviewClick)
                 }
-                ThemeItem(onClick = onThemeClick)
-                BackupItem(onClick = onBackupClick)
-                Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
-                ReviewItem(onClick = onReviewClick)
+                if (isPremiumUser.not()) {
+                    AdBanner(SETTING_BANNER_AD_UNIT_ID)
+                }
             }
-            if (isPremiumUser.not()) {
-                AdBanner(SETTING_BANNER_AD_UNIT_ID)
-            }
-        }
 
-        if (showTimePickerDialog && notificationTime != null) {
-            TimePickerDialog(
-                initialTime = notificationTime,
-                onConfirm = { time ->
-                    showTimePickerDialog = false
-                    onNotificationTimeChange(time)
-                },
-                onDismiss = { showTimePickerDialog = false }
-            )
+            if (showTimePickerDialog && notificationTime != null) {
+                TimePickerDialog(
+                    initialTime = notificationTime,
+                    onConfirm = { time ->
+                        showTimePickerDialog = false
+                        onNotificationTimeChange(time)
+                    },
+                    onDismiss = { showTimePickerDialog = false }
+                )
+            }
         }
     }
 }
@@ -232,6 +249,19 @@ private fun BackupItem(
 }
 
 @Composable
+private fun ScreenLockItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsItem(
+        name = Settings.SCREEN_LOCK.text,
+        icon = painterResource(R.drawable.lock),
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun ReviewItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -244,12 +274,18 @@ private fun ReviewItem(
     )
 }
 
+@Composable
+private fun ItemDivider() {
+    Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
+}
+
 @Preview(name = "Settings screen")
 @Preview(name = "Settings screen (dark)", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SettingsScreenPreview() {
     GBDiaryTheme {
         SettingsScreen(
+            alertDialogState = rememberAlertDialogState(),
             isPremiumUser = false,
             notificationEnabled = false,
             notificationTime = LocalTime.of(22, 0),
@@ -257,6 +293,7 @@ fun SettingsScreenPreview() {
             onNotificationTimeChange = {},
             onPurchaseClick = {},
             onThemeClick = {},
+            onScreenLockClick = {},
             onBackupClick = {},
             onReviewClick = {},
             onBack = {}

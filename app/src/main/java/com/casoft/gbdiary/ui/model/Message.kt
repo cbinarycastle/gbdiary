@@ -2,12 +2,12 @@ package com.casoft.gbdiary.ui.model
 
 sealed interface Message {
 
-    data class ToastMessage(
+    data class Toast(
         val text: String,
         val longDuration: Boolean = false,
     ) : Message
 
-    data class AlertDialogMessage(
+    data class AlertDialog(
         val text: String,
         val confirmText: String,
         val dismissText: String? = null,

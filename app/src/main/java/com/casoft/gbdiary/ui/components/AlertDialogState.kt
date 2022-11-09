@@ -8,5 +8,5 @@ fun rememberAlertDialogState() = remember { AlertDialogState() }
 
 @Stable
 class AlertDialogState {
-    var message by mutableStateOf<Message.AlertDialogMessage?>(null)
+    var message by mutableStateOf<Message.AlertDialog?>(null)
 }

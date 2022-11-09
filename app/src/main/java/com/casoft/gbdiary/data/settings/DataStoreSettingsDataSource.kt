@@ -35,6 +35,34 @@ class DataStoreSettingsDataSource(
         }
     }
 
+    override fun getPassword(): Flow<String?> {
+        return preferencesDataStore.data.map { prefs ->
+            prefs[PreferencesKeys.PASSWORD]
+        }
+    }
+
+    override suspend fun setPassword(password: String?) {
+        preferencesDataStore.edit { prefs ->
+            if (password == null) {
+                prefs.remove(PreferencesKeys.PASSWORD)
+            } else {
+                prefs[PreferencesKeys.PASSWORD] = password
+            }
+        }
+    }
+
+    override fun isBiometricsEnabled(): Flow<Boolean> {
+        return preferencesDataStore.data.map { prefs ->
+            prefs[PreferencesKeys.BIOMETRICS_ENABLED] ?: false
+        }
+    }
+
+    override suspend fun setBiometricsEnabled(enabled: Boolean) {
+        preferencesDataStore.edit { prefs ->
+            prefs[PreferencesKeys.BIOMETRICS_ENABLED] = enabled
+        }
+    }
+
     override fun getTheme(): Flow<Theme> {
         return preferencesDataStore.data.map { prefs ->
             prefs[PreferencesKeys.THEME]?.let { Theme.valueOf(it) }

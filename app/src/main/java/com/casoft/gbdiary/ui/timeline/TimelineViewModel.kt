@@ -39,7 +39,7 @@ class TimelineViewModel @Inject constructor(
                     result.data.sortedByDescending { it.date }
                 }
                 is Result.Error -> {
-                    _message.emit(Message.ToastMessage("타임라인을 불러오지 못했습니다."))
+                    _message.emit(Message.Toast("타임라인을 불러오지 못했습니다."))
                     listOf()
                 }
                 is Result.Loading -> listOf()

@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.di
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -22,6 +23,8 @@ object DataStoreModule {
 
 object PreferencesKeys {
     val NOTIFICATION_TIME = stringPreferencesKey("notification_time")
+    val PASSWORD = stringPreferencesKey("password")
+    val BIOMETRICS_ENABLED = booleanPreferencesKey("biometrics_enabled")
     val THEME = stringPreferencesKey("theme")
     val TEXT_ALIGN = stringPreferencesKey("text_align")
     val LATEST_LAUNCH_REVIEW_FLOW_DATE = longPreferencesKey("latest_launch_review_flow_date")

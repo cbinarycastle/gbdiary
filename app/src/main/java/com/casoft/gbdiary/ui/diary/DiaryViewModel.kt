@@ -62,7 +62,7 @@ class DiaryViewModel @Inject constructor(
                 is Result.Success -> result.data
                 is Result.Error -> {
                     _message.emit(
-                        Message.ToastMessage("작성된 일기를 불러오지 못했습니다.")
+                        Message.Toast("작성된 일기를 불러오지 못했습니다.")
                     )
                     null
                 }
@@ -171,14 +171,14 @@ class DiaryViewModel @Inject constructor(
 
         val errorMessage = when {
             isPremiumUser.not() && images.size >= MAX_IMAGES_FOR_STANDARD_USER -> {
-                Message.AlertDialogMessage(
+                Message.AlertDialog(
                     text = "사진은 최대 ${MAX_IMAGES_FOR_STANDARD_USER}장까지 첨부 가능해요!\n" +
                         "${MAX_IMAGES_FOR_PREMIUM_USER}장까지 추가하려면 이용권 구매가 필요합니다",
                     confirmText = "확인"
                 )
             }
             isPremiumUser && images.size >= MAX_IMAGES_FOR_PREMIUM_USER -> {
-                Message.AlertDialogMessage(
+                Message.AlertDialog(
                     text = "사진은 최대 ${MAX_IMAGES_FOR_PREMIUM_USER}장까지 첨부 가능해요!",
                     confirmText = "확인"
                 )
@@ -214,12 +214,12 @@ class DiaryViewModel @Inject constructor(
                 when (result) {
                     is Result.Success -> {
                         _message.emit(
-                            Message.ToastMessage("저장이 완료되었습니다.")
+                            Message.Toast("저장이 완료되었습니다.")
                         )
                     }
                     is Result.Error -> {
                         _message.emit(
-                            Message.ToastMessage("저장 도중 오류가 발생했습니다.")
+                            Message.Toast("저장 도중 오류가 발생했습니다.")
                         )
                     }
                     is Result.Loading -> {}

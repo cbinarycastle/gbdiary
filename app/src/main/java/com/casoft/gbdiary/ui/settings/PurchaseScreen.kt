@@ -90,7 +90,7 @@ private fun PurchaseScreen(
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text = "₩3,000",
-                            style = GBDiaryTheme.typography.h4
+                            style = GBDiaryTheme.typography.h3
                         )
                     }
                 }

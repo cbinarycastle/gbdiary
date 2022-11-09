@@ -17,13 +17,24 @@ fun DiaryApp() {
     val systemUiController = rememberSystemUiController()
 
     val theme by viewModel.theme.collectAsState()
-    var shouldShowSplashScreen by remember {
+
+    var showSplashScreen by remember {
         mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
     }
 
+    val screenLockEnabled by viewModel.biometricsEnabled.collectAsState()
+    var showScreenLock by remember { mutableStateOf(screenLockEnabled) }
+    var screenLockFinished by remember { mutableStateOf(false) }
+
     LaunchedEffect(true) {
         delay(1000)
-        shouldShowSplashScreen = false
+        showSplashScreen = false
+    }
+
+    LaunchedEffect(screenLockEnabled, screenLockFinished, showSplashScreen) {
+        if (screenLockEnabled && !screenLockFinished && !showSplashScreen) {
+            showScreenLock = true
+        }
     }
 
     GBDiaryTheme(theme) {
@@ -38,7 +49,7 @@ fun DiaryApp() {
 
         Box(Modifier.fillMaxSize()) {
             GBDiaryNavGraph()
-            if (shouldShowSplashScreen) {
+            if (showSplashScreen) {
                 SplashScreen()
             }
         }

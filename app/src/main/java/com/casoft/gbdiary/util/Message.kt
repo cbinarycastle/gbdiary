@@ -11,8 +11,8 @@ suspend fun Flow<Message>.collectMessage(
 ) {
     collect {
         when (it) {
-            is Message.ToastMessage -> context.toast(it.text)
-            is Message.AlertDialogMessage -> alertDialogState.message = it
+            is Message.Toast -> context.toast(it.text)
+            is Message.AlertDialog -> alertDialogState.message = it
         }
     }
 }

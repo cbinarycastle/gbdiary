@@ -12,6 +12,7 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
             viewModel = settingsViewModel,
             onPurchaseClick = actions::navigateToPurchase,
             onThemeClick = actions::navigateToTheme,
+            onScreenLockClick = actions::navigateToScreenLock,
             onBackupClick = actions::navigateToBackup,
             onBack = actions::navigateUp
         )
@@ -27,6 +28,22 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         val themeViewModel = hiltViewModel<ThemeViewModel>()
         ThemeScreen(
             viewModel = themeViewModel,
+            onBack = actions::navigateUp
+        )
+    }
+    composable(SettingsDestination.SCREEN_LOCK_ROUTE) {
+        val screenLockViewModel = hiltViewModel<ScreenLockViewModel>()
+        ScreenLockScreen(
+            viewModel = screenLockViewModel,
+            navigateToPasswordRegistration = actions::navigateToPasswordRegistration,
+            navigateToPasswordChange = { /*TODO*/ },
+            onBack = actions::navigateUp
+        )
+    }
+    composable(SettingsDestination.PASSWORD_REGISTRATION_ROUTE) {
+        val passwordRegistrationViewModel = hiltViewModel<PasswordRegistrationViewModel>()
+        PasswordRegistrationScreen(
+            viewModel = passwordRegistrationViewModel,
             onBack = actions::navigateUp
         )
     }
@@ -49,6 +66,14 @@ class SettingsActions(private val navController: NavHostController) {
         navController.navigate(SettingsDestination.THEME_ROUTE)
     }
 
+    fun navigateToScreenLock() {
+        navController.navigate(SettingsDestination.SCREEN_LOCK_ROUTE)
+    }
+
+    fun navigateToPasswordRegistration() {
+        navController.navigate(SettingsDestination.PASSWORD_REGISTRATION_ROUTE)
+    }
+
     fun navigateToBackup() {
         navController.navigate(SettingsDestination.BACKUP_ROUTE)
     }
@@ -62,5 +87,7 @@ object SettingsDestination {
     const val HOME_ROUTE = "settings/home"
     const val PURCHASE_ROUTE = "settings/purchase"
     const val THEME_ROUTE = "settings/theme"
+    const val SCREEN_LOCK_ROUTE = "settings/screen_lock"
+    const val PASSWORD_REGISTRATION_ROUTE = "settings/password_registration"
     const val BACKUP_ROUTE = "settings/backup"
 }

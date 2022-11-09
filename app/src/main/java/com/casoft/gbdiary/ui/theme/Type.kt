@@ -11,7 +11,8 @@ val DearJsOfNote = FontFamily(Font(R.font.dear_jsofnote))
 
 val Typography = Typography(
     defaultFontFamily = DearJsOfNote,
-    h4 = TextStyle(fontSize = 28.sp),
+    h3 = TextStyle(fontSize = 28.sp),
+    h4 = TextStyle(fontSize = 26.sp),
     h5 = TextStyle(fontSize = 24.sp),
     h6 = TextStyle(fontSize = 20.sp),
     subtitle1 = TextStyle(fontSize = 17.sp),

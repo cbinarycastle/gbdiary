@@ -37,43 +37,19 @@ fun GBDiarySwitch(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    val swipeableState = rememberSwipeableState(initialValue = checked)
-    var internalChecked by remember { mutableStateOf(checked) }
-
+    val swipeableState = rememberSwipeableStateFor(
+        value = checked,
+        onValueChange = onCheckedChange
+    )
     val minBound = 0f
     val maxBound = with(LocalDensity.current) { ThumbPathLength.toPx() }
     val isLight = GBDiaryTheme.colors.isLight
-
-    LaunchedEffect(internalChecked) {
-        if (swipeableState.currentValue != internalChecked) {
-            swipeableState.animateTo(internalChecked)
-        }
-    }
-
-    LaunchedEffect(checked) {
-        if (swipeableState.isAnimationRunning.not()) {
-            swipeableState.snapTo(checked)
-        }
-        internalChecked = checked
-    }
-
-    LaunchedEffect(swipeableState.currentValue) {
-        swipeableState.currentValue.let {
-            if (it != checked) {
-                internalChecked = it
-                onCheckedChange(it)
-            }
-        }
-    }
 
     Box(
         modifier = modifier
             .toggleable(
                 value = checked,
-                onValueChange = {
-                    internalChecked = it
-                    onCheckedChange(it)
-                },
+                onValueChange = onCheckedChange,
                 enabled = enabled,
                 role = Role.Switch,
                 interactionSource = interactionSource,
@@ -96,6 +72,33 @@ fun GBDiarySwitch(
             interactionSource = interactionSource
         )
     }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun <T : Any> rememberSwipeableStateFor(
+    value: T,
+    onValueChange: (T) -> Unit,
+): SwipeableState<T> {
+    val swipeableState = rememberSwipeableState(initialValue = value)
+    var forceValueCheck by remember { mutableStateOf(false) }
+
+    LaunchedEffect(value, forceValueCheck) {
+        if (swipeableState.currentValue != value) {
+            swipeableState.snapTo(value)
+        }
+    }
+
+    LaunchedEffect(swipeableState.currentValue) {
+        swipeableState.currentValue.let {
+            if (it != value) {
+                onValueChange(it)
+                forceValueCheck = !forceValueCheck
+            }
+        }
+    }
+
+    return swipeableState
 }
 
 @Composable

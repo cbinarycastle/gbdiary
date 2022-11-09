@@ -37,12 +37,14 @@ private val DarkColors = darkColors(
 
 private val LightGBDiaryColors = GBDiaryColors(
     dimmingOverlay = LightDimmingOverlay,
-    border = Light3
+    border = Light3,
+    enabled = Dark1
 )
 
 private val DarkGBDiaryColors = GBDiaryColors(
     dimmingOverlay = DarkDimmingOverlay,
-    border = Dark3
+    border = Dark3,
+    enabled = Light1
 )
 
 @Composable
@@ -112,12 +114,19 @@ object GBDiaryContentAlpha {
 }
 
 @Stable
-class GBDiaryColors(dimmingOverlay: Color, border: Color) {
+class GBDiaryColors(
+    dimmingOverlay: Color,
+    border: Color,
+    enabled: Color,
+) {
 
     var dimmingOverlay by mutableStateOf(dimmingOverlay)
         private set
 
     var border by mutableStateOf(border)
+        private set
+
+    var enabled by mutableStateOf(enabled)
         private set
 }
 
