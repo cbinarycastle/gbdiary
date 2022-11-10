@@ -23,8 +23,6 @@ class ScreenLockViewModel @Inject constructor(
     private val biometricsLockManager: BiometricsLockManager,
 ) : ViewModel() {
 
-    val biometricPromptInfo = biometricsLockManager.promptInfo
-
     val biometricEnrollIntent = biometricsLockManager.biometricEnrollIntent
 
     val passwordLockEnabled = observePasswordUseCase(Unit)
@@ -46,9 +44,6 @@ class ScreenLockViewModel @Inject constructor(
     private val _shouldEnrollBiometric = MutableSharedFlow<Unit>()
     val shouldEnrollBiometric = _shouldEnrollBiometric.asSharedFlow()
 
-    private val _shouldBiometricAuthenticate = MutableSharedFlow<Unit>()
-    val shouldBiometricAuthenticate = _shouldBiometricAuthenticate.asSharedFlow()
-
     private val _message = MutableSharedFlow<Message>()
     val message = _message.asSharedFlow()
 
@@ -67,7 +62,7 @@ class ScreenLockViewModel @Inject constructor(
         viewModelScope.launch {
             when (biometricsLockManager.isBiometricsAvailable()) {
                 AuthenticationStatus.SUCCESS, AuthenticationStatus.UNKNOWN -> {
-                    _shouldBiometricAuthenticate.emit(Unit)
+                    enableBiometricsLock()
                 }
                 AuthenticationStatus.NONE_ENROLLED -> {
                     _shouldEnrollBiometric.emit(Unit)

@@ -3,7 +3,7 @@ package com.casoft.gbdiary.ui.settings
 import android.app.Activity
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.*
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.util.biometricAuthenticate
 import com.casoft.gbdiary.util.collectMessage
 import kotlinx.coroutines.launch
 
@@ -32,7 +31,6 @@ fun ScreenLockScreen(
 ) {
     val context = LocalContext.current
 
-    val coroutineScope = rememberCoroutineScope()
     val alertDialogState = rememberAlertDialogState()
 
     val passwordLockEnabled by viewModel.passwordLockEnabled.collectAsState()
@@ -40,16 +38,11 @@ fun ScreenLockScreen(
 
     var showBiometricEnrollDialog by remember { mutableStateOf(false) }
 
-    val biometricEnrollLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    if (context.biometricAuthenticate(viewModel.biometricPromptInfo)) {
-                        viewModel.enableBiometricsLock()
-                    }
-                }
-            }
+    val biometricEnrollLauncher = rememberLauncherForActivityResult(StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            viewModel.enableBiometricsLock()
         }
+    }
 
     LaunchedEffect(viewModel) {
         launch {
@@ -59,15 +52,6 @@ fun ScreenLockScreen(
         launch {
             viewModel.shouldEnrollBiometric.collect {
                 showBiometricEnrollDialog = true
-            }
-        }
-
-        launch {
-            viewModel.shouldBiometricAuthenticate.collect {
-                val succeeded = context.biometricAuthenticate(viewModel.biometricPromptInfo)
-                if (succeeded) {
-                    viewModel.enableBiometricsLock()
-                }
             }
         }
     }
