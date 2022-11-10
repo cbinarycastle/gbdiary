@@ -94,11 +94,12 @@ class PasswordRegistrationViewModel @Inject constructor(
 
             if (password == confirmPassword.value) {
                 when (enablePasswordLockUseCase(password)) {
-                    is Result.Success -> _registrationCompleted.emit(Unit)
+                    is Result.Success -> {
+                        _message.emit(Message.Toast("비밀번호가 설정되었습니다."))
+                        _registrationCompleted.emit(Unit)
+                    }
                     is Result.Error -> {
-                        _message.emit(
-                            Message.Toast("비밀번호 잠금을 설정하지 못했습니다.")
-                        )
+                        _message.emit(Message.Toast("비밀번호를 설정하지 못했습니다."))
                     }
                     is Result.Loading -> {}
                 }

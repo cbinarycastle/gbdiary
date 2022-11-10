@@ -36,7 +36,7 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         ScreenLockScreen(
             viewModel = screenLockViewModel,
             navigateToPasswordRegistration = actions::navigateToPasswordRegistration,
-            navigateToPasswordChange = { /*TODO*/ },
+            navigateToPasswordChange = actions::navigateToPasswordChange,
             onBack = actions::navigateUp
         )
     }
@@ -44,6 +44,15 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         val passwordRegistrationViewModel = hiltViewModel<PasswordRegistrationViewModel>()
         PasswordRegistrationScreen(
             viewModel = passwordRegistrationViewModel,
+            initialMessage = "비밀번호를 입력해주세요",
+            onBack = actions::navigateUp
+        )
+    }
+    composable(SettingsDestination.PASSWORD_CHANGE_ROUTE) {
+        val passwordRegistrationViewModel = hiltViewModel<PasswordRegistrationViewModel>()
+        PasswordRegistrationScreen(
+            viewModel = passwordRegistrationViewModel,
+            initialMessage = "새 비밀번호를 입력해주세요",
             onBack = actions::navigateUp
         )
     }
@@ -74,6 +83,10 @@ class SettingsActions(private val navController: NavHostController) {
         navController.navigate(SettingsDestination.PASSWORD_REGISTRATION_ROUTE)
     }
 
+    fun navigateToPasswordChange() {
+        navController.navigate(SettingsDestination.PASSWORD_CHANGE_ROUTE)
+    }
+
     fun navigateToBackup() {
         navController.navigate(SettingsDestination.BACKUP_ROUTE)
     }
@@ -89,5 +102,6 @@ object SettingsDestination {
     const val THEME_ROUTE = "settings/theme"
     const val SCREEN_LOCK_ROUTE = "settings/screen_lock"
     const val PASSWORD_REGISTRATION_ROUTE = "settings/password_registration"
+    const val PASSWORD_CHANGE_ROUTE = "settings/password_change"
     const val BACKUP_ROUTE = "settings/backup"
 }
