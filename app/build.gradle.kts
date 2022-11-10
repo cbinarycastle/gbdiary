@@ -111,6 +111,7 @@ dependencies {
     implementation(Libs.AndroidX.Activity.ACTIVITY_COMPOSE)
     implementation(Libs.AndroidX.Hilt.NAVIGATION_COMPOSE)
     implementation(Libs.AndroidX.Lifecycle.VIEWMODEL_COMPOSE)
+    implementation(Libs.AndroidX.Navigation.COMPOSE)
     implementation(Libs.Coil.COMPOSE)
 
     kapt(Libs.AndroidX.Room.COMPILER)

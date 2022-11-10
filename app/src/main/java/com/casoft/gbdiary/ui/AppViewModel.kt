@@ -2,16 +2,11 @@ package com.casoft.gbdiary.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.casoft.gbdiary.domain.CheckExistingSignedInUserUseCase
-import com.casoft.gbdiary.domain.GetThemeUseCase
-import com.casoft.gbdiary.domain.ObserveBiometricsSettingUseCase
-import com.casoft.gbdiary.domain.QueryPurchasesUseCase
+import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.Theme
 import com.casoft.gbdiary.model.data
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,11 +14,12 @@ import javax.inject.Inject
 class AppViewModel @Inject constructor(
     private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
     private val queryPurchasesUseCase: QueryPurchasesUseCase,
-    getThemeUseCase: GetThemeUseCase,
+    observeThemeUseCase: ObserveThemeUseCase,
+    observePasswordUseCase: ObservePasswordUseCase,
     observeBiometricsSettingUseCase: ObserveBiometricsSettingUseCase,
 ) : ViewModel() {
 
-    val theme = getThemeUseCase(Unit)
+    val theme = observeThemeUseCase(Unit)
         .map { result -> result.data ?: Theme.SYSTEM }
         .stateIn(
             scope = viewModelScope,
@@ -31,13 +27,38 @@ class AppViewModel @Inject constructor(
             initialValue = Theme.SYSTEM
         )
 
-    val biometricsEnabled = observeBiometricsSettingUseCase(Unit)
+    private val passwordLockEnabled = observePasswordUseCase(Unit)
+        .take(1) // 앱 실행 이후의 변경사항은 받지 않음.
+        .map { it.data != null }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null
+        )
+
+    private val biometricsLockEnabled = observeBiometricsSettingUseCase(Unit)
+        .take(1) // 앱 실행 이후의 변경사항은 받지 않음.
         .map { it.data ?: false }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = false
+            initialValue = null
         )
+
+    val screenLockEnabled = combine(
+        passwordLockEnabled,
+        biometricsLockEnabled
+    ) { passwordLockEnabled, biometricsLockEnabled ->
+        if (passwordLockEnabled == null || biometricsLockEnabled == null) {
+            null
+        } else {
+            passwordLockEnabled || biometricsLockEnabled
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = null
+    )
 
     fun checkExistingSignedInUser() {
         viewModelScope.launch {

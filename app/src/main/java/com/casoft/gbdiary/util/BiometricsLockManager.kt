@@ -1,20 +1,24 @@
 package com.casoft.gbdiary.util
 
 import android.content.Intent
+import android.os.Build
 import android.provider.Settings
 import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricManager.Authenticators.*
 import androidx.biometric.BiometricPrompt
 import javax.inject.Inject
 
-private const val Authenticators = BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+private val Authenticators = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+} else {
+    BIOMETRIC_WEAK or DEVICE_CREDENTIAL
+}
 
 class BiometricsLockManager @Inject constructor(private val biometricManager: BiometricManager) {
 
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Biometric login for my app")
-        .setSubtitle("Log in using your biometric credential")
+        .setTitle("잠금 해제")
+        .setDescription("화면 잠금 해제를 위해 본인 인증을 진행해주세요")
         .setAllowedAuthenticators(Authenticators)
         .build()
 

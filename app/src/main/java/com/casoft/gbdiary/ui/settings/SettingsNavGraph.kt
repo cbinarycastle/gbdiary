@@ -32,9 +32,9 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         )
     }
     composable(SettingsDestination.SCREEN_LOCK_ROUTE) {
-        val screenLockViewModel = hiltViewModel<ScreenLockViewModel>()
-        ScreenLockScreen(
-            viewModel = screenLockViewModel,
+        val screenLockSettingViewModel = hiltViewModel<ScreenLockSettingViewModel>()
+        ScreenLockSettingScreen(
+            viewModel = screenLockSettingViewModel,
             navigateToPasswordRegistration = actions::navigateToPasswordRegistration,
             navigateToPasswordChange = actions::navigateToPasswordChange,
             onBack = actions::navigateUp

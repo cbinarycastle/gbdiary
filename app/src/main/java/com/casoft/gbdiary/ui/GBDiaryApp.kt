@@ -12,7 +12,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
 @Composable
-fun DiaryApp() {
+fun DiaryApp(finishActivity: () -> Unit) {
     val viewModel = hiltViewModel<AppViewModel>()
     val systemUiController = rememberSystemUiController()
 
@@ -22,19 +22,11 @@ fun DiaryApp() {
         mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
     }
 
-    val screenLockEnabled by viewModel.biometricsEnabled.collectAsState()
-    var showScreenLock by remember { mutableStateOf(screenLockEnabled) }
-    var screenLockFinished by remember { mutableStateOf(false) }
+    val screenLockEnabled by viewModel.screenLockEnabled.collectAsState()
 
     LaunchedEffect(true) {
         delay(1000)
         showSplashScreen = false
-    }
-
-    LaunchedEffect(screenLockEnabled, screenLockFinished, showSplashScreen) {
-        if (screenLockEnabled && !screenLockFinished && !showSplashScreen) {
-            showScreenLock = true
-        }
     }
 
     GBDiaryTheme(theme) {
@@ -48,7 +40,10 @@ fun DiaryApp() {
         }
 
         Box(Modifier.fillMaxSize()) {
-            GBDiaryNavGraph()
+            GBDiaryNavGraph(
+                screenLockEnabled = screenLockEnabled,
+                finishActivity = finishActivity
+            )
             if (showSplashScreen) {
                 SplashScreen()
             }

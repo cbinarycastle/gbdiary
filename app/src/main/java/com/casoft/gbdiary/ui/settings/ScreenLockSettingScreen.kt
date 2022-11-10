@@ -20,11 +20,12 @@ import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ui.components.*
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
+import com.casoft.gbdiary.util.toast
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScreenLockScreen(
-    viewModel: ScreenLockViewModel,
+fun ScreenLockSettingScreen(
+    viewModel: ScreenLockSettingViewModel,
     navigateToPasswordRegistration: () -> Unit,
     navigateToPasswordChange: () -> Unit,
     onBack: () -> Unit,
@@ -39,8 +40,9 @@ fun ScreenLockScreen(
     var showBiometricEnrollDialog by remember { mutableStateOf(false) }
 
     val biometricEnrollLauncher = rememberLauncherForActivityResult(StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
+        if (it.resultCode >= Activity.RESULT_FIRST_USER) {
             viewModel.enableBiometricsLock()
+            context.toast("생체 인증 잠금이 설정되었습니다.")
         }
     }
 
@@ -58,7 +60,7 @@ fun ScreenLockScreen(
 
     AlertDialogLayout(state = alertDialogState) {
         Box(Modifier.fillMaxSize()) {
-            ScreenLockScreen(
+            ScreenLockSettingScreen(
                 passwordLockEnabled = passwordLockEnabled,
                 onPasswordLockEnabledChange = { enabled ->
                     if (enabled) {
@@ -96,7 +98,7 @@ fun ScreenLockScreen(
 }
 
 @Composable
-private fun ScreenLockScreen(
+private fun ScreenLockSettingScreen(
     passwordLockEnabled: Boolean,
     onPasswordLockEnabledChange: (Boolean) -> Unit,
     onPasswordChangeClick: () -> Unit,
@@ -196,7 +198,7 @@ private fun BiometricsItem(
 @Composable
 fun ScreenLockScreenPreview() {
     GBDiaryTheme {
-        ScreenLockScreen(
+        ScreenLockSettingScreen(
             passwordLockEnabled = false,
             onPasswordLockEnabledChange = {},
             onPasswordChangeClick = {},

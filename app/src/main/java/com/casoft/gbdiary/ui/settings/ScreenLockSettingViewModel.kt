@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ScreenLockViewModel @Inject constructor(
+class ScreenLockSettingViewModel @Inject constructor(
     observePasswordUseCase: ObservePasswordUseCase,
     observeBiometricsSettingUseCase: ObserveBiometricsSettingUseCase,
     private val disablePasswordLockUseCase: DisablePasswordLockUseCase,

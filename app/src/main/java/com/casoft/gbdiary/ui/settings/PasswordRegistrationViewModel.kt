@@ -55,9 +55,9 @@ class PasswordRegistrationViewModel @Inject constructor(
             }
             KeypadElement.Delete -> {
                 if (_isConfirmStep.value) {
-                    removeLastConfirmPassword()
+                    removeLastConfirmPasswordInput()
                 } else {
-                    removeLastPassword()
+                    removeLastPasswordInput()
                 }
             }
             KeypadElement.Empty -> {}
@@ -110,14 +110,14 @@ class PasswordRegistrationViewModel @Inject constructor(
         }
     }
 
-    private fun removeLastPassword() {
+    private fun removeLastPasswordInput() {
         val value = password.value
         if (value.isNotEmpty()) {
             password.value = value.dropLast(1)
         }
     }
 
-    private fun removeLastConfirmPassword() {
+    private fun removeLastConfirmPasswordInput() {
         val value = confirmPassword.value
         if (value.isNotEmpty()) {
             confirmPassword.value = value.dropLast(1)

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetThemeUseCase @Inject constructor(
+class ObserveThemeUseCase @Inject constructor(
     private val settingsDataSource: SettingsDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Unit, Theme>(ioDispatcher) {

@@ -62,8 +62,8 @@ fun PasswordRegistrationScreen(
         PasswordRegistrationScreen(
             passwordInputState = passwordInputState,
             input = input,
-            message = message,
             onInput = viewModel::onInput,
+            message = message,
             onBack = onBack
         )
     }
@@ -73,8 +73,8 @@ fun PasswordRegistrationScreen(
 private fun PasswordRegistrationScreen(
     passwordInputState: PasswordInputState,
     input: String,
-    message: String,
     onInput: (KeypadElement) -> Unit,
+    message: String,
     onBack: () -> Unit,
 ) {
     Column(
@@ -86,8 +86,8 @@ private fun PasswordRegistrationScreen(
         PasswordInput(
             state = passwordInputState,
             password = input,
-            message = message,
             onInput = onInput,
+            message = message
         )
     }
 }

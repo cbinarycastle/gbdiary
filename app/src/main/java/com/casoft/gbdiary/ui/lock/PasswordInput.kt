@@ -25,11 +25,12 @@ private val KeypadElements = arrayOf(
 @Composable
 fun PasswordInput(
     password: String,
-    message: String,
     onInput: (KeypadElement) -> Unit,
+    message: String,
+    modifier: Modifier = Modifier,
     state: PasswordInputState = rememberPasswordInputState(),
 ) {
-    Column(Modifier.padding(bottom = 40.dp)) {
+    Column(modifier.padding(bottom = 40.dp)) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,

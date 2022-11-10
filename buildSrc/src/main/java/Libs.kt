@@ -41,6 +41,10 @@ object Libs {
             const val VIEWMODEL_COMPOSE = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0"
         }
 
+        object Navigation {
+            const val COMPOSE = "androidx.navigation:navigation-compose:2.5.3"
+        }
+
         object Room {
             private const val VERSION = "2.4.2"
             const val COMPILER = "androidx.room:room-compiler:$VERSION"
