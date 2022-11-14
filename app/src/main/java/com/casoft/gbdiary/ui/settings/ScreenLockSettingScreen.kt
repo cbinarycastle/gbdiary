@@ -184,7 +184,7 @@ private fun BiometricsItem(
 ) {
     SettingsItem(
         name = "생체 인증",
-        icon = painterResource(R.drawable.face_id)
+        icon = painterResource(R.drawable.touch_id)
     ) {
         GBDiarySwitch(
             checked = enabled,
