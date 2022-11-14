@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
-            DiaryApp(finishActivity = this::finish)
+            GBDiaryApp(finishActivity = this::finish)
         }
     }
 

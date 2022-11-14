@@ -1,6 +1,8 @@
 package com.casoft.gbdiary.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -78,9 +80,16 @@ fun GBDiaryTheme(
         colors = colors,
         typography = Typography
     ) {
+        val contentColor = contentColorFor(colors.background)
+        val textSelectionColors = TextSelectionColors(
+            handleColor = contentColor,
+            backgroundColor = contentColor.copy(alpha = 0.4f)
+        )
+
         CompositionLocalProvider(
             LocalGBDiaryColors provides gbDiaryColors,
-            LocalContentColor provides contentColorFor(colors.background),
+            LocalContentColor provides contentColor,
+            LocalTextSelectionColors provides textSelectionColors,
             LocalElevationOverlay provides null
         ) {
             Surface(color = colors.background) {

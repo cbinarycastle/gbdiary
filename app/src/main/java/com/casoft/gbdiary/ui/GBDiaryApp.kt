@@ -12,7 +12,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
 
 @Composable
-fun DiaryApp(finishActivity: () -> Unit) {
+fun GBDiaryApp(finishActivity: () -> Unit) {
     val viewModel = hiltViewModel<AppViewModel>()
     val systemUiController = rememberSystemUiController()
 
