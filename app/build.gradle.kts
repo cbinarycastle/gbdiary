@@ -103,6 +103,7 @@ dependencies {
     implementation(Libs.AndroidX.STARTUP)
     implementation(Libs.AndroidX.Activity.ACTIVITY_KTX)
 
+    implementation(Libs.AndroidX.Compose.FOUNDATION)
     implementation(Libs.AndroidX.Compose.MATERIAL)
     implementation(Libs.AndroidX.Compose.RUNTIME)
     implementation(Libs.AndroidX.Compose.UI)
