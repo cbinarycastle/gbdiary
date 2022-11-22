@@ -96,13 +96,14 @@ class GoogleBillingDataSource(
     }
 
     override fun onBillingSetupFinished(billingResult: BillingResult) {
-        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+        val responseCode = billingResult.responseCode
+        if (responseCode == BillingClient.BillingResponseCode.OK) {
             externalScope.launch {
                 queryProductDetails()
                 queryPurchases()
             }
         } else {
-            Timber.e("Billing client connection failed. responseCode: ${billingResult.responseCode}")
+            Timber.e("Billing client connection failed. responseCode: $responseCode")
         }
     }
 
@@ -151,12 +152,13 @@ class GoogleBillingDataSource(
     }
 
     private fun onPurchasesResult(result: PurchasesResult) {
-        if (result.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+        val responseCode = result.billingResult.responseCode
+        if (responseCode == BillingClient.BillingResponseCode.OK) {
             externalScope.launch {
                 processPurchases(result.purchasesList)
             }
         } else {
-            Timber.e("Querying purchases is failed")
+            Timber.e("Querying purchases is failed. responseCode: $responseCode")
         }
     }
 
