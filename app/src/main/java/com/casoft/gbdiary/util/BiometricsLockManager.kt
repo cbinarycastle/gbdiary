@@ -22,8 +22,12 @@ class BiometricsLockManager @Inject constructor(private val biometricManager: Bi
         .setAllowedAuthenticators(Authenticators)
         .build()
 
-    val biometricEnrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-        putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, Authenticators)
+    val biometricEnrollIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+            putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, Authenticators)
+        }
+    } else {
+        Intent(Settings.ACTION_SECURITY_SETTINGS)
     }
 
     fun isBiometricsAvailable(): AuthenticationStatus {
