@@ -25,7 +25,8 @@ class DiaryViewModel @Inject constructor(
     private val getDiaryItemUseCase: GetDiaryItemUseCase,
     private val saveDiaryItemUseCase: SaveDiaryItemUseCase,
     private val deleteDiaryItemUseCase: DeleteDiaryItemUseCase,
-    getTextAlignUseCase: GetTextAlignUseCase,
+    observeDiaryFontSizeUseCase: ObserveDiaryFontSizeUseCase,
+    observeTextAlignUseCase: ObserveTextAlignUseCase,
     private val setTextAlignUseCase: SetTextAlignUseCase,
     @ApplicationScope private val applicationScope: CoroutineScope,
 ) : ViewModel() {
@@ -108,7 +109,15 @@ class DiaryViewModel @Inject constructor(
         initialValue = false
     )
 
-    val textAlign = getTextAlignUseCase(Unit)
+    val contentFontSize = observeDiaryFontSizeUseCase(Unit)
+        .map { it.data ?: DiaryFontSize.Default }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DiaryFontSize.Default
+        )
+
+    val textAlign = observeTextAlignUseCase(Unit)
         .map { it.successOr(TextAlign.LEFT) }
         .stateIn(
             scope = viewModelScope,

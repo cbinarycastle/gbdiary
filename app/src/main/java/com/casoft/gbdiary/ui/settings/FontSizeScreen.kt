@@ -11,12 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.ui.components.DiaryCard
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
+import com.casoft.gbdiary.ui.components.TickSlider
+import com.casoft.gbdiary.util.sp
 import java.time.LocalDate
 
 @Composable
@@ -24,17 +27,19 @@ fun FontSizeScreen(
     viewModel: FontSizeViewModel,
     onBack: () -> Unit,
 ) {
-    val diaryFontSize by viewModel.diaryFontSize.collectAsState()
+    val fontSize by viewModel.fontSize.collectAsState()
 
     FontSizeScreen(
-        diaryFontSize = diaryFontSize,
+        fontSize = fontSize,
+        onFontSizeChange = viewModel::setFontSize,
         onBack = onBack
     )
 }
 
 @Composable
 private fun FontSizeScreen(
-    diaryFontSize: DiaryFontSize,
+    fontSize: DiaryFontSize,
+    onFontSizeChange: (DiaryFontSize) -> Unit,
     onBack: () -> Unit,
 ) {
     Column(
@@ -43,15 +48,14 @@ private fun FontSizeScreen(
             .systemBarsPadding()
     ) {
         AppBar(onBack)
-        DiaryCard(
-            item = DiaryItem(
-                date = LocalDate.now(),
-                stickers = listOf(Sticker.SATISFACTION),
-                content = "꼬박꼬박 일기 쓰는 습관 :)\n폰트 사이즈를 변경할 수 있어요"
-            ),
-            onClick = {},
-            contentFontSize = diaryFontSize,
-            modifier = Modifier.heightIn(min = 200.dp)
+        Preview(
+            fontSize = fontSize,
+            modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp)
+        )
+        FontSizeSlider(
+            value = fontSize,
+            onValueChange = onFontSizeChange,
+            modifier = Modifier.padding(start = 24.dp, top = 48.dp, end = 24.dp)
         )
     }
 }
@@ -71,5 +75,49 @@ private fun AppBar(onBack: () -> Unit) {
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+    }
+}
+
+@Composable
+private fun Preview(
+    fontSize: DiaryFontSize,
+    modifier: Modifier = Modifier,
+) {
+    DiaryCard(
+        item = DiaryItem(
+            date = LocalDate.now(),
+            stickers = listOf(Sticker.SATISFACTION),
+            content = "꼬박꼬박 일기 쓰는 습관 :)\n폰트 사이즈를 변경할 수 있어요"
+        ),
+        contentFontSize = fontSize.sp,
+        modifier = modifier.height(200.dp)
+    )
+}
+
+@Composable
+private fun FontSizeSlider(
+    value: DiaryFontSize,
+    onValueChange: (DiaryFontSize) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            text = "A",
+            fontSize = 16.sp
+        )
+        TickSlider(
+            value = value,
+            onValueChange = onValueChange,
+            steps = DiaryFontSize.values().toList(),
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "A",
+            fontSize = 24.sp
+        )
     }
 }

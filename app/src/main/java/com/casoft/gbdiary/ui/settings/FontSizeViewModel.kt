@@ -19,15 +19,15 @@ class FontSizeViewModel @Inject constructor(
     private val setDiaryFontSizeUseCase: SetDiaryFontSizeUseCase,
 ) : ViewModel() {
 
-    val diaryFontSize = observeDiaryFontSizeUseCase(Unit)
-        .map { it.data ?: DiaryFontSize.M }
+    val fontSize = observeDiaryFontSizeUseCase(Unit)
+        .map { it.data ?: DiaryFontSize.Default }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = DiaryFontSize.M
+            initialValue = DiaryFontSize.Default
         )
 
-    fun setDiaryFontSize(diaryFontSize: DiaryFontSize) {
+    fun setFontSize(diaryFontSize: DiaryFontSize) {
         viewModelScope.launch {
             setDiaryFontSizeUseCase(diaryFontSize)
         }

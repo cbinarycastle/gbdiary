@@ -81,7 +81,7 @@ class DataStoreSettingsDataSource(
         return preferencesDataStore.data.map { prefs ->
             prefs[PreferencesKeys.DIARY_FONT_SIZE]?.let {
                 DiaryFontSize.valueOf(it)
-            } ?: DiaryFontSize.M
+            } ?: DiaryFontSize.Default
         }
     }
 

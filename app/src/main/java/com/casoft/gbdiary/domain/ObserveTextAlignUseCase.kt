@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetTextAlignUseCase @Inject constructor(
+class ObserveTextAlignUseCase @Inject constructor(
     private val settingsDataSource: SettingsDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Unit, TextAlign>(ioDispatcher) {

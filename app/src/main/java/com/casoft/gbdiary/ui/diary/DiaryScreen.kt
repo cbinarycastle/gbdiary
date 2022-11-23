@@ -30,11 +30,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
+import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
@@ -48,6 +50,7 @@ import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
+import com.casoft.gbdiary.util.sp
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -80,6 +83,7 @@ fun DiaryScreen(
     val stickers by viewModel.stickers.collectAsState()
     val content by viewModel.content.collectAsState()
     val images by viewModel.images.collectAsState()
+    val contentFontSize by viewModel.contentFontSize.collectAsState()
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
 
     BackHandler {
@@ -118,6 +122,7 @@ fun DiaryScreen(
         stickers = stickers,
         content = content,
         images = images,
+        contentFontSize = contentFontSize,
         textAlign = textAlign,
         addSticker = viewModel::addSticker,
         changeSticker = viewModel::changeSticker,
@@ -152,6 +157,7 @@ private fun DiaryScreen(
     stickers: List<Sticker>,
     content: String,
     images: List<File>,
+    contentFontSize: DiaryFontSize,
     textAlign: TextAlign,
     addSticker: (Sticker) -> Unit,
     changeSticker: (Int, Sticker) -> Unit,
@@ -267,10 +273,14 @@ private fun DiaryScreen(
                         Spacer(Modifier.height(24.dp))
                         Box(Modifier.fillMaxWidth()) {
                             if (content.isEmpty()) {
-                                ContentPlaceholder(textAlign = textAlign)
+                                ContentPlaceholder(
+                                    fontSize = contentFontSize.sp,
+                                    textAlign = textAlign,
+                                )
                             }
                             ContentTextField(
                                 text = content,
+                                fontSize = contentFontSize.sp,
                                 textAlign = textAlign,
                                 onValueChange = onContentChange,
                                 modifier = Modifier.focusRequester(state.textFieldFocusRequester)
@@ -453,20 +463,25 @@ private fun Sticker(
 }
 
 @Composable
-private fun ContentPlaceholder(textAlign: TextAlign) {
+private fun ContentPlaceholder(
+    fontSize: TextUnit,
+    textAlign: TextAlign,
+) {
     Text(
         text = "오늘 하루를 기록해보세요",
+        fontSize = fontSize,
+        textAlign = textAlign,
+        style = GBDiaryTheme.typography.body1,
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(0.3f),
-        style = GBDiaryTheme.typography.body1,
-        textAlign = textAlign
+            .alpha(0.3f)
     )
 }
 
 @Composable
 private fun ContentTextField(
     text: String,
+    fontSize: TextUnit,
     textAlign: TextAlign,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -476,6 +491,7 @@ private fun ContentTextField(
         onValueChange = onValueChange,
         textStyle = GBDiaryTheme.typography.body1.copy(
             color = LocalContentColor.current,
+            fontSize = fontSize,
             textAlign = textAlign
         ),
         cursorBrush = SolidColor(LocalContentColor.current),
@@ -719,6 +735,7 @@ fun DiaryScreenPreview() {
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
             content = "내용",
             images = listOf(),
+            contentFontSize = DiaryFontSize.Default,
             textAlign = TextAlign.Left,
             addSticker = {},
             changeSticker = { _, _ -> },

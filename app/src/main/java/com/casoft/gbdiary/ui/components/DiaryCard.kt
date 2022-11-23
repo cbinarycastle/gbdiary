@@ -2,9 +2,9 @@ package com.casoft.gbdiary.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.DiaryItem
@@ -31,23 +30,22 @@ import com.casoft.gbdiary.ui.theme.DarkTextIcon
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.LightDimmingOverlay
 import com.casoft.gbdiary.ui.theme.LightTextIcon
+import com.casoft.gbdiary.util.sp
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VISIBLE_IMAGES = 3
 
 private val DateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DiaryCard(
     item: DiaryItem,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    contentFontSize: DiaryFontSize = DiaryFontSize.M,
+    onClick: (() -> Unit)? = null,
+    contentFontSize: TextUnit = DiaryFontSize.Default.sp,
     wordToHighlight: String? = null,
 ) {
     Surface(
-        onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         elevation = 1.dp,
         modifier = modifier
@@ -56,6 +54,13 @@ fun DiaryCard(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .then(
+                    if (onClick == null) {
+                        Modifier
+                    } else {
+                        Modifier.clickable { onClick() }
+                    }
+                )
                 .padding(16.dp)
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -78,14 +83,14 @@ fun DiaryCard(
                 if (wordToHighlight == null) {
                     Text(
                         text = item.content,
-                        fontSize = contentFontSize.sp,
+                        fontSize = contentFontSize,
                         maxLines = 8,
                         overflow = TextOverflow.Ellipsis
                     )
                 } else {
                     Text(
                         text = item.buildHighlightedContent(wordToHighlight),
-                        fontSize = contentFontSize.sp,
+                        fontSize = contentFontSize,
                         maxLines = 8,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -244,18 +249,3 @@ private fun DiaryItem.buildHighlightedContent(wordToHighlight: String) = buildAn
         }
     }
 }
-
-val DiaryFontSize.sp: TextUnit
-    @Composable
-    get() {
-        val value = GBDiaryTheme.typography.body1.fontSize.value + when (this) {
-            DiaryFontSize.XXS -> -6
-            DiaryFontSize.XS -> -4
-            DiaryFontSize.S -> -2
-            DiaryFontSize.M -> 0
-            DiaryFontSize.L -> 2
-            DiaryFontSize.XL -> 4
-            DiaryFontSize.XXL -> 6
-        }
-        return value.sp
-    }

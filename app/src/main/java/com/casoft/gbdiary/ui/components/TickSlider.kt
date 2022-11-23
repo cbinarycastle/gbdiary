@@ -16,8 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
@@ -36,13 +38,14 @@ fun <T> TickSlider(
     val tickFractions = remember(steps) { stepsToTickFractions(steps.size) }
 
     BoxWithConstraints(modifier) {
+        val density = LocalDensity.current
+        val hapticFeedback = LocalHapticFeedback.current
         val coroutineScope = rememberCoroutineScope()
 
         val thumbRadiusPx: Float
         val maxPx: Float
         val minPx: Float
-
-        with(LocalDensity.current) {
+        with(density) {
             thumbRadiusPx = ThumbRadius.toPx()
             maxPx = max(constraints.maxWidth - thumbRadiusPx, 0f)
             minPx = min(thumbRadiusPx, maxPx)
@@ -66,11 +69,12 @@ fun <T> TickSlider(
             )
 
             if (value != targetValue) {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                 onValueChange(targetValue)
             }
         }
 
-        val thumbOffset = with(LocalDensity.current) {
+        val thumbOffset = with(density) {
             valueToThumbOffset(value, width, steps).toDp()
         }
 
