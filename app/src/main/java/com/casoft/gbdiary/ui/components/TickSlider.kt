@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -35,6 +36,8 @@ fun <T> TickSlider(
     val tickFractions = remember(steps) { stepsToTickFractions(steps.size) }
 
     BoxWithConstraints(modifier) {
+        val coroutineScope = rememberCoroutineScope()
+
         val thumbRadiusPx: Float
         val maxPx: Float
         val minPx: Float
@@ -57,9 +60,10 @@ fun <T> TickSlider(
             val targetValue = snapOffsetToTick(
                 minPx = minPx,
                 maxPx = maxPx,
-                rawOffset = rawOffset + thumbRadiusPx,
+                rawOffset = rawOffset + minPx,
+                steps = steps,
                 tickFractions = tickFractions
-            ).let { index -> steps[index] }
+            )
 
             if (value != targetValue) {
                 onValueChange(targetValue)
@@ -78,6 +82,17 @@ fun <T> TickSlider(
 
         GBDiarySliderImpl(
             tickFractions = tickFractions,
+            modifier = Modifier.pointerInput(true) {
+                detectTapGestures(
+                    onTap = { offset ->
+                        coroutineScope.launch {
+                            draggableState.drag {
+                                dragBy((offset.x - minPx) - rawOffset)
+                            }
+                        }
+                    }
+                )
+            },
             thumbModifier = Modifier
                 .offset(x = thumbOffset)
                 .pointerInput(true) {
@@ -117,12 +132,13 @@ private fun GBDiarySliderImpl(
     }
 }
 
-private fun snapOffsetToTick(
+private fun <T> snapOffsetToTick(
     minPx: Float,
     maxPx: Float,
     rawOffset: Float,
+    steps: List<T>,
     tickFractions: List<Float>,
-): Int {
+): T {
     var minValue = Float.MAX_VALUE
     var minIndex = 0
 
@@ -135,7 +151,7 @@ private fun snapOffsetToTick(
             }
         }
 
-    return minIndex
+    return steps[minIndex]
 }
 
 private fun <T> valueToThumbOffset(value: T, width: Float, steps: List<T>): Float {
