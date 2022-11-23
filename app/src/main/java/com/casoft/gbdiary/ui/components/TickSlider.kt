@@ -22,7 +22,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.casoft.gbdiary.ui.theme.Dark1
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
+import com.casoft.gbdiary.ui.theme.Light2
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
@@ -207,10 +209,10 @@ private fun Thumb(modifier: Modifier = Modifier) {
         modifier = modifier
             .size(ThumbSize - ThumbBorderWidth)
             .clip(CircleShape)
-            .background(color = GBDiaryTheme.colors.primary)
+            .background(Light2)
             .border(
                 width = ThumbBorderWidth,
-                color = GBDiaryTheme.gbDiaryColors.enabled,
+                color = Dark1,
                 shape = CircleShape
             )
     )
