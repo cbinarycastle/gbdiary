@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.casoft.gbdiary.di.PreferencesKeys
+import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.TextAlign
 import com.casoft.gbdiary.model.Theme
 import kotlinx.coroutines.flow.Flow
@@ -73,6 +74,20 @@ class DataStoreSettingsDataSource(
     override suspend fun setTheme(theme: Theme) {
         preferencesDataStore.edit { prefs ->
             prefs[PreferencesKeys.THEME] = theme.name
+        }
+    }
+
+    override fun getDiaryFontSize(): Flow<DiaryFontSize> {
+        return preferencesDataStore.data.map { prefs ->
+            prefs[PreferencesKeys.DIARY_FONT_SIZE]?.let {
+                DiaryFontSize.valueOf(it)
+            } ?: DiaryFontSize.M
+        }
+    }
+
+    override suspend fun setDiaryFontSize(diaryFontSize: DiaryFontSize) {
+        preferencesDataStore.edit { prefs ->
+            prefs[PreferencesKeys.DIARY_FONT_SIZE] = diaryFontSize.name
         }
     }
 

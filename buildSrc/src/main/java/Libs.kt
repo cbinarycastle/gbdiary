@@ -32,6 +32,7 @@ object Libs {
             const val RUNTIME = "androidx.compose.runtime:runtime:$VERSION"
             const val UI = "androidx.compose.ui:ui:$VERSION"
             const val UI_TOOLING = "androidx.compose.ui:ui-tooling:$VERSION"
+            const val UI_UTIL = "androidx.compose.ui:ui-util:$VERSION"
         }
 
         object Hilt {

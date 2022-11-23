@@ -19,8 +19,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
@@ -40,6 +43,7 @@ fun DiaryCard(
     item: DiaryItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    contentFontSize: DiaryFontSize = DiaryFontSize.M,
     wordToHighlight: String? = null,
 ) {
     Surface(
@@ -74,12 +78,14 @@ fun DiaryCard(
                 if (wordToHighlight == null) {
                     Text(
                         text = item.content,
+                        fontSize = contentFontSize.sp,
                         maxLines = 8,
                         overflow = TextOverflow.Ellipsis
                     )
                 } else {
                     Text(
                         text = item.buildHighlightedContent(wordToHighlight),
+                        fontSize = contentFontSize.sp,
                         maxLines = 8,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -238,3 +244,18 @@ private fun DiaryItem.buildHighlightedContent(wordToHighlight: String) = buildAn
         }
     }
 }
+
+val DiaryFontSize.sp: TextUnit
+    @Composable
+    get() {
+        val value = GBDiaryTheme.typography.body1.fontSize.value + when (this) {
+            DiaryFontSize.XXS -> -6
+            DiaryFontSize.XS -> -4
+            DiaryFontSize.S -> -2
+            DiaryFontSize.M -> 0
+            DiaryFontSize.L -> 2
+            DiaryFontSize.XL -> 4
+            DiaryFontSize.XXL -> 6
+        }
+        return value.sp
+    }

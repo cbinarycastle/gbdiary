@@ -26,6 +26,7 @@ object PreferencesKeys {
     val PASSWORD = stringPreferencesKey("password")
     val BIOMETRICS_ENABLED = booleanPreferencesKey("biometrics_enabled")
     val THEME = stringPreferencesKey("theme")
+    val DIARY_FONT_SIZE = stringPreferencesKey("diary_font_size")
     val TEXT_ALIGN = stringPreferencesKey("text_align")
     val LATEST_LAUNCH_REVIEW_FLOW_DATE = longPreferencesKey("latest_launch_review_flow_date")
     val LATEST_BACKUP_DATE = longPreferencesKey("latest_backup_date")

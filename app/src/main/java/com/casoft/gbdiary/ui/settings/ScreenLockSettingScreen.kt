@@ -145,7 +145,7 @@ private fun AppBar(onBack: () -> Unit) {
                 )
             }
             Text(
-                text = "화면 잠금",
+                text = Settings.SCREEN_LOCK.text,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

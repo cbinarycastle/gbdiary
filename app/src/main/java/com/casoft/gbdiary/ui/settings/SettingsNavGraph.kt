@@ -12,6 +12,7 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
             viewModel = settingsViewModel,
             onPurchaseClick = actions::navigateToPurchase,
             onThemeClick = actions::navigateToTheme,
+            onFontSizeClick = actions::navigateToFontSize,
             onScreenLockClick = actions::navigateToScreenLock,
             onBackupClick = actions::navigateToBackup,
             onBack = actions::navigateUp
@@ -28,6 +29,13 @@ fun NavGraphBuilder.settingsNavGraph(actions: SettingsActions) {
         val themeViewModel = hiltViewModel<ThemeViewModel>()
         ThemeScreen(
             viewModel = themeViewModel,
+            onBack = actions::navigateUp
+        )
+    }
+    composable(SettingsDestination.FONT_SIZE_ROUTE) {
+        val fontSizeViewModel = hiltViewModel<FontSizeViewModel>()
+        FontSizeScreen(
+            viewModel = fontSizeViewModel,
             onBack = actions::navigateUp
         )
     }
@@ -75,6 +83,10 @@ class SettingsActions(private val navController: NavHostController) {
         navController.navigate(SettingsDestination.THEME_ROUTE)
     }
 
+    fun navigateToFontSize() {
+        navController.navigate(SettingsDestination.FONT_SIZE_ROUTE)
+    }
+
     fun navigateToScreenLock() {
         navController.navigate(SettingsDestination.SCREEN_LOCK_ROUTE)
     }
@@ -100,6 +112,7 @@ object SettingsDestination {
     const val HOME_ROUTE = "settings/home"
     const val PURCHASE_ROUTE = "settings/purchase"
     const val THEME_ROUTE = "settings/theme"
+    const val FONT_SIZE_ROUTE = "settings/font_size"
     const val SCREEN_LOCK_ROUTE = "settings/screen_lock"
     const val PASSWORD_REGISTRATION_ROUTE = "settings/password_registration"
     const val PASSWORD_CHANGE_ROUTE = "settings/password_change"

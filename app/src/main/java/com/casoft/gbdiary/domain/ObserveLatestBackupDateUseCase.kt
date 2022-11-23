@@ -10,7 +10,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
-class ObserveLatestBackupDate @Inject constructor(
+class ObserveLatestBackupDateUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Unit, ZonedDateTime?>(ioDispatcher) {

@@ -29,6 +29,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onFontSizeClick: () -> Unit,
     onScreenLockClick: () -> Unit,
     onBackupClick: () -> Unit,
     onBack: () -> Unit,
@@ -55,6 +56,7 @@ fun SettingsScreen(
             onNotificationTimeChange = viewModel::setNotificationTime,
             onPurchaseClick = onPurchaseClick,
             onThemeClick = onThemeClick,
+            onFontSizeClick = onFontSizeClick,
             onBackupClick = onBackupClick,
             onScreenLockClick = onScreenLockClick,
             onReviewClick = context::navigateToGooglePlay,
@@ -73,6 +75,7 @@ private fun SettingsScreen(
     onNotificationTimeChange: (LocalTime) -> Unit,
     onPurchaseClick: () -> Unit,
     onThemeClick: () -> Unit,
+    onFontSizeClick: () -> Unit,
     onScreenLockClick: () -> Unit,
     onBackupClick: () -> Unit,
     onReviewClick: () -> Unit,
@@ -112,6 +115,7 @@ private fun SettingsScreen(
                         )
                     }
                     ThemeItem(onClick = onThemeClick)
+                    FontSizeItem(onClick = onFontSizeClick)
                     ItemDivider()
                     ScreenLockItem(onClick = onScreenLockClick)
                     BackupItem(onClick = onBackupClick)
@@ -236,6 +240,19 @@ private fun ThemeItem(
 }
 
 @Composable
+private fun FontSizeItem(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SettingsItem(
+        name = Settings.FONT_SIZE.text,
+        icon = painterResource(R.drawable.font),
+        onClick = onClick,
+        modifier = modifier
+    )
+}
+
+@Composable
 private fun BackupItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -293,6 +310,7 @@ fun SettingsScreenPreview() {
             onNotificationTimeChange = {},
             onPurchaseClick = {},
             onThemeClick = {},
+            onFontSizeClick = {},
             onScreenLockClick = {},
             onBackupClick = {},
             onReviewClick = {},

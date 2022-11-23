@@ -28,7 +28,7 @@ class BackupViewModel @Inject constructor(
     private val backupDataUseCase: BackupDataUseCase,
     private val syncDataUseCase: SyncDataUseCase,
     private val checkExistingSignedInUserUseCase: CheckExistingSignedInUserUseCase,
-    observeLatestBackupDate: ObserveLatestBackupDate,
+    observeLatestBackupDateUseCase: ObserveLatestBackupDateUseCase,
     val googleSignInClient: GoogleSignInClient,
 ) : ViewModel() {
 
@@ -56,7 +56,7 @@ class BackupViewModel @Inject constructor(
             initialValue = false
         )
 
-    val latestBackupDate = observeLatestBackupDate(Unit)
+    val latestBackupDate = observeLatestBackupDateUseCase(Unit)
         .map { it.data?.format(LatestBackupDateTimeFormatter) }
         .stateIn(
             scope = viewModelScope,
