@@ -108,7 +108,7 @@ dependencies {
     implementation(Libs.AndroidX.Compose.RUNTIME)
     implementation(Libs.AndroidX.Compose.UI)
     debugImplementation(Libs.AndroidX.Compose.UI_TOOLING)
-    debugImplementation(Libs.AndroidX.Compose.UI_UTIL)
+    implementation(Libs.AndroidX.Compose.UI_UTIL)
     implementation(Libs.AndroidX.Compose.PREVIEW)
     implementation(Libs.AndroidX.Activity.ACTIVITY_COMPOSE)
     implementation(Libs.AndroidX.Hilt.NAVIGATION_COMPOSE)
