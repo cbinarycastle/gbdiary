@@ -26,14 +26,15 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Composable
-fun TickSlider(
-    value: Int,
-    onValueChange: (Int) -> Unit,
-    steps: Int,
+fun <T> TickSlider(
+    value: T,
+    onValueChange: (T) -> Unit,
+    steps: List<T>,
+    modifier: Modifier = Modifier,
 ) {
-    val tickFractions = remember(steps) { stepsToTickFractions(steps) }
+    val tickFractions = remember(steps) { stepsToTickFractions(steps.size) }
 
-    BoxWithConstraints {
+    BoxWithConstraints(modifier) {
         val thumbRadiusPx: Float
         val maxPx: Float
         val minPx: Float
@@ -45,6 +46,7 @@ fun TickSlider(
         }
         val width = maxPx - minPx
 
+        var isDragging by remember { mutableStateOf(false) }
         var pressOffset by remember { mutableStateOf(0f) }
         var rawOffset by remember { mutableStateOf(valueToThumbOffset(value, width, steps)) }
 
@@ -57,7 +59,8 @@ fun TickSlider(
                 maxPx = maxPx,
                 rawOffset = rawOffset + thumbRadiusPx,
                 tickFractions = tickFractions
-            )
+            ).let { index -> steps[index] }
+
             if (value != targetValue) {
                 onValueChange(targetValue)
             }
@@ -65,6 +68,12 @@ fun TickSlider(
 
         val thumbOffset = with(LocalDensity.current) {
             valueToThumbOffset(value, width, steps).toDp()
+        }
+
+        LaunchedEffect(value) {
+            if (!isDragging) {
+                rawOffset = valueToThumbOffset(value, width, steps)
+            }
         }
 
         GBDiarySliderImpl(
@@ -77,7 +86,11 @@ fun TickSlider(
                 .draggable(
                     state = draggableState,
                     orientation = Orientation.Horizontal,
-                    onDragStopped = { rawOffset = valueToThumbOffset(value, width, steps) }
+                    onDragStarted = { isDragging = true },
+                    onDragStopped = {
+                        rawOffset = valueToThumbOffset(value, width, steps)
+                        isDragging = false
+                    }
                 )
         )
     }
@@ -96,7 +109,10 @@ private fun GBDiarySliderImpl(
         contentAlignment = Alignment.CenterStart,
         modifier = modifier
     ) {
-        Track(tickFractions)
+        Track(
+            tickFractions = tickFractions,
+            modifier = Modifier.fillMaxWidth()
+        )
         Thumb(thumbModifier)
     }
 }
@@ -119,11 +135,12 @@ private fun snapOffsetToTick(
             }
         }
 
-    return minIndex + 1
+    return minIndex
 }
 
-private fun valueToThumbOffset(value: Int, width: Float, steps: Int): Float {
-    return width / (steps - 1) * (value - 1)
+private fun <T> valueToThumbOffset(value: T, width: Float, steps: List<T>): Float {
+    val index = steps.indexOf(value)
+    return width / (steps.size - 1) * index
 }
 
 @Composable
@@ -133,7 +150,7 @@ private fun Track(
 ) {
     val color = GBDiaryTheme.gbDiaryColors.border
 
-    Canvas(modifier.fillMaxWidth()) {
+    Canvas(modifier) {
         val sliderStart = ThumbRadius.toPx()
         val sliderEnd = size.width - sliderStart
 
