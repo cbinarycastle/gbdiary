@@ -19,7 +19,7 @@ import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.ui.components.DiaryCard
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.TickSlider
-import com.casoft.gbdiary.util.sp
+import com.casoft.gbdiary.util.style
 import java.time.LocalDate
 
 @Composable
@@ -89,7 +89,7 @@ private fun Preview(
             stickers = listOf(Sticker.SATISFACTION),
             content = "꼬박꼬박 일기 쓰는 습관 :)\n폰트 사이즈를 변경할 수 있어요"
         ),
-        contentFontSize = fontSize.sp,
+        contentTextStyle = fontSize.style,
         modifier = modifier.height(200.dp)
     )
 }

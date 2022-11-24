@@ -28,9 +28,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
@@ -50,7 +50,7 @@ import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
-import com.casoft.gbdiary.util.sp
+import com.casoft.gbdiary.util.style
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -274,15 +274,15 @@ private fun DiaryScreen(
                         Box(Modifier.fillMaxWidth()) {
                             if (content.isEmpty()) {
                                 ContentPlaceholder(
-                                    fontSize = contentFontSize.sp,
                                     textAlign = textAlign,
+                                    textStyle = contentFontSize.style
                                 )
                             }
                             ContentTextField(
-                                text = content,
-                                fontSize = contentFontSize.sp,
-                                textAlign = textAlign,
+                                value = content,
                                 onValueChange = onContentChange,
+                                textAlign = textAlign,
+                                textStyle = contentFontSize.style,
                                 modifier = Modifier.focusRequester(state.textFieldFocusRequester)
                             )
                         }
@@ -464,14 +464,13 @@ private fun Sticker(
 
 @Composable
 private fun ContentPlaceholder(
-    fontSize: TextUnit,
     textAlign: TextAlign,
+    textStyle: TextStyle,
 ) {
     Text(
         text = "오늘 하루를 기록해보세요",
-        fontSize = fontSize,
         textAlign = textAlign,
-        style = GBDiaryTheme.typography.body1,
+        style = textStyle,
         modifier = Modifier
             .fillMaxWidth()
             .alpha(0.3f)
@@ -480,18 +479,17 @@ private fun ContentPlaceholder(
 
 @Composable
 private fun ContentTextField(
-    text: String,
-    fontSize: TextUnit,
-    textAlign: TextAlign,
+    value: String,
     onValueChange: (String) -> Unit,
+    textAlign: TextAlign,
+    textStyle: TextStyle,
     modifier: Modifier = Modifier,
 ) {
     BasicTextField(
-        value = text,
+        value = value,
         onValueChange = onValueChange,
-        textStyle = GBDiaryTheme.typography.body1.copy(
+        textStyle = textStyle.copy(
             color = LocalContentColor.current,
-            fontSize = fontSize,
             textAlign = textAlign
         ),
         cursorBrush = SolidColor(LocalContentColor.current),

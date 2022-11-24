@@ -16,10 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.model.DiaryFontSize
@@ -30,7 +30,7 @@ import com.casoft.gbdiary.ui.theme.DarkTextIcon
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.LightDimmingOverlay
 import com.casoft.gbdiary.ui.theme.LightTextIcon
-import com.casoft.gbdiary.util.sp
+import com.casoft.gbdiary.util.style
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VISIBLE_IMAGES = 3
@@ -42,7 +42,7 @@ fun DiaryCard(
     item: DiaryItem,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    contentFontSize: TextUnit = DiaryFontSize.Default.sp,
+    contentTextStyle: TextStyle = DiaryFontSize.Default.style,
     wordToHighlight: String? = null,
 ) {
     Surface(
@@ -83,16 +83,16 @@ fun DiaryCard(
                 if (wordToHighlight == null) {
                     Text(
                         text = item.content,
-                        fontSize = contentFontSize,
                         maxLines = 8,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        style = contentTextStyle
                     )
                 } else {
                     Text(
                         text = item.buildHighlightedContent(wordToHighlight),
-                        fontSize = contentFontSize,
                         maxLines = 8,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        style = contentTextStyle
                     )
                 }
             }
