@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.content.getSystemService
 import com.casoft.gbdiary.time.TimeProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -70,11 +69,7 @@ class DiaryAlarmManager @Inject constructor(
 
     private fun makePendingIntent(): PendingIntent {
         val intent = Intent(context, DiaryAlarmBroadcastReceiver::class.java)
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
+        val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
 
         val requestCode = System.currentTimeMillis().toInt()
         return PendingIntent.getBroadcast(context, requestCode, intent, flags)
