@@ -185,7 +185,7 @@ private fun DiaryScreen(
             if (granted) {
                 onAlbumClick()
             } else {
-                state.showPermissionDeniedDialog()
+                state.showImagePermissionDeniedDialog()
             }
         }
 
@@ -354,13 +354,13 @@ private fun DiaryScreen(
                         .align(Alignment.TopCenter)
                 )
 
-                if (state.shouldShowPermissionDeniedDialog) {
-                    PermissionDeniedDialog(
+                if (state.shouldShowImagePermissionDeniedDialog) {
+                    ImagePermissionDeniedDialog(
                         onConfirm = {
-                            state.hidePermissionDeniedDialog()
+                            state.hideImagePermissionDeniedDialog()
                             context.navigateToAppSettings()
                         },
-                        onDismiss = state::hidePermissionDeniedDialog
+                        onDismiss = state::hideImagePermissionDeniedDialog
                     )
                 }
 

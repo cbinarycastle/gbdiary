@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalTime
 import javax.inject.Inject
 
-class GetNotificationTimeUseCase @Inject constructor(
+class ObserveNotificationTimeUseCase @Inject constructor(
     private val settingsDataSource: SettingsDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Unit, LocalTime?>(ioDispatcher) {

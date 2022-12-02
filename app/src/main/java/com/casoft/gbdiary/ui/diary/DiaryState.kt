@@ -50,7 +50,7 @@ class DiaryState(
     var visibleRemoveImageButtonIndex by mutableStateOf<Int?>(null)
         private set
 
-    var shouldShowPermissionDeniedDialog by mutableStateOf(false)
+    var shouldShowImagePermissionDeniedDialog by mutableStateOf(false)
         private set
 
     var shouldShowConfirmDeleteDialog by mutableStateOf(false)
@@ -105,12 +105,12 @@ class DiaryState(
         visibleRemoveImageButtonIndex = null
     }
 
-    fun showPermissionDeniedDialog() {
-        shouldShowPermissionDeniedDialog = true
+    fun showImagePermissionDeniedDialog() {
+        shouldShowImagePermissionDeniedDialog = true
     }
 
-    fun hidePermissionDeniedDialog() {
-        shouldShowPermissionDeniedDialog = false
+    fun hideImagePermissionDeniedDialog() {
+        shouldShowImagePermissionDeniedDialog = false
     }
 
     fun showConfirmDeleteDialog() {

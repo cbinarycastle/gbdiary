@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import com.casoft.gbdiary.ui.components.GBDiaryAlertDialog
 
 @Composable
-fun PermissionDeniedDialog(
+fun ImagePermissionDeniedDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {

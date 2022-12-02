@@ -17,6 +17,8 @@ class AppViewModel @Inject constructor(
     observeThemeUseCase: ObserveThemeUseCase,
     observePasswordUseCase: ObservePasswordUseCase,
     observeBiometricsSettingUseCase: ObserveBiometricsSettingUseCase,
+    observeNotificationTimeUseCase: ObserveNotificationTimeUseCase,
+    private val disableNotificationUseCase: DisableNotificationUseCase,
 ) : ViewModel() {
 
     val theme = observeThemeUseCase(Unit)
@@ -60,6 +62,14 @@ class AppViewModel @Inject constructor(
         initialValue = null
     )
 
+    val notificationEnabled = observeNotificationTimeUseCase(Unit)
+        .map { it.data != null }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = false
+        )
+
     fun checkExistingSignedInUser() {
         viewModelScope.launch {
             checkExistingSignedInUserUseCase(Unit)
@@ -69,6 +79,12 @@ class AppViewModel @Inject constructor(
     fun queryPurchases() {
         viewModelScope.launch {
             queryPurchasesUseCase(Unit)
+        }
+    }
+
+    fun disableNotification() {
+        viewModelScope.launch {
+            disableNotificationUseCase(Unit)
         }
     }
 }

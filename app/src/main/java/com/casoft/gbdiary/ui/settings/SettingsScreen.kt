@@ -49,14 +49,14 @@ fun SettingsScreen(
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
 
-    var shouldShowPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var shouldShowNotificationPermissionDeniedDialog by remember { mutableStateOf(false) }
 
     val notificationPermissionLauncher =
         rememberLauncherForActivityResult(RequestPermission()) { granted ->
             if (granted) {
                 viewModel.setNotificationEnabled(true)
             } else {
-                shouldShowPermissionDeniedDialog = true
+                shouldShowNotificationPermissionDeniedDialog = true
             }
         }
 
@@ -100,16 +100,13 @@ fun SettingsScreen(
             onBack = onBack
         )
 
-        if (shouldShowPermissionDeniedDialog) {
-            GBDiaryAlertDialog(
+        if (shouldShowNotificationPermissionDeniedDialog) {
+            NotificationPermissionDeniedDialog(
                 onConfirm = {
-                    shouldShowPermissionDeniedDialog = false
+                    shouldShowNotificationPermissionDeniedDialog = false
                     context.navigateToAppSettings()
                 },
-                onDismiss = { shouldShowPermissionDeniedDialog = false },
-                content = { Text("알림을 설정하려면 알림 권한을 허용해야 합니다.") },
-                confirmText = { Text("설정") },
-                dismissText = { Text("취소") }
+                onDismiss = { shouldShowNotificationPermissionDeniedDialog = false }
             )
         }
     }
@@ -344,6 +341,20 @@ private fun ReviewItem(
 @Composable
 private fun ItemDivider() {
     Divider(Modifier.padding(horizontal = 24.dp, vertical = 16.dp))
+}
+
+@Composable
+fun NotificationPermissionDeniedDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    GBDiaryAlertDialog(
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        content = { Text("알림을 설정하려면 알림 권한을 허용해야 합니다.") },
+        confirmText = { Text("설정") },
+        dismissText = { Text("취소") }
+    )
 }
 
 @Preview(name = "Settings screen")

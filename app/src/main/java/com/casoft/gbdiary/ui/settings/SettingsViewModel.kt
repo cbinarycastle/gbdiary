@@ -16,7 +16,7 @@ class SettingsViewModel @Inject constructor(
     isPremiumUserUseCase: IsPremiumUserUseCase,
     private val enableNotificationUseCase: EnableNotificationUseCase,
     private val disableNotificationUseCase: DisableNotificationUseCase,
-    getNotificationTimeUseCase: GetNotificationTimeUseCase,
+    observeNotificationTimeUseCase: ObserveNotificationTimeUseCase,
     private val setNotificationTimeUseCase: SetNotificationTimeUseCase,
 ) : ViewModel() {
 
@@ -28,7 +28,7 @@ class SettingsViewModel @Inject constructor(
             initialValue = true
         )
 
-    val notificationTime = getNotificationTimeUseCase(Unit)
+    val notificationTime = observeNotificationTimeUseCase(Unit)
         .map { result -> result.data }
         .stateIn(
             scope = viewModelScope,
