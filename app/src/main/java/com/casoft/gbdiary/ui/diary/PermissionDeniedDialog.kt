@@ -12,7 +12,7 @@ fun PermissionDeniedDialog(
     GBDiaryAlertDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
-        content = { Text("사진 업로드를 위한 접근 권한 변경이 필요합니다.") },
+        content = { Text("사진을 업로드하려면 사진 접근 권한을 허용해야 합니다.") },
         confirmText = { Text("설정") },
         dismissText = { Text("취소") }
     )

@@ -36,7 +36,7 @@ class DiaryAlarmManager @Inject constructor(
             .toInstant()
             .toEpochMilli()
 
-        alarmManager?.set(
+        alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             triggerAtMillis,
             pendingIntent

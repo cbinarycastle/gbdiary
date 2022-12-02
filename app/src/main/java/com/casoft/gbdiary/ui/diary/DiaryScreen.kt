@@ -1,9 +1,10 @@
 package com.casoft.gbdiary.ui.diary
 
 import android.Manifest
-import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.content.pm.PackageManager
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Build
+import android.os.Build.VERSION_CODES.TIRAMISU
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
@@ -179,13 +180,14 @@ private fun DiaryScreen(
 
     val shouldShowAppBarDivider by remember { derivedStateOf { scrollState.value > 0 } }
 
-    val permissionLauncher = rememberLauncherForActivityResult(RequestPermission()) { granted ->
-        if (granted) {
-            onAlbumClick()
-        } else {
-            state.showPermissionDeniedDialog()
+    val imagePermissionLauncher =
+        rememberLauncherForActivityResult(RequestPermission()) { granted ->
+            if (granted) {
+                onAlbumClick()
+            } else {
+                state.showPermissionDeniedDialog()
+            }
         }
-    }
 
     LaunchedEffect(existsDiary) {
         if (existsDiary != null && existsDiary.not() && initialStickerBottomSheetShown.not()) {
@@ -312,18 +314,19 @@ private fun DiaryScreen(
                     }
                     SuggestionBar(
                         onAlbumClick = {
-                            val permission =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                    Manifest.permission.READ_MEDIA_IMAGES
-                                } else {
-                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                }
-                            if (ContextCompat.checkSelfPermission(context,
-                                    permission) == PERMISSION_GRANTED
-                            ) {
+                            val permission = if (Build.VERSION.SDK_INT >= TIRAMISU) {
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            } else {
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            }
+                            val permissionGranted = ContextCompat.checkSelfPermission(
+                                context, permission
+                            ) == PackageManager.PERMISSION_GRANTED
+
+                            if (permissionGranted) {
                                 onAlbumClick()
                             } else {
-                                permissionLauncher.launch(permission)
+                                imagePermissionLauncher.launch(permission)
                             }
                         },
                         onAlignClick = onAlignClick,

@@ -1,6 +1,11 @@
 package com.casoft.gbdiary.ui.settings
 
+import android.content.pm.PackageManager
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.os.Build
+import android.os.Build.VERSION_CODES.TIRAMISU
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,9 +20,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ad.SETTING_BANNER_AD_UNIT_ID
 import com.casoft.gbdiary.ui.components.*
+import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
 import com.casoft.gbdiary.util.navigateToGooglePlay
@@ -42,6 +49,17 @@ fun SettingsScreen(
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
 
+    var shouldShowPermissionDeniedDialog by remember { mutableStateOf(false) }
+
+    val notificationPermissionLauncher =
+        rememberLauncherForActivityResult(RequestPermission()) { granted ->
+            if (granted) {
+                viewModel.setNotificationEnabled(true)
+            } else {
+                shouldShowPermissionDeniedDialog = true
+            }
+        }
+
     LaunchedEffect(viewModel) {
         viewModel.message.collectMessage(context, alertDialogState)
     }
@@ -52,7 +70,26 @@ fun SettingsScreen(
             isPremiumUser = isPremiumUser,
             notificationEnabled = notificationEnabled,
             notificationTime = notificationTime,
-            onNotificationEnabledChange = viewModel::setNotificationEnabled,
+            onNotificationEnabledChange = { enabled ->
+                if (enabled) {
+                    if (Build.VERSION.SDK_INT >= TIRAMISU) {
+                        val permission = android.Manifest.permission.POST_NOTIFICATIONS
+                        val permissionGranted = ContextCompat.checkSelfPermission(
+                            context, permission
+                        ) == PackageManager.PERMISSION_GRANTED
+
+                        if (permissionGranted) {
+                            viewModel.setNotificationEnabled(true)
+                        } else {
+                            notificationPermissionLauncher.launch(permission)
+                        }
+                    } else {
+                        viewModel.setNotificationEnabled(true)
+                    }
+                } else {
+                    viewModel.setNotificationEnabled(false)
+                }
+            },
             onNotificationTimeChange = viewModel::setNotificationTime,
             onPurchaseClick = onPurchaseClick,
             onThemeClick = onThemeClick,
@@ -62,6 +99,19 @@ fun SettingsScreen(
             onReviewClick = context::navigateToGooglePlay,
             onBack = onBack
         )
+
+        if (shouldShowPermissionDeniedDialog) {
+            GBDiaryAlertDialog(
+                onConfirm = {
+                    shouldShowPermissionDeniedDialog = false
+                    context.navigateToAppSettings()
+                },
+                onDismiss = { shouldShowPermissionDeniedDialog = false },
+                content = { Text("알림을 설정하려면 알림 권한을 허용해야 합니다.") },
+                confirmText = { Text("설정") },
+                dismissText = { Text("취소") }
+            )
+        }
     }
 }
 
