@@ -22,7 +22,7 @@ fun GBDiaryApp(finishActivity: () -> Unit) {
         mutableStateOf(Build.VERSION.SDK_INT < Build.VERSION_CODES.S)
     }
 
-    val screenLockEnabled by viewModel.screenLockEnabled.collectAsState()
+    val shouldLockScreen by viewModel.shouldLockScreen.collectAsState()
 
     LaunchedEffect(true) {
         delay(1000)
@@ -41,7 +41,8 @@ fun GBDiaryApp(finishActivity: () -> Unit) {
 
         Box(Modifier.fillMaxSize()) {
             GBDiaryNavGraph(
-                screenLockEnabled = screenLockEnabled,
+                shouldLockScreen = shouldLockScreen,
+                onUnlockScreen = viewModel::unlockScreen,
                 finishActivity = finishActivity
             )
             if (showSplashScreen) {

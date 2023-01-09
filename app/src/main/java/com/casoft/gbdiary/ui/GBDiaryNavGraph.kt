@@ -3,14 +3,14 @@ package com.casoft.gbdiary.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.casoft.gbdiary.ui.diary.DiaryActions
 import com.casoft.gbdiary.ui.lock.ScreenLockScreen
 import com.casoft.gbdiary.ui.lock.ScreenLockViewModel
@@ -18,17 +18,20 @@ import com.casoft.gbdiary.ui.lock.ScreenLockViewModel
 @Composable
 fun GBDiaryNavGraph(
     navController: NavHostController = rememberNavController(),
-    screenLockEnabled: Boolean? = false,
+    shouldLockScreen: Boolean?,
+    onUnlockScreen: () -> Unit = {},
     finishActivity: () -> Unit = {},
 ) {
     val mainActions = remember(navController) { MainActions(navController) }
     val diaryActions = remember(navController) { DiaryActions(navController) }
 
-    val screenUnlocked = remember { mutableStateOf<Boolean?>(null) }
+    val shouldLockScreenState = rememberUpdatedState(shouldLockScreen)
 
-    LaunchedEffect(screenLockEnabled) {
-        if (screenLockEnabled != null) {
-            screenUnlocked.value = !screenLockEnabled
+    if (shouldLockScreen != null) {
+        LaunchedEffect(shouldLockScreen) {
+            if (shouldLockScreen) {
+                navController.navigate(GBDiaryDestinations.SCREEN_LOCK_ROUTE)
+            }
         }
     }
 
@@ -38,13 +41,13 @@ fun GBDiaryNavGraph(
     ) {
         navigation(
             route = GBDiaryDestinations.MAIN_ROUTE,
-            startDestination = MainDestinations.HOME_ROUTE
+            startDestination = MainDestinations.HOME_ROUTE,
         ) {
             mainNavGraph(
                 navController = navController,
+                shouldLockScreen = shouldLockScreenState,
                 actions = mainActions,
-                diaryActions = diaryActions,
-                screenUnlocked = screenUnlocked
+                diaryActions = diaryActions
             )
         }
         composable(GBDiaryDestinations.SCREEN_LOCK_ROUTE) {
@@ -56,7 +59,7 @@ fun GBDiaryNavGraph(
             ScreenLockScreen(
                 viewModel = screenLockViewModel,
                 onUnlock = {
-                    screenUnlocked.value = true
+                    onUnlockScreen()
                     navController.popBackStack()
                 },
                 onClose = finishActivity

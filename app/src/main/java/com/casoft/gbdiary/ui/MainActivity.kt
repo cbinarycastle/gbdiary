@@ -47,11 +47,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.checkExistingSignedInUser()
+        with(viewModel) {
+            checkInactivityTimeout()
+            checkExistingSignedInUser()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.queryPurchases()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.turnToInactivity()
     }
 }

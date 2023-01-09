@@ -27,32 +27,23 @@ import java.time.YearMonth
 
 fun NavGraphBuilder.mainNavGraph(
     navController: NavHostController,
+    shouldLockScreen: State<Boolean?>,
     actions: MainActions,
     diaryActions: DiaryActions,
-    screenUnlocked: State<Boolean?>, // Boolean으로 선언 시 recomposition되지 않음.
 ) {
     composable(MainDestinations.HOME_ROUTE) {
-        val isScreenUnlocked = screenUnlocked.value
+        val viewModel = hiltViewModel<CalendarViewModel>()
 
-        if (isScreenUnlocked != null) {
-            LaunchedEffect(isScreenUnlocked) {
-                if (!isScreenUnlocked) {
-                    navController.navigate(GBDiaryDestinations.SCREEN_LOCK_ROUTE)
-                }
-            }
-
-            if (isScreenUnlocked) {
-                val viewModel = hiltViewModel<CalendarViewModel>()
-                CalendarScreen(
-                    viewModel = viewModel,
-                    onDayClick = actions::navigateToDiary,
-                    onTimelineClick = { actions.navigateToTimeline(viewModel.currentYearMonth) },
-                    onSearchClick = actions::navigateToSearch,
-                    onSettingsClick = actions::navigateToSettings,
-                    onWriteClick = actions::navigateToDiary,
-                    state = rememberCalendarState(viewModel.currentYearMonth)
-                )
-            }
+        if (shouldLockScreen.value == false) {
+            CalendarScreen(
+                viewModel = viewModel,
+                onDayClick = actions::navigateToDiary,
+                onTimelineClick = { actions.navigateToTimeline(viewModel.currentYearMonth) },
+                onSearchClick = actions::navigateToSearch,
+                onSettingsClick = actions::navigateToSettings,
+                onWriteClick = actions::navigateToDiary,
+                state = rememberCalendarState(viewModel.currentYearMonth)
+            )
         }
     }
     navigation(
