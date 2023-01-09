@@ -18,7 +18,7 @@ class AlarmBootReceiver : BroadcastReceiver() {
     lateinit var settingsDataSource: SettingsDataSource
 
     @Inject
-    lateinit var diaryAlarmManager: DiaryAlarmManager
+    lateinit var notificationAlarmManager: NotificationAlarmManager
 
     @ApplicationScope
     @Inject
@@ -29,7 +29,7 @@ class AlarmBootReceiver : BroadcastReceiver() {
             externalScope.launch {
                 val notificationTime = settingsDataSource.getNotificationTime().firstOrNull()
                 if (notificationTime != null) {
-                    diaryAlarmManager.setAlarm(notificationTime)
+                    notificationAlarmManager.setAlarm(notificationTime)
                 }
             }
         }

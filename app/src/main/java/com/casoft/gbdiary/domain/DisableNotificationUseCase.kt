@@ -2,19 +2,19 @@ package com.casoft.gbdiary.domain
 
 import com.casoft.gbdiary.data.settings.SettingsDataSource
 import com.casoft.gbdiary.di.IoDispatcher
-import com.casoft.gbdiary.notification.DiaryAlarmManager
+import com.casoft.gbdiary.notification.NotificationAlarmManager
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 class DisableNotificationUseCase @Inject constructor(
-    private val diaryAlarmManager: DiaryAlarmManager,
+    private val notificationAlarmManager: NotificationAlarmManager,
     private val settingsDataSource: SettingsDataSource,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : UseCase<Unit, Unit>(ioDispatcher) {
 
     override suspend fun execute(params: Unit) {
-        diaryAlarmManager.cancelAlarm()
+        notificationAlarmManager.cancelAlarm()
         settingsDataSource.setNotificationTime(null)
-        diaryAlarmManager.disableAlarmBootReceiver()
+        notificationAlarmManager.disableAlarmBootReceiver()
     }
 }

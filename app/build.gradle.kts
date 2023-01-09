@@ -154,4 +154,5 @@ dependencies {
     testImplementation(Libs.Mockito.CORE)
 
     implementation(Libs.Timber.TIMBER)
+    implementation("androidx.paging:paging-runtime:3.1.1")
 }

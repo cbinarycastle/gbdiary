@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DiaryAlarmManager @Inject constructor(
+class NotificationAlarmManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val timeProvider: TimeProvider,
 ) {
