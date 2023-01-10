@@ -101,7 +101,7 @@ class ScreenLockViewModelDelegateImpl(
     }
 
     override fun checkInactivityTimeout() {
-        if (inactivityTimeoutExceeded.value) {
+        if (screenLockEnabled.value != true || inactivityTimeoutExceeded.value) {
             return
         }
 
