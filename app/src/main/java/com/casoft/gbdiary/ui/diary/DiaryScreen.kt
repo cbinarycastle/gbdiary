@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,7 +84,7 @@ fun DiaryScreen(
     val existsDiary by viewModel.existsDiary.collectAsState()
     val initialStickerBottomSheetShown by viewModel.initialStickerBottomSheetShown.collectAsState()
     val stickers by viewModel.stickers.collectAsState()
-    val content by viewModel.content.collectAsState()
+    val contentTextFieldValue by viewModel.contentTextFieldValue.collectAsState()
     val images by viewModel.images.collectAsState()
     val contentFontSize by viewModel.contentFontSize.collectAsState()
     val textAlign = viewModel.textAlign.collectAsState().value.toUiModel()
@@ -122,7 +123,7 @@ fun DiaryScreen(
         existsDiary = existsDiary,
         initialStickerBottomSheetShown = initialStickerBottomSheetShown,
         stickers = stickers,
-        content = content,
+        contentTextFieldValue = contentTextFieldValue,
         images = images,
         contentFontSize = contentFontSize,
         textAlign = textAlign,
@@ -135,6 +136,7 @@ fun DiaryScreen(
         onImageClick = onImageClick,
         onAlbumClick = viewModel::onAlbumClick,
         onAlignClick = viewModel::toggleTextAlign,
+        onTimestampClick = viewModel::addTimestampToContent,
         onDoneClick = viewModel::saveDiary,
         onDeleteDiary = {
             viewModel.deleteDiary()
@@ -157,7 +159,7 @@ private fun DiaryScreen(
     existsDiary: Boolean?,
     initialStickerBottomSheetShown: Boolean,
     stickers: List<Sticker>,
-    content: String,
+    contentTextFieldValue: TextFieldValue,
     images: List<File>,
     contentFontSize: DiaryFontSize,
     textAlign: TextAlign,
@@ -165,11 +167,12 @@ private fun DiaryScreen(
     changeSticker: (Int, Sticker) -> Unit,
     onShowStickerBottomSheetInitially: () -> Unit,
     onRemoveSticker: (Int) -> Unit,
-    onContentChange: (String) -> Unit,
+    onContentChange: (TextFieldValue) -> Unit,
     onRemoveImage: (Int) -> Unit,
     onImageClick: (Int) -> Unit,
     onAlbumClick: () -> Unit,
     onAlignClick: () -> Unit,
+    onTimestampClick: () -> Unit,
     onDoneClick: () -> Unit,
     onDeleteDiary: () -> Unit,
     onBack: () -> Unit,
@@ -275,14 +278,14 @@ private fun DiaryScreen(
                         )
                         Spacer(Modifier.height(24.dp))
                         Box(Modifier.fillMaxWidth()) {
-                            if (content.isEmpty()) {
+                            if (contentTextFieldValue.text.isEmpty()) {
                                 ContentPlaceholder(
                                     textAlign = textAlign,
                                     textStyle = contentFontSize.style
                                 )
                             }
                             ContentTextField(
-                                value = content,
+                                value = contentTextFieldValue,
                                 onValueChange = onContentChange,
                                 textAlign = textAlign,
                                 textStyle = contentFontSize.style,
@@ -330,6 +333,7 @@ private fun DiaryScreen(
                             }
                         },
                         onAlignClick = onAlignClick,
+                        onTimestampClick = onTimestampClick,
                         onDoneClick = {
                             focusManager.clearFocus()
                             onDoneClick()
@@ -487,8 +491,8 @@ private fun ContentPlaceholder(
 
 @Composable
 private fun ContentTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
     textAlign: TextAlign,
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
@@ -583,6 +587,7 @@ private fun Image(
 private fun SuggestionBar(
     onAlbumClick: () -> Unit,
     onAlignClick: () -> Unit,
+    onTimestampClick: () -> Unit,
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
@@ -602,14 +607,13 @@ private fun SuggestionBar(
             )
             .padding(horizontal = 16.dp)
     ) {
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             SuggestionBarIcon(onClick = onAlbumClick) {
                 Icon(
                     painter = painterResource(R.drawable.album),
                     contentDescription = "앨범"
                 )
             }
-            Spacer(Modifier.width(8.dp))
             SuggestionBarIcon(onClick = onAlignClick) {
                 when (textAlign) {
                     TextAlign.Left -> {
@@ -625,6 +629,12 @@ private fun SuggestionBar(
                         )
                     }
                 }
+            }
+            SuggestionBarIcon(onClick = onTimestampClick) {
+                Icon(
+                    painter = painterResource(R.drawable.time),
+                    contentDescription = "현재 시각"
+                )
             }
         }
         if (WindowInsets.isImeVisible) {
@@ -739,7 +749,7 @@ fun DiaryScreenPreview() {
             existsDiary = true,
             initialStickerBottomSheetShown = false,
             stickers = listOf(Sticker.HOPEFUL, Sticker.CONFUSION),
-            content = "내용",
+            contentTextFieldValue = TextFieldValue("내용"),
             images = listOf(),
             contentFontSize = DiaryFontSize.Default,
             textAlign = TextAlign.Left,
@@ -752,6 +762,7 @@ fun DiaryScreenPreview() {
             onImageClick = {},
             onAlbumClick = {},
             onAlignClick = {},
+            onTimestampClick = {},
             onDoneClick = {},
             onDeleteDiary = {},
             onBack = {},

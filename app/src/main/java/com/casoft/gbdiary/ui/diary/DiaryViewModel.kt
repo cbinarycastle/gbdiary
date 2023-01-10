@@ -1,5 +1,7 @@
 package com.casoft.gbdiary.ui.diary
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.di.ApplicationScope
@@ -14,9 +16,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 const val MAX_STICKERS = 4
+
+private val TimestampFormatter = DateTimeFormatter.ofPattern("a hh:mm")
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -50,8 +56,8 @@ class DiaryViewModel @Inject constructor(
     private val _stickers = MutableStateFlow<List<Sticker>>(listOf())
     val stickers = _stickers.asStateFlow()
 
-    private val _content = MutableStateFlow("")
-    val content = _content.asStateFlow()
+    private val _contentTextFieldValue = MutableStateFlow(TextFieldValue())
+    val contentTextFieldValue = _contentTextFieldValue.asStateFlow()
 
     private val _images = MutableStateFlow<List<File>>(listOf())
     val images = _images.asStateFlow()
@@ -78,7 +84,7 @@ class DiaryViewModel @Inject constructor(
                 addAll(diaryItem.stickers)
             }
             publishStickerList()
-            _content.value = diaryItem.content
+            _contentTextFieldValue.value = _contentTextFieldValue.value.copy(text = diaryItem.content)
             _images.value = diaryItem.images.map { filePath -> File(filePath) }
         }
         .stateIn(
@@ -93,15 +99,17 @@ class DiaryViewModel @Inject constructor(
     private val isValidToSave = combine(
         existingDiary,
         stickers,
-        content,
+        contentTextFieldValue,
         images
-    ) { existingDiary, stickers, content, images ->
-        val isNotEmpty = stickers.isNotEmpty() || content.isNotBlank() || images.isNotEmpty()
-        val isChanged = existingDiary?.let { existing ->
-            existing.stickers != stickers ||
-                existing.content != content ||
-                existing.images != images.map { image -> image.path }
-        } ?: true
+    ) { existingDiary, stickers, contentTextFieldValue, images ->
+        val isNotEmpty = stickers.isNotEmpty() || contentTextFieldValue.text.isNotBlank() || images.isNotEmpty()
+        val isChanged = if (existingDiary == null) {
+            true
+        } else {
+            existingDiary.stickers != stickers ||
+                existingDiary.content != contentTextFieldValue.text ||
+                existingDiary.images != images.map { image -> image.path }
+        }
         isNotEmpty && isChanged
     }.stateIn(
         scope = viewModelScope,
@@ -156,8 +164,8 @@ class DiaryViewModel @Inject constructor(
         _stickers.value = stickerList.toList()
     }
 
-    fun inputText(text: String) {
-        _content.value = text
+    fun inputText(textFieldValue: TextFieldValue) {
+        _contentTextFieldValue.value = textFieldValue
     }
 
     fun addImages(images: List<LocalImage>) {
@@ -204,6 +212,17 @@ class DiaryViewModel @Inject constructor(
         }
     }
 
+    fun addTimestampToContent() {
+        val timestamp = LocalTime.now().format(TimestampFormatter)
+        val newText = "${contentTextFieldValue.value.text}$timestamp "
+
+        val newTextFieldValue = contentTextFieldValue.value.copy(
+            text = newText,
+            selection = TextRange(newText.length)
+        )
+        inputText(newTextFieldValue)
+    }
+
     fun saveDiary(shouldShowMessage: Boolean = true) {
         if (isValidToSave.value.not()) {
             return
@@ -214,7 +233,7 @@ class DiaryViewModel @Inject constructor(
                 SaveDiaryItemUseCase.Params(
                     date = date.value,
                     stickers = stickers.value,
-                    content = content.value,
+                    content = contentTextFieldValue.value.text,
                     images = images.value
                 )
             )
