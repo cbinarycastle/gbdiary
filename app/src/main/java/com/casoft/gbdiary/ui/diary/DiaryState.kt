@@ -1,5 +1,7 @@
 package com.casoft.gbdiary.ui.diary
 
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
@@ -19,16 +21,18 @@ fun rememberDiaryState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     ),
+    stickerBottomSheetScrollState: ScrollState = rememberScrollState(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
 ) = remember(bottomSheetState, coroutineScope, keyboardController) {
-    DiaryState(bottomSheetState, coroutineScope, keyboardController)
+    DiaryState(bottomSheetState, stickerBottomSheetScrollState, coroutineScope, keyboardController)
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Stable
 class DiaryState(
     val bottomSheetState: ModalBottomSheetState,
+    val stickerBottomSheetScrollState: ScrollState,
     private val coroutineScope: CoroutineScope,
     private val keyboardController: SoftwareKeyboardController?,
 ) {
@@ -74,6 +78,7 @@ class DiaryState(
 
         currentBottomSheet = bottomSheet
         coroutineScope.launch {
+            stickerBottomSheetScrollState.scrollTo(0)
             bottomSheetState.show()
         }
     }

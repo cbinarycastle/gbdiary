@@ -1,7 +1,6 @@
 package com.casoft.gbdiary.ui.diary
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +32,7 @@ private val DateFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd EEEE")
 
 @Composable
 fun StickerBottomSheet(
+    scrollState: ScrollState,
     date: LocalDate,
     isPremiumUser: Boolean,
     onStickerSelected: (Sticker) -> Unit,
@@ -40,6 +40,10 @@ fun StickerBottomSheet(
     var selectedStickerType by remember { mutableStateOf(StickerType.MOOD) }
     val stickerEnabled = remember(selectedStickerType, isPremiumUser) {
         selectedStickerType == StickerType.MOOD || isPremiumUser
+    }
+
+    LaunchedEffect(selectedStickerType) {
+        scrollState.scrollTo(0)
     }
 
     BoxWithConstraints {
@@ -83,6 +87,7 @@ fun StickerBottomSheet(
             }
             Spacer(Modifier.height(24.dp))
             Stickers(
+                scrollState = scrollState,
                 stickerType = selectedStickerType,
                 onStickerClick = onStickerSelected,
                 enabled = stickerEnabled
@@ -104,7 +109,7 @@ private fun StickerTypeTab(
             .clickable { onClick() }
     ) {
         if (selected) {
-            androidx.compose.foundation.Image(
+            Image(
                 painter = markerPainter(),
                 contentDescription = null,
                 modifier = Modifier.alignTopToCenterOfParent()
@@ -128,12 +133,18 @@ private fun StickerTypeTab(
 
 @Composable
 private fun Stickers(
+    scrollState: ScrollState = rememberScrollState(),
     stickerType: StickerType,
     onStickerClick: (Sticker) -> Unit,
     enabled: Boolean = true,
 ) {
     Box {
-        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(bottom = 24.dp)
+        ) {
             Sticker.values()
                 .filter { it.type == stickerType }
                 .toList()
@@ -144,7 +155,7 @@ private fun Stickers(
                             Sticker(
                                 sticker = sticker,
                                 onClick = onStickerClick,
-                                enabled = enabled,
+                                enabled = enabled
                             )
                         }
                     }
@@ -171,7 +182,7 @@ private fun Sticker(
     onClick: (Sticker) -> Unit,
     enabled: Boolean = true,
 ) {
-    androidx.compose.foundation.Image(
+    Image(
         painter = painterResource(sticker.imageResId),
         contentDescription = sticker.name,
         modifier = Modifier

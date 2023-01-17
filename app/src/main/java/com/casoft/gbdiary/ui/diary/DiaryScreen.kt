@@ -203,6 +203,7 @@ private fun DiaryScreen(
         sheetContent = {
             when (state.currentBottomSheet) {
                 DiaryBottomSheet.STICKER -> StickerBottomSheet(
+                    scrollState = state.stickerBottomSheetScrollState,
                     date = date,
                     isPremiumUser = isPremiumUser,
                     onStickerSelected = { sticker ->
@@ -232,13 +233,14 @@ private fun DiaryScreen(
         sheetState = state.bottomSheetState,
         sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         sheetElevation = 0.dp,
-        scrimColor = GBDiaryTheme.gbDiaryColors.dimmingOverlay
+        scrimColor = GBDiaryTheme.gbDiaryColors.dimmingOverlay,
+        modifier = Modifier.navigationBarsPadding()
     ) {
         AlertDialogLayout(state = alertDialogState) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemBarsPadding()
+                    .statusBarsPadding()
                     .imePadding()
             ) {
                 Column(Modifier.fillMaxSize()) {
