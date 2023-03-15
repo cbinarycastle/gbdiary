@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui.diary
+package com.casoft.gbdiary.ui.diary.image
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler

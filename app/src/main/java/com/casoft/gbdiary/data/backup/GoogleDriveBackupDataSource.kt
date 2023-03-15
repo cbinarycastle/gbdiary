@@ -12,7 +12,6 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
-import com.google.api.services.drive.model.File
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -23,10 +22,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.InputStream
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import com.google.api.services.drive.model.File as DriveFile
 
 private const val APPLICATION_NAME = "GBDiary"
 
@@ -57,7 +58,7 @@ class GoogleDriveBackupDataSource(
             initialValue = null
         )
 
-    override suspend fun getAllFiles(account: Account): List<File> {
+    override suspend fun getAllFiles(account: Account): List<DriveFile> {
         val drive = createDrive(account)
         return drive.files().list()
             .setSpaces(APP_DATA_FOLDER)
@@ -98,27 +99,27 @@ class GoogleDriveBackupDataSource(
         backupData: BackupData,
     ) = withContext(ioDispatcher) {
         val drive = createDrive(account)
-        val metadata = File().apply {
+        val metadata = DriveFile().apply {
             parents = listOf(APP_DATA_FOLDER)
             name = JSON_FILE_NAME
         }
         val mediaContent = FileContent(MIME_TYPE_JSON, createBackupDataFile(backupData))
 
-        val file: File = drive.files().create(metadata, mediaContent).execute()
+        val file = drive.files().create(metadata, mediaContent).execute()
         Timber.d("Uploaded data file ID: ${file.id}")
     }
 
     override suspend fun uploadImage(
         account: Account,
-        fileName: String,
-        filePath: String,
-    ): File = withContext(ioDispatcher) {
+        filename: String,
+        file: File,
+    ): DriveFile = withContext(ioDispatcher) {
         val drive = createDrive(account)
-        val metadata = File().apply {
+        val metadata = DriveFile().apply {
             parents = listOf(APP_DATA_FOLDER)
-            name = fileName
+            name = filename
         }
-        val mediaContent = FileContent(MIME_TYPE_JPEG, java.io.File(filePath))
+        val mediaContent = FileContent(MIME_TYPE_JPEG, file)
 
         drive.files().create(metadata, mediaContent).execute()
             .also { file -> Timber.d("Uploaded image file ID: ${file.id}") }
@@ -126,11 +127,11 @@ class GoogleDriveBackupDataSource(
 
     override suspend fun deleteImage(
         account: Account,
-        fileName: String,
+        filename: String,
     ) = withContext(ioDispatcher) {
         val drive = createDrive(account)
         val existingImageFiles = drive.files().list()
-            .setQ("name='$fileName'")
+            .setQ("name='$filename'")
             .setSpaces(APP_DATA_FOLDER)
             .execute()
 
@@ -163,9 +164,9 @@ class GoogleDriveBackupDataSource(
             .build()
     }
 
-    private fun createBackupDataFile(backupData: BackupData): java.io.File {
+    private fun createBackupDataFile(backupData: BackupData): File {
         val backupDataJson = gson.toJson(backupData)
-        return java.io.File.createTempFile(
+        return File.createTempFile(
             JSON_FILE_NAME,
             null,
             context.cacheDir

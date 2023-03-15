@@ -5,8 +5,8 @@ import com.casoft.gbdiary.data.backup.BackupDataItem
 import com.casoft.gbdiary.data.backup.BackupDataSource
 import com.casoft.gbdiary.data.backup.toDiaryItemEntity
 import com.casoft.gbdiary.data.diary.DiaryDataSource
-import com.casoft.gbdiary.data.diary.ImageDataSource
 import com.casoft.gbdiary.di.IoDispatcher
+import com.casoft.gbdiary.image.ImageFileStorage
 import com.casoft.gbdiary.model.Result
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ProducerScope
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class SyncDataUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
     private val diaryDataSource: DiaryDataSource,
-    private val imageDataSource: ImageDataSource,
+    private val imageFileStorage: ImageFileStorage,
     @IoDispatcher ioDispatcher: CoroutineDispatcher,
 ) : FlowUseCase<Account, Unit>(ioDispatcher) {
 
@@ -53,9 +53,7 @@ class SyncDataUseCase @Inject constructor(
             async {
                 val images = backupDataItem.images.map { fileId ->
                     backupDataSource.download(account, fileId)
-                        .let { inputStream ->
-                            imageDataSource.saveImage(source = inputStream)
-                        }
+                        .let { inputStream -> imageFileStorage.save(inputStream) }
                         .path
                 }
 

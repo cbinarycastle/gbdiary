@@ -2,25 +2,26 @@ package com.casoft.gbdiary.data.backup
 
 import android.accounts.Account
 import com.casoft.gbdiary.model.Sticker
-import com.google.api.services.drive.model.File
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.File
 import java.io.InputStream
 import java.time.ZonedDateTime
+import com.google.api.services.drive.model.File as DriveFile
 
 class BackupDataSourceStub : BackupDataSource {
 
     var backupData: BackupData? = null
         private set
 
-    private val images = mutableMapOf<String, String>()
+    private val images = mutableMapOf<String, File>()
 
     private val _latestBackupDate = MutableStateFlow<ZonedDateTime?>(null)
     override val latestBackupDateTime: Flow<ZonedDateTime?> = _latestBackupDate.asStateFlow()
 
-    override suspend fun getAllFiles(account: Account): List<File> = listOf()
+    override suspend fun getAllFiles(account: Account): List<DriveFile> = listOf()
 
     override suspend fun getData(account: Account): BackupData {
         return backupData ?: throw BackupDataNotFoundException()
@@ -35,15 +36,15 @@ class BackupDataSourceStub : BackupDataSource {
 
     override suspend fun uploadImage(
         account: Account,
-        fileName: String,
-        filePath: String,
-    ): File {
-        images[fileName] = filePath
-        return File()
+        filename: String,
+        file: File,
+    ): DriveFile {
+        images[filename] = file
+        return DriveFile()
     }
 
-    override suspend fun deleteImage(account: Account, fileName: String) {
-        images.remove(fileName)
+    override suspend fun deleteImage(account: Account, filename: String) {
+        images.remove(filename)
     }
 
     override suspend fun deleteFile(account: Account, fileId: String) {

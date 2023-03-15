@@ -40,13 +40,14 @@ import androidx.lifecycle.SavedStateHandle
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.DiaryFontSize
-import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
 import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.rememberAlertDialogState
+import com.casoft.gbdiary.ui.diary.image.ImagePermissionDeniedDialog
+import com.casoft.gbdiary.ui.diary.image.SELECTED_IMAGES_RESULT_KEY
 import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
 import com.casoft.gbdiary.ui.extension.navigateToAppSettings
@@ -98,8 +99,8 @@ fun DiaryScreen(
         }
     }
 
-    savedStateHandle?.CollectOnce<List<LocalImage>>(
-        key = SELECTED_IMAGE_URIS_RESULT_KEY,
+    savedStateHandle?.CollectOnce<List<File>>(
+        key = SELECTED_IMAGES_RESULT_KEY,
         defaultValue = listOf()
     ) { selectedImages -> viewModel.addImages(selectedImages) }
 
@@ -109,8 +110,8 @@ fun DiaryScreen(
         }
 
         launch {
-            viewModel.navigateToImagePicker.collect { preSelectionCount ->
-                onAlbumClick(preSelectionCount)
+            viewModel.navigateToImagePicker.collect { images ->
+                onAlbumClick(images)
             }
         }
     }

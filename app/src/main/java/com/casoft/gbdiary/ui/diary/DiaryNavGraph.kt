@@ -7,7 +7,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.casoft.gbdiary.model.LocalImage
+import com.casoft.gbdiary.ui.diary.image.ImagePickerScreen
+import com.casoft.gbdiary.ui.diary.image.ImagePickerViewModel
+import com.casoft.gbdiary.ui.diary.image.ImageViewerScreen
+import com.casoft.gbdiary.ui.diary.image.SELECTED_IMAGES_RESULT_KEY
 import java.io.File
 import java.time.LocalDate
 
@@ -38,6 +41,7 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         val dayOfMonth = arguments.getInt(DiaryDestinations.HOME_DAY_OF_MONTH_KEY)
         val diaryViewModel = hiltViewModel<DiaryViewModel>()
             .apply { setDate(LocalDate.of(year, month, dayOfMonth)) }
+
         DiaryScreen(
             viewModel = diaryViewModel,
             savedStateHandle = actions.savedStateHandle,
@@ -62,14 +66,15 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         )
     ) { backStackEntry ->
         val arguments = requireNotNull(backStackEntry.arguments)
-        val preSelectionCount = arguments.getInt(
-            DiaryDestinations.IMAGE_PICKER_PRE_SELECTION_COUNT_KEY
-        )
-        val imagePickerViewModel = hiltViewModel<ImagePickerViewModel>()
+        val preSelectionCount = arguments.getInt(DiaryDestinations.IMAGE_PICKER_PRE_SELECTION_COUNT_KEY)
+
+        val viewModel = hiltViewModel<ImagePickerViewModel>().apply {
+            setPreSelectionCount(preSelectionCount)
+        }
+
         ImagePickerScreen(
-            viewModel = imagePickerViewModel,
-            preSelectionCount = preSelectionCount,
-            onFinishSelect = { images ->
+            viewModel = viewModel,
+            onFinishSelection = { images ->
                 actions.setSelectedImages(images)
                 actions.navigateUp()
             },
@@ -87,6 +92,7 @@ fun NavGraphBuilder.diaryNavGraph(actions: DiaryActions) {
         val arguments = requireNotNull(backStackEntry.arguments)
         val initialPage = arguments.getInt(DiaryDestinations.IMAGE_VIEWER_INITIAL_PAGE_KEY)
         val images = actions.getImagesForViewer()
+
         ImageViewerScreen(
             images = images,
             initialPage = initialPage,
@@ -112,10 +118,10 @@ class DiaryActions(private val navController: NavController) {
         )
     }
 
-    fun setSelectedImages(images: List<LocalImage>) {
+    fun setSelectedImages(images: List<File>) {
         navController.previousBackStackEntry
             ?.savedStateHandle
-            ?.set(SELECTED_IMAGE_URIS_RESULT_KEY, images)
+            ?.set(SELECTED_IMAGES_RESULT_KEY, images)
     }
 
     fun navigateToImageViewer(images: List<File>, initialPage: Int) {

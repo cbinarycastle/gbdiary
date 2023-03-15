@@ -31,6 +31,7 @@ import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.LightDimmingOverlay
 import com.casoft.gbdiary.ui.theme.LightTextIcon
 import com.casoft.gbdiary.util.style
+import java.io.File
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VISIBLE_IMAGES = 3
@@ -123,7 +124,7 @@ private fun Stickers(
 }
 
 @Composable
-private fun Images(images: List<String>) {
+private fun Images(images: List<File>) {
     Box(Modifier.clip(RoundedCornerShape(6.dp))) {
         when (images.size) {
             1 -> SingleImage(images[0])
@@ -134,7 +135,7 @@ private fun Images(images: List<String>) {
 }
 
 @Composable
-private fun SingleImage(image: String) {
+private fun SingleImage(image: File) {
     Image(
         painter = rememberAsyncImagePainter(image),
         contentDescription = "이미지",
@@ -146,7 +147,7 @@ private fun SingleImage(image: String) {
 }
 
 @Composable
-private fun DoubleImage(image1: String, image2: String) {
+private fun DoubleImage(image1: File, image2: File) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.fillMaxWidth()
@@ -165,7 +166,7 @@ private fun DoubleImage(image1: String, image2: String) {
 }
 
 @Composable
-private fun TripleOrMoreImage(image1: String, image2: String, image3: String, size: Int) {
+private fun TripleOrMoreImage(image1: File, image2: File, image3: File, size: Int) {
     Column(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.fillMaxWidth()

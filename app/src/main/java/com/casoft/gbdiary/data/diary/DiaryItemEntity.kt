@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.casoft.gbdiary.model.DiaryItem
 import com.casoft.gbdiary.model.Sticker
+import java.io.File
 import java.time.LocalDate
 
 @Entity(tableName = "DiaryItem")
@@ -19,7 +20,7 @@ fun DiaryItemEntity.toDiaryItem() = DiaryItem(
     date = date.toLocalDate(),
     stickers = stickers,
     content = contents,
-    images = images
+    images = images.map { File(it) }
 )
 
 data class Date(

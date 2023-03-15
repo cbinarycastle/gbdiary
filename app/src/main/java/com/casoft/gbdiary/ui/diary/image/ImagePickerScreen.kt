@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui.diary
+package com.casoft.gbdiary.ui.diary.image
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
@@ -23,22 +23,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
-import com.casoft.gbdiary.model.LocalImage
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
 import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.rememberAlertDialogState
-import com.casoft.gbdiary.ui.extension.toContentUri
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
+import kotlinx.coroutines.launch
+import java.io.File
 
-const val SELECTED_IMAGE_URIS_RESULT_KEY = "selectedImages"
+const val SELECTED_IMAGES_RESULT_KEY = "selectedImages"
 
 @Composable
 fun ImagePickerScreen(
     viewModel: ImagePickerViewModel,
-    preSelectionCount: Int,
-    onFinishSelect: (List<LocalImage>) -> Unit,
+    onFinishSelection: (List<File>) -> Unit,
     onClose: () -> Unit,
 ) {
     val alertDialogState = rememberAlertDialogState()
@@ -48,19 +47,23 @@ fun ImagePickerScreen(
     val numberOfSelectedImages by viewModel.numberOfSelectedImages.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.message.collectMessage(context, alertDialogState)
-    }
+        launch {
+            viewModel.message.collectMessage(context, alertDialogState)
+        }
 
-    LaunchedEffect(preSelectionCount) {
-        viewModel.preSelectionCount = preSelectionCount
+        launch {
+            viewModel.selectionFinished.collect { selectedImages ->
+                onFinishSelection(selectedImages)
+            }
+        }
     }
 
     ImagePickerScreen(
         alertDialogState = alertDialogState,
         images = images,
         numberOfSelectedImages = numberOfSelectedImages,
-        onImageSelect = { viewModel.toggleImage(it) },
-        onFinishSelect = onFinishSelect,
+        onImageSelect = { viewModel.toggleSelected(it) },
+        onFinishSelection = viewModel::finishSelection,
         onClose = onClose
     )
 }
@@ -71,7 +74,7 @@ private fun ImagePickerScreen(
     images: List<List<ImageUiState>>,
     numberOfSelectedImages: Int,
     onImageSelect: (ImageUiState) -> Unit,
-    onFinishSelect: (List<LocalImage>) -> Unit,
+    onFinishSelection: () -> Unit,
     onClose: () -> Unit,
 ) {
     AlertDialogLayout(state = alertDialogState) {
@@ -82,21 +85,15 @@ private fun ImagePickerScreen(
         ) {
             AppBar(
                 selectionCount = numberOfSelectedImages,
-                onSelect = {
-                    onFinishSelect(
-                        images.flatten()
-                            .filter { image -> image.selected }
-                            .map { image -> image.localImage }
-                    )
-                },
+                onSelect = onFinishSelection,
                 onClose = onClose
             )
             LazyColumn(Modifier.weight(1f)) {
                 items(images) { row ->
                     Row {
                         repeat(NUMBER_OF_IMAGES_BY_ROW) { index ->
-                            val image = row.getOrNull(index)
-                            if (image == null) {
+                            val imageUiState = row.getOrNull(index)
+                            if (imageUiState == null) {
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
@@ -104,9 +101,9 @@ private fun ImagePickerScreen(
                                 )
                             } else {
                                 SelectableImage(
-                                    uri = image.localImage.toContentUri(),
-                                    selected = image.selected,
-                                    onClick = { onImageSelect(image) },
+                                    uri = imageUiState.image.contentUri,
+                                    selected = imageUiState.selected,
+                                    onClick = { onImageSelect(imageUiState) },
                                     modifier = Modifier
                                         .weight(1f)
                                         .aspectRatio(1f)
@@ -199,7 +196,7 @@ fun ImagePickerScreenPreview() {
             images = listOf(),
             numberOfSelectedImages = 0,
             onImageSelect = {},
-            onFinishSelect = {},
+            onFinishSelection = {},
             onClose = {}
         )
     }

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.casoft.gbdiary.di.ApplicationScope
 import com.casoft.gbdiary.domain.*
 import com.casoft.gbdiary.model.*
-import com.casoft.gbdiary.ui.extension.toFile
 import com.casoft.gbdiary.ui.model.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -85,7 +84,7 @@ class DiaryViewModel @Inject constructor(
             }
             publishStickerList()
             _contentTextFieldValue.value = _contentTextFieldValue.value.copy(text = diaryItem.content)
-            _images.value = diaryItem.images.map { filePath -> File(filePath) }
+            _images.value = diaryItem.images
         }
         .stateIn(
             scope = viewModelScope,
@@ -168,8 +167,8 @@ class DiaryViewModel @Inject constructor(
         _contentTextFieldValue.value = textFieldValue
     }
 
-    fun addImages(images: List<LocalImage>) {
-        _images.value = _images.value + images.map { it.toFile() }
+    fun addImages(images: List<File>) {
+        _images.value = _images.value + images
     }
 
     fun removeImage(index: Int) {

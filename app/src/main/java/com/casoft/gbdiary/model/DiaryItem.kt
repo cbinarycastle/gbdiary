@@ -4,6 +4,7 @@ import com.casoft.gbdiary.data.backup.BackupDataDateFormatter
 import com.casoft.gbdiary.data.backup.BackupDataItem
 import com.casoft.gbdiary.data.diary.Date
 import com.casoft.gbdiary.data.diary.DiaryItemEntity
+import java.io.File
 import java.time.LocalDate
 
 const val MAX_IMAGES_FOR_STANDARD_USER = 3
@@ -13,7 +14,7 @@ data class DiaryItem(
     val date: LocalDate,
     val stickers: List<Sticker>,
     val content: String,
-    val images: List<String> = listOf(),
+    val images: List<File> = listOf(),
 )
 
 fun DiaryItem.toBackupDataItem(imageIds: List<String>) = BackupDataItem(
@@ -31,5 +32,5 @@ fun DiaryItem.toDiaryItemEntity() = DiaryItemEntity(
     ),
     stickers = stickers,
     contents = content,
-    images = images,
+    images = images.map { it.path },
 )

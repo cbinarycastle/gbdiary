@@ -1,16 +1,17 @@
 package com.casoft.gbdiary.data.backup
 
 import android.accounts.Account
-import com.google.api.services.drive.model.File
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 import java.io.InputStream
 import java.time.ZonedDateTime
+import com.google.api.services.drive.model.File as DriveFile
 
 interface BackupDataSource {
 
     val latestBackupDateTime: Flow<ZonedDateTime?>
 
-    suspend fun getAllFiles(account: Account): List<File>
+    suspend fun getAllFiles(account: Account): List<DriveFile>
 
     suspend fun getData(account: Account): BackupData
 
@@ -18,9 +19,9 @@ interface BackupDataSource {
 
     suspend fun uploadData(account: Account, backupData: BackupData)
 
-    suspend fun uploadImage(account: Account, fileName: String, filePath: String): File
+    suspend fun uploadImage(account: Account, filename: String, file: File): DriveFile
 
-    suspend fun deleteImage(account: Account, fileName: String)
+    suspend fun deleteImage(account: Account, filename: String)
 
     suspend fun deleteFile(account: Account, fileId: String)
 

@@ -1,4 +1,4 @@
-package com.casoft.gbdiary.ui.diary
+package com.casoft.gbdiary.ui.diary.image
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

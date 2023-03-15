@@ -9,14 +9,15 @@ import com.casoft.gbdiary.data.diary.toDiaryItem
 import com.casoft.gbdiary.di.IoDispatcher
 import com.casoft.gbdiary.model.Result
 import com.casoft.gbdiary.model.toBackupDataItem
-import com.google.api.services.drive.model.File
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import java.io.File
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import javax.inject.Inject
+import com.google.api.services.drive.model.File as DriveFile
 
 class BackupDataUseCase @Inject constructor(
     private val backupDataSource: BackupDataSource,
@@ -62,7 +63,7 @@ class BackupDataUseCase @Inject constructor(
 
     private suspend fun ProducerScope<Result<BackupResult>>.deleteAllFiles(
         account: Account,
-        files: List<File>,
+        files: List<DriveFile>,
         progress: JobProgress,
     ) = coroutineScope {
         files.map {
@@ -105,15 +106,15 @@ class BackupDataUseCase @Inject constructor(
     private suspend fun uploadImages(
         account: Account,
         date: LocalDate,
-        images: List<String>,
-    ): List<File> {
+        images: List<File>,
+    ): List<DriveFile> {
         return images.mapIndexed { index, filePath ->
             val backupFileName = "${date}_${index + 1}"
-            backupDataSource.deleteImage(account = account, fileName = backupFileName)
+            backupDataSource.deleteImage(account = account, filename = backupFileName)
             backupDataSource.uploadImage(
                 account = account,
-                fileName = backupFileName,
-                filePath = filePath
+                filename = backupFileName,
+                file = filePath
             )
         }
     }
