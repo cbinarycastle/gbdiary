@@ -7,17 +7,19 @@ import java.time.YearMonth
 
 interface DiaryDataSource {
 
-    fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>>
+    fun loadDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>>
 
-    fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity?>
+    suspend fun getDiaryItemsByYearMonth(yearMonth: YearMonth): List<DiaryItemEntity>
 
-    fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>>
+    fun loadDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity?>
 
-    fun getAllDiaryItems(): List<DiaryItemEntity>
+    fun loadDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>>
+
+    suspend fun getAllDiaryItems(): List<DiaryItemEntity>
 
     suspend fun save(item: DiaryItem)
 
     suspend fun delete(item: DiaryItem)
 
-    fun deleteAllAndInsertAll(items: List<DiaryItemEntity>)
+    suspend fun deleteAllAndInsertAll(items: List<DiaryItemEntity>)
 }

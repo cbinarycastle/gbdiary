@@ -8,14 +8,21 @@ import java.time.YearMonth
 
 class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao) : DiaryDataSource {
 
-    override fun getDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>> {
+    override fun loadDiaryItemsByYearMonth(yearMonth: YearMonth): Flow<List<DiaryItemEntity>> {
         return diaryItemDao.getStreamByYearAndMonth(
             year = yearMonth.year,
             month = yearMonth.monthValue
         )
     }
 
-    override fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity> {
+    override suspend fun getDiaryItemsByYearMonth(yearMonth: YearMonth): List<DiaryItemEntity> {
+        return diaryItemDao.getByYearAndMonth(
+            year = yearMonth.year,
+            month = yearMonth.monthValue
+        )
+    }
+
+    override fun loadDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity?> {
         return diaryItemDao.getStreamByDate(
             year = date.year,
             month = date.monthValue,
@@ -23,11 +30,11 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao) : DiaryData
         )
     }
 
-    override fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> {
+    override fun loadDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> {
         return diaryItemDao.findStreamByContents("%$contents%")
     }
 
-    override fun getAllDiaryItems(): List<DiaryItemEntity> {
+    override suspend fun getAllDiaryItems(): List<DiaryItemEntity> {
         return diaryItemDao.getAll()
     }
 
@@ -39,7 +46,7 @@ class DefaultDiaryDataSource(private val diaryItemDao: DiaryItemDao) : DiaryData
         diaryItemDao.delete(item.toDiaryItemEntity())
     }
 
-    override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
+    override suspend fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
         return diaryItemDao.deleteAllAndInsertAll(items)
     }
 }

@@ -138,14 +138,14 @@ private fun SearchTextField(
             if (value.isEmpty()) {
                 Text(
                     text = "일기 검색",
-                    style = GBDiaryTheme.typography.subtitle1,
+                    style = GBDiaryTheme.typography.subtitle2,
                     modifier = Modifier.alpha(0.3f)
                 )
             }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = GBDiaryTheme.typography.subtitle1.copy(
+                textStyle = GBDiaryTheme.typography.subtitle2.copy(
                     color = LocalContentColor.current
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

@@ -15,7 +15,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.casoft.gbdiary.model.Sticker
 import com.casoft.gbdiary.model.StickerType
-import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.AppBarHeight
 import com.casoft.gbdiary.ui.extension.statusBarHeight
 import com.casoft.gbdiary.ui.modifier.alignTopToCenterOfParent
@@ -23,6 +22,7 @@ import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.Dark1
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.ui.theme.markerPainter
+import com.casoft.gbdiary.util.imageResId
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -70,7 +70,7 @@ fun StickerBottomSheet(
             Spacer(Modifier.height(6.dp))
             Text(
                 text = "오늘은 어떤 하루였나요?",
-                style = GBDiaryTheme.typography.subtitle1
+                style = GBDiaryTheme.typography.subtitle2
             )
             Spacer(Modifier.height(24.dp))
             Row {

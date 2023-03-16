@@ -14,21 +14,23 @@ class DiaryDataSourceStub : DiaryDataSource {
     val diaryItems
         get() = _diaryItems.toList()
 
-    override fun getDiaryItemsByYearMonth(
+    override fun loadDiaryItemsByYearMonth(
         yearMonth: YearMonth,
     ): Flow<List<DiaryItemEntity>> = flow {
         diaryItems.filter { YearMonth.of(it.date.year, it.date.month) == yearMonth }
     }
 
-    override fun getDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity> = flow {
+    override suspend fun getDiaryItemsByYearMonth(yearMonth: YearMonth): List<DiaryItemEntity> = diaryItems
+
+    override fun loadDiaryItemByDate(date: LocalDate): Flow<DiaryItemEntity?> = flow {
         diaryItems.first { it.date.toLocalDate() == date }
     }
 
-    override fun findDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> = flow {
+    override fun loadDiaryItemsByContents(contents: String): Flow<List<DiaryItemEntity>> = flow {
         diaryItems.filter { it.contents == contents }
     }
 
-    override fun getAllDiaryItems(): List<DiaryItemEntity> = diaryItems
+    override suspend fun getAllDiaryItems(): List<DiaryItemEntity> = diaryItems
 
     override suspend fun save(item: DiaryItem) {
         delete(item)
@@ -39,7 +41,7 @@ class DiaryDataSourceStub : DiaryDataSource {
         _diaryItems.removeAll { it.date.toLocalDate() == item.date }
     }
 
-    override fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
+    override suspend fun deleteAllAndInsertAll(items: List<DiaryItemEntity>) {
         _diaryItems.run {
             clear()
             addAll(items)

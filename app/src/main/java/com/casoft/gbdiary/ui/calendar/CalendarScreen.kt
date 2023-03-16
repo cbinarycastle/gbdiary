@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui.calendar
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -17,6 +18,7 @@ import com.casoft.gbdiary.ui.components.AD_HEIGHT
 import com.casoft.gbdiary.ui.components.AdBanner
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
 import com.casoft.gbdiary.ui.components.MonthPickerDialog
+import com.casoft.gbdiary.ui.theme.GBDiaryContentAlpha
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.findActivity
 import com.casoft.gbdiary.util.yearMonth
@@ -38,6 +40,7 @@ fun CalendarScreen(
     viewModel: CalendarViewModel,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
+    onStatisticsClick: () -> Unit,
     onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
@@ -73,6 +76,7 @@ fun CalendarScreen(
         getDayStateList = { yearMonth -> viewModel.getDayStateList(yearMonth) },
         onDayClick = onDayClick,
         onTimelineClick = onTimelineClick,
+        onStatisticsClick = onStatisticsClick,
         onSearchClick = onSearchClick,
         onSettingsClick = onSettingsClick,
         onWriteClick = onWriteClick
@@ -88,6 +92,7 @@ private fun CalendarScreen(
     getDayStateList: (YearMonth) -> StateFlow<DayStateList>,
     onDayClick: (LocalDate) -> Unit,
     onTimelineClick: () -> Unit,
+    onStatisticsClick: () -> Unit,
     onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onWriteClick: (LocalDate) -> Unit,
@@ -98,7 +103,7 @@ private fun CalendarScreen(
         Column(Modifier.fillMaxSize()) {
             AppBar(
                 onTimelineClick = onTimelineClick,
-                onCalendarClick = { showMonthPickerDialog = true },
+                onStatisticsClick = onStatisticsClick,
                 onSearchClick = onSearchClick,
                 onSettingsClick = onSettingsClick
             )
@@ -111,7 +116,10 @@ private fun CalendarScreen(
                     modifier = Modifier.padding(top = 80.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    MonthHeader(yearMonth = state.currentYearMonth)
+                    MonthHeader(
+                        yearMonth = state.currentYearMonth,
+                        onClick = { showMonthPickerDialog = true }
+                    )
                     Spacer(Modifier.height(32.dp))
                     WeekHeader(Modifier.align(Alignment.CenterHorizontally))
                     Calendar(
@@ -181,7 +189,7 @@ private fun CalendarScreen(
 @Composable
 private fun AppBar(
     onTimelineClick: () -> Unit,
-    onCalendarClick: () -> Unit,
+    onStatisticsClick: () -> Unit,
     onSearchClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
@@ -198,12 +206,12 @@ private fun AppBar(
                     )
                 }
                 IconButton(
-                    onClick = onCalendarClick,
+                    onClick = onStatisticsClick,
                     modifier = Modifier.padding(start = 36.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.calendar),
-                        contentDescription = "월 이동"
+                        painter = painterResource(R.drawable.statistics),
+                        contentDescription = "통계"
                     )
                 }
             }
@@ -229,14 +237,28 @@ private fun AppBar(
 }
 
 @Composable
-private fun MonthHeader(yearMonth: YearMonth) {
-    Text(
-        text = yearMonth.month.getDisplayName(
-            TextStyle.FULL,
-            Locale.getDefault()
-        ),
-        style = GBDiaryTheme.typography.h5
-    )
+private fun MonthHeader(
+    yearMonth: YearMonth,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onClick() }
+    ) {
+        Text(
+            text = yearMonth.month.getDisplayName(
+                TextStyle.FULL,
+                Locale.getDefault()
+            ),
+            style = GBDiaryTheme.typography.h5
+        )
+        CompositionLocalProvider(LocalContentAlpha provides GBDiaryContentAlpha.disabled) {
+            Icon(
+                painter = painterResource(R.drawable.chevron_right),
+                contentDescription = "월 이동"
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -289,6 +311,7 @@ private fun CalendarScreenPreview() {
             getDayStateList = { MutableStateFlow(DayStateList.empty()) },
             onDayClick = {},
             onTimelineClick = {},
+            onStatisticsClick = {},
             onSearchClick = {},
             onSettingsClick = {},
             onWriteClick = {}

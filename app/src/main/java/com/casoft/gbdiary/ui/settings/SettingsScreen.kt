@@ -222,7 +222,7 @@ private fun PurchaseButton(
         ) {
             Text(
                 text = "프리미엄 이용권 구매",
-                style = GBDiaryTheme.typography.subtitle1,
+                style = GBDiaryTheme.typography.subtitle2,
                 modifier = Modifier.padding(start = 36.dp)
             )
             Image(

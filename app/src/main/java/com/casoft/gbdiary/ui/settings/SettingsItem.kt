@@ -36,7 +36,7 @@ fun SettingsItem(
             )
             .padding(contentPadding)
     ) {
-        ProvideTextStyle(GBDiaryTheme.typography.subtitle1) {
+        ProvideTextStyle(GBDiaryTheme.typography.subtitle2) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (icon != null) {
                     Icon(
@@ -47,7 +47,7 @@ fun SettingsItem(
                 }
                 Text(
                     text = name,
-                    style = GBDiaryTheme.typography.subtitle1
+                    style = GBDiaryTheme.typography.subtitle2
                 )
             }
             Spacer(Modifier.width(12.dp))

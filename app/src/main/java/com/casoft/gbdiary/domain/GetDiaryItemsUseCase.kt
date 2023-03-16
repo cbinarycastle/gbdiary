@@ -17,7 +17,7 @@ class GetDiaryItemsUseCase @Inject constructor(
 ) : FlowUseCase<YearMonth, List<DiaryItem>>(ioDispatcher) {
 
     override fun execute(params: YearMonth): Flow<Result<List<DiaryItem>>> {
-        return diaryDataSource.getDiaryItemsByYearMonth(params)
+        return diaryDataSource.loadDiaryItemsByYearMonth(params)
             .map { items ->
                 val diaryItem = items.map { item -> item.toDiaryItem() }
                 Result.Success(diaryItem)

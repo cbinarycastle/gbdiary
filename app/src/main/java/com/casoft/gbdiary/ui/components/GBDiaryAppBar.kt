@@ -26,7 +26,7 @@ fun GBDiaryAppBar(
             elevation = 0.dp
         ) {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                ProvideTextStyle(GBDiaryTheme.typography.subtitle1) {
+                ProvideTextStyle(GBDiaryTheme.typography.subtitle2) {
                     content()
                 }
             }

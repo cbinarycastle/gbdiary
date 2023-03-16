@@ -191,7 +191,7 @@ private fun BackupScreen(
                             text = signedInEmail,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
-                            style = GBDiaryTheme.typography.subtitle1,
+                            style = GBDiaryTheme.typography.subtitle2,
                             modifier = Modifier.alpha(0.4f)
                         )
                     }

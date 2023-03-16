@@ -2,7 +2,7 @@ package com.casoft.gbdiary.data.database
 
 import androidx.room.TypeConverter
 import com.casoft.gbdiary.model.Sticker
-import com.casoft.gbdiary.model.sticker
+import com.casoft.gbdiary.util.sticker
 import com.google.gson.Gson
 
 class StickerListConverter {

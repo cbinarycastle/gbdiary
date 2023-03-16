@@ -20,7 +20,7 @@ class SearchDiaryItemsUseCase @Inject constructor(
     override fun execute(params: String): Flow<Result<List<DiaryItem>>> = flow {
         emit(Result.Loading())
 
-        diaryDataSource.findDiaryItemsByContents(params)
+        diaryDataSource.loadDiaryItemsByContents(params)
             .map { items ->
                 items.map { item -> item.toDiaryItem() }
                     .let { Result.Success(it) }

@@ -41,7 +41,6 @@ import coil.compose.rememberAsyncImagePainter
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.model.DiaryFontSize
 import com.casoft.gbdiary.model.Sticker
-import com.casoft.gbdiary.model.imageResId
 import com.casoft.gbdiary.ui.components.AlertDialogLayout
 import com.casoft.gbdiary.ui.components.AlertDialogState
 import com.casoft.gbdiary.ui.components.GBDiaryAppBar
@@ -54,6 +53,7 @@ import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
+import com.casoft.gbdiary.util.imageResId
 import com.casoft.gbdiary.util.style
 import kotlinx.coroutines.launch
 import java.io.File
@@ -732,7 +732,7 @@ private fun MoreBottomSheet(onDelete: () -> Unit) {
             )
             Text(
                 text = "삭제",
-                style = GBDiaryTheme.typography.subtitle1
+                style = GBDiaryTheme.typography.subtitle2
             )
         }
     }

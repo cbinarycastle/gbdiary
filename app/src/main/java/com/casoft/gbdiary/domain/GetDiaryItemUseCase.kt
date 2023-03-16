@@ -17,7 +17,7 @@ class GetDiaryItemUseCase @Inject constructor(
 ) : FlowUseCase<LocalDate, DiaryItem?>(ioDispatcher) {
 
     override fun execute(params: LocalDate): Flow<Result<DiaryItem?>> {
-        return diaryDataSource.getDiaryItemByDate(params)
+        return diaryDataSource.loadDiaryItemByDate(params)
             .map { Result.Success(it?.toDiaryItem()) }
     }
 }

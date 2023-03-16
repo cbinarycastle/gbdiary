@@ -26,7 +26,7 @@ fun MonthPickerDialog(
     var currentYear by remember { mutableStateOf(initialYear) }
 
     Dialog(onDismissRequest = onDismiss) {
-        ProvideTextStyle(GBDiaryTheme.typography.subtitle1) {
+        ProvideTextStyle(GBDiaryTheme.typography.subtitle2) {
             Surface(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()

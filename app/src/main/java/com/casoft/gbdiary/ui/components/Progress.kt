@@ -51,7 +51,7 @@ fun Progress(progress: Float) {
         Text(
             text = "${(progress * 100).roundToInt()}%",
             color = color,
-            style = GBDiaryTheme.typography.subtitle1,
+            style = GBDiaryTheme.typography.subtitle2,
         )
     }
 }
