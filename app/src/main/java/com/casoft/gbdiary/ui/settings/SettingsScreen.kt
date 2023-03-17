@@ -1,5 +1,6 @@
 package com.casoft.gbdiary.ui.settings
 
+import android.content.ActivityNotFoundException
 import android.content.pm.PackageManager
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Build
@@ -28,6 +29,7 @@ import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
 import com.casoft.gbdiary.util.navigateToGooglePlay
+import com.casoft.gbdiary.util.toast
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -96,7 +98,13 @@ fun SettingsScreen(
             onFontSizeClick = onFontSizeClick,
             onBackupClick = onBackupClick,
             onScreenLockClick = onScreenLockClick,
-            onReviewClick = context::navigateToGooglePlay,
+            onReviewClick = {
+                try {
+                    context.navigateToGooglePlay()
+                } catch (e: ActivityNotFoundException) {
+                    context.toast("구글 플레이 스토어가 존재하지 않습니다.")
+                }
+            },
             onBack = onBack
         )
 
