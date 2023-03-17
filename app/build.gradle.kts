@@ -124,6 +124,7 @@ dependencies {
     testImplementation(Libs.Coroutines.TEST)
 
     implementation(Libs.Accompanist.PAGER)
+    implementation(Libs.Accompanist.PERMISSIONS)
     implementation(Libs.Accompanist.SYSTEM_UI_CONTROLLER)
 
     implementation(Libs.GoogleDrive.HTTP_CLIENT)
