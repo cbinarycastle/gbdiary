@@ -1,6 +1,7 @@
 package com.casoft.gbdiary.ui.settings
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
@@ -84,7 +85,11 @@ fun ScreenLockSettingScreen(
             if (showBiometricEnrollDialog) {
                 GBDiaryAlertDialog(
                     onConfirm = {
-                        biometricEnrollLauncher.launch(viewModel.biometricEnrollIntent)
+                        try {
+                            biometricEnrollLauncher.launch(viewModel.biometricEnrollIntent)
+                        } catch (e: ActivityNotFoundException) {
+                            context.toast("생체 인증 정보 등록이 불가능한 기기입니다.")
+                        }
                         showBiometricEnrollDialog = false
                     },
                     onDismiss = { showBiometricEnrollDialog = false },
