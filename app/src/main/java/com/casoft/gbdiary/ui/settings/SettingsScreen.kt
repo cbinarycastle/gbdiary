@@ -1,12 +1,10 @@
 package com.casoft.gbdiary.ui.settings
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.ActivityNotFoundException
-import android.content.pm.PackageManager
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Build
 import android.os.Build.VERSION_CODES.TIRAMISU
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -21,18 +19,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.casoft.gbdiary.R
 import com.casoft.gbdiary.ad.SETTING_BANNER_AD_UNIT_ID
 import com.casoft.gbdiary.ui.components.*
-import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
-import com.casoft.gbdiary.util.collectMessage
-import com.casoft.gbdiary.util.navigateToGooglePlay
-import com.casoft.gbdiary.util.toast
+import com.casoft.gbdiary.util.*
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
@@ -51,16 +50,24 @@ fun SettingsScreen(
     val notificationEnabled by viewModel.notificationEnabled.collectAsState()
     val notificationTime by viewModel.notificationTime.collectAsState()
 
-    var shouldShowNotificationPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var notificationPermissionDialogVisible by remember { mutableStateOf(false) }
+    var scheduleExactAlarmRequestDialogVisible by remember { mutableStateOf(false) }
 
-    val notificationPermissionLauncher =
-        rememberLauncherForActivityResult(RequestPermission()) { granted ->
+    val notificationPermissionState: PermissionState? = if (Build.VERSION.SDK_INT >= TIRAMISU) {
+        rememberPermissionState(POST_NOTIFICATIONS) { granted ->
             if (granted) {
-                viewModel.setNotificationEnabled(true)
+                if (context.canScheduleExactAlarm()) {
+                    viewModel.setNotificationEnabled(true)
+                } else {
+                    scheduleExactAlarmRequestDialogVisible = true
+                }
             } else {
-                shouldShowNotificationPermissionDeniedDialog = true
+                notificationPermissionDialogVisible = true
             }
         }
+    } else {
+        null
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.message.collectMessage(context, alertDialogState)
@@ -74,19 +81,15 @@ fun SettingsScreen(
             notificationTime = notificationTime,
             onNotificationEnabledChange = { enabled ->
                 if (enabled) {
-                    if (Build.VERSION.SDK_INT >= TIRAMISU) {
-                        val permission = android.Manifest.permission.POST_NOTIFICATIONS
-                        val permissionGranted = ContextCompat.checkSelfPermission(
-                            context, permission
-                        ) == PackageManager.PERMISSION_GRANTED
-
-                        if (permissionGranted) {
+                    val notificationPermissionGranted = notificationPermissionState?.status?.isGranted ?: true
+                    if (notificationPermissionGranted) {
+                        if (context.canScheduleExactAlarm()) {
                             viewModel.setNotificationEnabled(true)
                         } else {
-                            notificationPermissionLauncher.launch(permission)
+                            scheduleExactAlarmRequestDialogVisible = true
                         }
                     } else {
-                        viewModel.setNotificationEnabled(true)
+                        notificationPermissionState?.launchPermissionRequest()
                     }
                 } else {
                     viewModel.setNotificationEnabled(false)
@@ -108,13 +111,25 @@ fun SettingsScreen(
             onBack = onBack
         )
 
-        if (shouldShowNotificationPermissionDeniedDialog) {
-            NotificationPermissionDeniedDialog(
+        if (notificationPermissionDialogVisible) {
+            NotificationPermissionDialog(
                 onConfirm = {
-                    shouldShowNotificationPermissionDeniedDialog = false
+                    notificationPermissionDialogVisible = false
                     context.navigateToAppSettings()
                 },
-                onDismiss = { shouldShowNotificationPermissionDeniedDialog = false }
+                onDismiss = { notificationPermissionDialogVisible = false }
+            )
+        }
+
+        if (scheduleExactAlarmRequestDialogVisible) {
+            ScheduleExactAlarmRequestDialog(
+                onConfirm = {
+                    scheduleExactAlarmRequestDialogVisible = false
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        context.requestScheduleExactAlarm()
+                    }
+                },
+                onDismiss = { scheduleExactAlarmRequestDialogVisible = false }
             )
         }
     }
@@ -352,7 +367,7 @@ private fun ItemDivider() {
 }
 
 @Composable
-fun NotificationPermissionDeniedDialog(
+private fun NotificationPermissionDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -360,6 +375,20 @@ fun NotificationPermissionDeniedDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         content = { Text("알림을 설정하려면 알림 권한을 허용해야 합니다.") },
+        confirmText = { Text("설정") },
+        dismissText = { Text("취소") }
+    )
+}
+
+@Composable
+private fun ScheduleExactAlarmRequestDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    GBDiaryAlertDialog(
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        content = { Text("정확한 알림을 위해 알람 및 리마인더 설정을 허용해야 합니다.") },
         confirmText = { Text("설정") },
         dismissText = { Text("취소") }
     )

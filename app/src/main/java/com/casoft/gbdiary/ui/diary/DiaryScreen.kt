@@ -49,11 +49,11 @@ import com.casoft.gbdiary.ui.diary.image.ImagePermissionDeniedDialog
 import com.casoft.gbdiary.ui.diary.image.SELECTED_IMAGES_RESULT_KEY
 import com.casoft.gbdiary.ui.extension.CollectOnce
 import com.casoft.gbdiary.ui.extension.border
-import com.casoft.gbdiary.ui.extension.navigateToAppSettings
 import com.casoft.gbdiary.ui.modifier.noRippleClickable
 import com.casoft.gbdiary.ui.theme.GBDiaryTheme
 import com.casoft.gbdiary.util.collectMessage
 import com.casoft.gbdiary.util.imageResId
+import com.casoft.gbdiary.util.navigateToAppSettings
 import com.casoft.gbdiary.util.style
 import kotlinx.coroutines.launch
 import java.io.File
