@@ -23,7 +23,7 @@ class NotificationAlarmManager @Inject constructor(
     fun setAlarm(time: LocalTime) {
         val pendingIntent = makePendingIntent()
 
-        val now = timeProvider.nowLocal()
+        val now = timeProvider.now()
         val date = if (time <= now.toLocalTime()) {
             now.toLocalDate().plusDays(1)
         } else {
